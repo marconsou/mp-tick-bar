@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MPTickBar", "MPTickBar\MPTickBar.csproj", "{254B0C0E-D431-437C-8FFE-FD24A34124EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{254B0C0E-D431-437C-8FFE-FD24A34124EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{254B0C0E-D431-437C-8FFE-FD24A34124EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{254B0C0E-D431-437C-8FFE-FD24A34124EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{254B0C0E-D431-437C-8FFE-FD24A34124EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {95BF7137-3769-423A-BCA1-4B8126D1F643}
+	EndGlobalSection
+EndGlobal
