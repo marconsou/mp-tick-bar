@@ -3,7 +3,7 @@ using Dalamud.Plugin;
 using System;
 using System.Numerics;
 
-namespace MPTickBar
+namespace MPTickBarApi4
 {
     [Serializable]
     public class Configuration : IPluginConfiguration
@@ -31,7 +31,7 @@ namespace MPTickBar
         public UIType UIType { get; set; } = UIType.FinalFantasyXIVDefault;
 
         [NonSerialized]
-        private DalamudPluginInterface pluginInterface;
+        private DalamudPluginInterface? pluginInterface;
 
         public void Initialize(DalamudPluginInterface pluginInterface)
         {
@@ -40,7 +40,7 @@ namespace MPTickBar
 
         public void Save()
         {
-            this.pluginInterface.SavePluginConfig(this);
+            this.pluginInterface?.SavePluginConfig(this);
         }
     }
 }

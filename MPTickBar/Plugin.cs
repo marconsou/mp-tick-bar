@@ -48,7 +48,7 @@ namespace MPTickBar
 
             this.PluginInterface.CommandManager.AddHandler(this.CommandName, new CommandInfo(this.OnCommand)
             {
-                HelpMessage = "Visually tracks MP regeneration tick.",
+                HelpMessage = "Visually tracks MP regeneration tick (Black Mage only).",
                 ShowInHelp = true
             });
 
@@ -146,7 +146,7 @@ namespace MPTickBar
 
             if (!this.PluginUI.IsMpTickBarProgressResumed)
             {
-                var skipSpecificEvents = (this.LastCurrentMp == 0) && (currentMp == 10000); //Death during battle and first time login
+                var skipSpecificEvents = (this.LastCurrentMp == 0) && (currentMp == 10000); //Death during battle / first loop on login
                 var wasMPRegenerated = (this.LastCurrentMp < currentMp);
 
                 this.PluginUI.IsMpTickBarProgressResumed = (!skipSpecificEvents) && (wasMPRegenerated) && (!PlayerHelpers.IsLucidDreamingActivated(currentPlayer));
