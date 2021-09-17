@@ -1,6 +1,6 @@
 ## MP Tick Bar
 
-A Final Fantasy XIV [Dalamud](https://github.com/goatcorp/Dalamud) plugin to visually tracks MP regeneration tick.
+A Final Fantasy XIV [Dalamud](https://github.com/goatcorp/Dalamud) plugin to visually tracks MP regeneration tick (Black Mage only).
 
 Type `/mptb` in game to open configuration menu.
 
