@@ -8,25 +8,11 @@
     <Company />
     <Authors>Marconsou</Authors>
     <PackageProjectUrl>https://github.com/marconsou/mp-tick-bar</PackageProjectUrl>
+    <Description>Visually tracks MP regeneration tick (Black Mage only).</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="DalamudPackager" Version="2.1.2" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Reference Include="Dalamud">
-      <HintPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks\5.2.7.0')">$(AppData)\XIVLauncher\addon\Hooks\5.2.7.0\Dalamud.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="ImGui.NET">
-      <HintPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks\5.2.7.0')">$(AppData)\XIVLauncher\addon\Hooks\5.2.7.0\ImGui.NET.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="ImGuiScene">
-      <HintPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks\5.2.7.0')">$(AppData)\XIVLauncher\addon\Hooks\5.2.7.0\ImGuiScene.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
   </ItemGroup>
   
   <ItemGroup>
@@ -42,6 +28,21 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="Dalamud">
+      <HintPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks\5.2.7.0')">$(AppData)\XIVLauncher\addon\Hooks\5.2.7.0\Dalamud.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="ImGui.NET">
+      <HintPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks\5.2.7.0')">$(AppData)\XIVLauncher\addon\Hooks\5.2.7.0\ImGui.NET.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="ImGuiScene">
+      <HintPath Condition="Exists('$(AppData)\XIVLauncher\addon\Hooks\5.2.7.0')">$(AppData)\XIVLauncher\addon\Hooks\5.2.7.0\ImGuiScene.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>

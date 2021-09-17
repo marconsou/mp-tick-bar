@@ -1,19 +1,18 @@
-﻿using Dalamud.Game.ClientState;
-using Dalamud.Game.ClientState.Actors.Types;
-using Dalamud.Game.ClientState.Structs.JobGauge;
+﻿using Dalamud.Game.ClientState.JobGauge;
+using Dalamud.Game.ClientState.JobGauge.Types;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using System.Linq;
-using System.Reflection;
 
-namespace MPTickBar
+namespace MPTickBarApi4
 {
     public static class PlayerHelpers
     {
-        private static bool IsEffectActivated(PlayerCharacter currentPlayer, short effectId)
+        private static bool IsEffectActivated(PlayerCharacter currentPlayer, short statusId)
         {
             if (currentPlayer == null)
                 return false;
 
-            return currentPlayer.StatusEffects.Any(x => x.EffectId == effectId);
+            return currentPlayer.StatusList.Any(x => x.StatusId == statusId);
         }
 
         public static bool IsBlackMage(PlayerCharacter currentPlayer)
@@ -35,25 +34,18 @@ namespace MPTickBar
             return PlayerHelpers.IsEffectActivated(currentPlayer, 738);
         }
 
-        public static bool IsUmbralIceIIIActivated(ClientState clientState)
+        public static bool IsUmbralIceIIIActivated(JobGauges jobGauges)
         {
-            if (clientState == null)
-                return false;
-
-            var BLMGaugeData = clientState.JobGauges.Get<BLMGauge>();
-            var fieldInfo = typeof(BLMGauge).GetField("elementStance", BindingFlags.NonPublic | BindingFlags.Instance);
-            return ((byte)fieldInfo.GetValue(BLMGaugeData) == 253);
+            return (jobGauges.Get<BLMGauge>().UmbralIceStacks == 3);
         }
 
         public static float CalculatedFireIIICastTime(float fireIIICastTime, bool isUmbralIceIIIActivated, bool isCircleOfPowerActivated)
         {
-            /*unsafe
-            {
-                var fire3CastTime = FFXIVClientStructs.FFXIV.Client.Game.ActionManager.Instance()->GetAdjustedCastTime(FFXIVClientStructs.FFXIV.Client.Game.ActionType.Spell, 152);
-                Dalamud.Plugin.PluginLog.Information($"{fire3CastTime}s");
-                return fire3CastTime;
-            }*/
-
+            //unsafe
+            //{
+                //var fireIIIId = 152u;
+                //ActionManager.Instance()->GetAdjustedCastTime(ActionType.Spell, fireIIIId);
+            //}
             var circleOfPowerModifier = 0.85f;
             return (fireIIICastTime * (isCircleOfPowerActivated ? circleOfPowerModifier : 1.0f)) / (isUmbralIceIIIActivated ? 2.0f : 1.0f);
         }

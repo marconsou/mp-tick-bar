@@ -1,0 +1,13 @@
+{
+  "Author": "Marconsou",
+  "Name": "MP Tick Bar (Api 4)",
+  "Description": "Visually tracks MP regeneration tick (Black Mage only).",
+  "DalamudApiLevel": 4,
+  "InternalName": "MPTickBarApi4",
+  "ImageUrls": [
+    "https://i.ibb.co/TPzBCjt/Promo1.png",
+    "https://i.ibb.co/TPzBCjt/Promo1.png",
+    "https://i.ibb.co/TPzBCjt/Promo1.png"
+  ],
+  "IconUrl": "https://i.ibb.co/XfnG0KP/Icon.png"
+}

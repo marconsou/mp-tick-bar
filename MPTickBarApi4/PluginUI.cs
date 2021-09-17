@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace MPTickBar
+namespace MPTickBarApi4
 {
     public class PluginUI : IDisposable
     {
