@@ -5,6 +5,7 @@ using Dalamud.Game.Command;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using ImGuiNET;
+using MPTickBar.Properties;
 
 namespace MPTickBar
 {
@@ -15,19 +16,19 @@ namespace MPTickBar
         private static string CommandName => "/mptb";
 
         [PluginService]
-        public static DalamudPluginInterface PluginInterface { get; private set; }
+        private static DalamudPluginInterface PluginInterface { get; set; }
 
         [PluginService]
-        public static CommandManager CommandManager { get; private set; }
+        private static CommandManager CommandManager { get; set; }
 
         [PluginService]
-        public static Framework Framework { get; private set; }
+        private static Framework Framework { get; set; }
 
         [PluginService]
-        public static ClientState ClientState { get; private set; }
+        private static ClientState ClientState { get; set; }
 
         [PluginService]
-        public static JobGauges JobGauges { get; private set; }
+        private static JobGauges JobGauges { get; set; }
 
         private MPTickBarPluginUI MPTickBarPluginUI { get; set; }
 
@@ -55,11 +56,16 @@ namespace MPTickBar
             var jobStackMaterialUI = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.JobStackMaterialUI);
             this.MPTickBarPluginUI = new MPTickBarPluginUI(this.Configuration, gaugeDefault, gaugeMaterialUIBlack, GaugeMaterialUIDiscord, jobStackDefault, jobStackMaterialUI);
 
-            MPTickBarPlugin.CommandManager?.AddHandler(MPTickBarPlugin.CommandName, new CommandInfo(OnCommand)
+            MPTickBarPlugin.CommandManager.AddHandler(MPTickBarPlugin.CommandName, new CommandInfo(OnCommand)
             {
-                HelpMessage = "Open configuration menu.",
+                HelpMessage = "Open MP Tick Bar configuration menu.",
                 ShowInHelp = true
             });
+
+            MPTickBarPlugin.PluginInterface.UiBuilder.DisableAutomaticUiHide = false;
+            MPTickBarPlugin.PluginInterface.UiBuilder.DisableCutsceneUiHide = false;
+            MPTickBarPlugin.PluginInterface.UiBuilder.DisableGposeUiHide = false;
+            MPTickBarPlugin.PluginInterface.UiBuilder.DisableUserUiHide = false;
 
             MPTickBarPlugin.PluginInterface.UiBuilder.Draw += this.Draw;
             MPTickBarPlugin.PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfigUi;

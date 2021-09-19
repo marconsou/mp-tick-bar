@@ -6,20 +6,20 @@
 	<LangVersion>latest</LangVersion>
 	<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <OutputPath>$(AppData)\XIVLauncher\devPlugins\MPTickBarApi4\</OutputPath>
+    <OutputPath>C:\Users\User\AppData\Roaming\XIVLauncher\devPlugins\MPTickBar\</OutputPath>
     <Version>1.0.0.0</Version>
     <Product></Product>
     <Company />
     <Authors>Marconsou</Authors>
-    <PackageProjectUrl>https://github.com/marconsou/mp-tick-bar</PackageProjectUrl>
+    <PackageProjectUrl></PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="MPTickBarApi4.json" />
+    <None Remove="MPTickBar.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="MPTickBarApi4.json">
+    <Content Include="MPTickBar.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -30,12 +30,12 @@
   
   <PropertyGroup>
     <DalamudLibPath>$(AppData)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
-    <Description>Visually tracks MP regeneration tick (Black Mage only).</Description>
-    <PackageTags>mp tick bar</PackageTags>
+    <Description></Description>
+    <PackageTags></PackageTags>
     <AssemblyName>MPTickBar</AssemblyName>
     <RootNamespace>MPTickBar</RootNamespace>
-    <RepositoryUrl>https://github.com/marconsou/mp-tick-bar</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl></RepositoryUrl>
+    <RepositoryType></RepositoryType>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

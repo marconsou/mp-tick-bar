@@ -7,8 +7,8 @@
     <Product></Product>
     <Company />
     <Authors>Marconsou</Authors>
-    <PackageProjectUrl>https://github.com/marconsou/mp-tick-bar</PackageProjectUrl>
-    <Description>Visually tracks MP regeneration tick (Black Mage only).</Description>
+    <PackageProjectUrl></PackageProjectUrl>
+    <Description></Description>
   </PropertyGroup>
 
   <ItemGroup>
