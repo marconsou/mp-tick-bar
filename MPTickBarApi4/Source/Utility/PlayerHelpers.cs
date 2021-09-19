@@ -7,7 +7,7 @@ namespace MPTickBar
 {
     public static class PlayerHelpers
     {
-        private static bool IsEffectActivated(PlayerCharacter currentPlayer, short statusId)
+        private static bool IsEffectActivated(PlayerCharacter currentPlayer, uint statusId)
         {
             if (currentPlayer == null)
                 return false;
@@ -20,7 +20,7 @@ namespace MPTickBar
             if (currentPlayer == null)
                 return false;
 
-            var jobBLMId = 25;
+            var jobBLMId = 25u;
             return (currentPlayer.ClassJob?.Id == jobBLMId);
         }
 
