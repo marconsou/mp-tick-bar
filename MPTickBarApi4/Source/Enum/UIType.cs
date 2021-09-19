@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace MPTickBarApi4
+namespace MPTickBar
 {
     public enum UIType
     {

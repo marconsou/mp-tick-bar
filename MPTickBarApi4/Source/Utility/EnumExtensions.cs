@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 
-namespace MPTickBarApi4
+namespace MPTickBar
 {
     public static class EnumExtensions
     {

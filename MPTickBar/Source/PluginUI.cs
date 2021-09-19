@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace MPTickBarApi4
+namespace MPTickBar
 {
     public class PluginUI : IDisposable
     {
@@ -36,7 +36,7 @@ namespace MPTickBarApi4
 
         private Vector2 ItemSpacingDefault { get; set; }
 
-        private struct MPTickBarUI
+        private class MPTickBarUI
         {
             public TextureWrap Gauge { get; set; }
 
@@ -345,23 +345,23 @@ namespace MPTickBarApi4
 
         private MPTickBarUI GetMPTickBarUI()
         {
-            MPTickBarUI ui = new();
+            var mpTickBarUI = new MPTickBarUI();
             switch (this.Configuration.UIType)
             {
                 case UIType.FinalFantasyXIVDefault:
-                    ui.Gauge = this.GaugeDefault;
-                    ui.JobStack = this.JobStackDefault;
+                    mpTickBarUI.Gauge = this.GaugeDefault;
+                    mpTickBarUI.JobStack = this.JobStackDefault;
                     break;
                 case UIType.MaterialUIDiscord:
-                    ui.Gauge = this.GaugeMaterialUIDiscord;
-                    ui.JobStack = this.JobStackMaterialUI;
+                    mpTickBarUI.Gauge = this.GaugeMaterialUIDiscord;
+                    mpTickBarUI.JobStack = this.JobStackMaterialUI;
                     break;
                 case UIType.MaterialUIBlack:
-                    ui.Gauge = this.GaugeMaterialUIBlack;
-                    ui.JobStack = this.JobStackMaterialUI;
+                    mpTickBarUI.Gauge = this.GaugeMaterialUIBlack;
+                    mpTickBarUI.JobStack = this.JobStackMaterialUI;
                     break;
             }
-            return ui;
+            return mpTickBarUI;
         }
     }
 }

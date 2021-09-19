@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace MPTickBar
 {
-    public class PluginUI : IDisposable
+    public class MPTickBarPluginUI : IDisposable
     {
         private Configuration Configuration { get; set; }
 
@@ -36,14 +36,14 @@ namespace MPTickBar
 
         private Vector2 ItemSpacingDefault { get; set; }
 
-        private struct MPTickBarUI
+        private class MPTickBarUI
         {
             public TextureWrap Gauge { get; set; }
 
             public TextureWrap JobStack { get; set; }
         }
 
-        public PluginUI(Configuration configuration, TextureWrap gaugeDefault, TextureWrap gaugeMaterialUIBlack, TextureWrap gaugeMaterialUIDiscord, TextureWrap jobStackDefault, TextureWrap jobStackMaterialUI)
+        public MPTickBarPluginUI(Configuration configuration, TextureWrap gaugeDefault, TextureWrap gaugeMaterialUIBlack, TextureWrap gaugeMaterialUIDiscord, TextureWrap jobStackDefault, TextureWrap jobStackMaterialUI)
         {
             this.Configuration = configuration;
             this.GaugeDefault = gaugeDefault;
@@ -53,21 +53,13 @@ namespace MPTickBar
             this.JobStackMaterialUI = jobStackMaterialUI;
         }
 
-        protected virtual void Dispose(bool disposing)
+        public void Dispose()
         {
-            if (!disposing) return;
-
             this.GaugeDefault.Dispose();
             this.GaugeMaterialUIBlack.Dispose();
             this.GaugeMaterialUIDiscord.Dispose();
             this.JobStackDefault.Dispose();
             this.JobStackMaterialUI.Dispose();
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public void Draw()
@@ -121,9 +113,9 @@ namespace MPTickBar
             var offsetY = !isPreview ? 25.0f : 0.0f;
             var elementWidth = 160.0f;
 
-            PluginUI.RenderGaugeUIElement(mpTickBarUI, uiScale, offsetY, elementWidth, 1.0f, 5, Vector4.One);
-            PluginUI.RenderGaugeUIElement(mpTickBarUI, uiScale, offsetY, elementWidth, progress, 2, new Vector4(this.Configuration.ProgressBarTintColor, 1.0f));
-            PluginUI.RenderGaugeUIElement(mpTickBarUI, uiScale, offsetY, elementWidth, 1.0f, 0, Vector4.One);
+            MPTickBarPluginUI.RenderGaugeUIElement(mpTickBarUI, uiScale, offsetY, elementWidth, 1.0f, 5, Vector4.One);
+            MPTickBarPluginUI.RenderGaugeUIElement(mpTickBarUI, uiScale, offsetY, elementWidth, progress, 2, new Vector4(this.Configuration.ProgressBarTintColor, 1.0f));
+            MPTickBarPluginUI.RenderGaugeUIElement(mpTickBarUI, uiScale, offsetY, elementWidth, 1.0f, 0, Vector4.One);
 
             if (this.Configuration.IsFastFireIIIMarkerVisible && (this.IsUmbralIceIIIActivated || isPreview))
             {
@@ -137,8 +129,8 @@ namespace MPTickBar
                     var startX = (fastFireIIIMarkerOffset * uiScale);
                     var startY = offsetY - (this.Configuration.UIType == UIType.FinalFantasyXIVDefault ? 0.0f : 0.5f * uiScale);
 
-                    PluginUI.RenderJobStackUIElement(mpTickBarUI, uiScale, startX, startY, 0, Vector4.One);
-                    PluginUI.RenderJobStackUIElement(mpTickBarUI, uiScale, startX, startY, 1, new Vector4(this.Configuration.FastFireIIIMarkerTintColor, 1.0f));
+                    MPTickBarPluginUI.RenderJobStackUIElement(mpTickBarUI, uiScale, startX, startY, 0, Vector4.One);
+                    MPTickBarPluginUI.RenderJobStackUIElement(mpTickBarUI, uiScale, startX, startY, 1, new Vector4(this.Configuration.FastFireIIIMarkerTintColor, 1.0f));
                 }
                 else if (this.Configuration.FastFireIIIMarkerType == FastFireIIIMarkerType.Line)
                 {
@@ -345,23 +337,23 @@ namespace MPTickBar
 
         private MPTickBarUI GetMPTickBarUI()
         {
-            MPTickBarUI ui = new();
+            var mpTickBarUI = new MPTickBarUI();
             switch (this.Configuration.UIType)
             {
                 case UIType.FinalFantasyXIVDefault:
-                    ui.Gauge = this.GaugeDefault;
-                    ui.JobStack = this.JobStackDefault;
+                    mpTickBarUI.Gauge = this.GaugeDefault;
+                    mpTickBarUI.JobStack = this.JobStackDefault;
                     break;
                 case UIType.MaterialUIDiscord:
-                    ui.Gauge = this.GaugeMaterialUIDiscord;
-                    ui.JobStack = this.JobStackMaterialUI;
+                    mpTickBarUI.Gauge = this.GaugeMaterialUIDiscord;
+                    mpTickBarUI.JobStack = this.JobStackMaterialUI;
                     break;
                 case UIType.MaterialUIBlack:
-                    ui.Gauge = this.GaugeMaterialUIBlack;
-                    ui.JobStack = this.JobStackMaterialUI;
+                    mpTickBarUI.Gauge = this.GaugeMaterialUIBlack;
+                    mpTickBarUI.JobStack = this.JobStackMaterialUI;
                     break;
             }
-            return ui;
+            return mpTickBarUI;
         }
     }
 }
