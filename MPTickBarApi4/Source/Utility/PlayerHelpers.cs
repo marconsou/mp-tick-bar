@@ -3,7 +3,7 @@ using Dalamud.Game.ClientState.JobGauge.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using System.Linq;
 
-namespace MPTickBarApi4
+namespace MPTickBar
 {
     public static class PlayerHelpers
     {

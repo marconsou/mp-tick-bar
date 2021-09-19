@@ -1,4 +1,4 @@
-﻿namespace MPTickBarApi4
+﻿namespace MPTickBar
 {
     public enum FastFireIIIMarkerType
     {
