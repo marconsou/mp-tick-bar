@@ -143,10 +143,10 @@ namespace MPTickBar
             var currentMp = currentPlayer.CurrentMp;
             var territoryType = clientState.TerritoryType;
             var isInCombat = currentPlayer.StatusFlags.ToString().Contains("InCombat");
+            var isDead = (currentPlayer.CurrentHp == 0);
 
             if (!this.MPTickBarPluginUI.IsMpTickBarProgressResumed)
             {
-                var isDead = (currentPlayer.CurrentHp == 0);
                 var wasMPreset = (this.LastCurrentMp == 0) && (currentMp == currentPlayer.MaxMp);
                 var wasMPRegenerated = (this.LastCurrentMp < currentMp);
 
@@ -166,7 +166,7 @@ namespace MPTickBar
                 var changingZones = (this.LastTerritoryType != territoryType);
                 var leavingBattle = (this.LastIsInCombat && !isInCombat);
 
-                if ((changingZones) || (leavingBattle))
+                if (isDead || changingZones || leavingBattle)
                 {
                     this.MPTickBarPluginUI.IsMpTickBarProgressResumed = false;
                 }
