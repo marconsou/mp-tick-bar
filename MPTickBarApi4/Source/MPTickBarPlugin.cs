@@ -67,6 +67,7 @@ namespace MPTickBar
             MPTickBarPlugin.PluginInterface.UiBuilder.DisableGposeUiHide = false;
             MPTickBarPlugin.PluginInterface.UiBuilder.DisableUserUiHide = false;
 
+            MPTickBarPlugin.ClientState.Login += this.Login;
             MPTickBarPlugin.PluginInterface.UiBuilder.Draw += this.Draw;
             MPTickBarPlugin.PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfigUi;
             MPTickBarPlugin.Framework.Update += this.Update;
@@ -75,6 +76,7 @@ namespace MPTickBar
         public void Dispose()
         {
             this.MPTickBarPluginUI.Dispose();
+            MPTickBarPlugin.ClientState.Login -= this.Login;
             MPTickBarPlugin.PluginInterface.UiBuilder.Draw -= this.Draw;
             MPTickBarPlugin.PluginInterface.UiBuilder.OpenConfigUi -= this.OpenConfigUi;
             MPTickBarPlugin.Framework.Update -= this.Update;
@@ -87,6 +89,12 @@ namespace MPTickBar
         private void OnCommand(string command, string args)
         {
             this.OpenConfigUi();
+        }
+
+        private void Login(object sender, System.EventArgs e)
+        {
+            if (this.MPTickBarPluginUI != null)
+                this.MPTickBarPluginUI.IsMpTickBarProgressResumed = false;
         }
 
         private void Draw()
@@ -116,11 +124,11 @@ namespace MPTickBar
 
             if (!this.MPTickBarPluginUI.IsMpTickBarProgressResumed)
             {
-                var skipSpecificEvents = (this.LastCurrentMp == 0) && (currentMp == 10000); //Death during battle / first loop on login
+                var isDead = (currentPlayer.CurrentHp == 0);
+                var wasMPreset = (this.LastCurrentMp == 0) && (currentMp == currentPlayer.MaxMp);
                 var wasMPRegenerated = (this.LastCurrentMp < currentMp);
 
-                this.MPTickBarPluginUI.IsMpTickBarProgressResumed = (!skipSpecificEvents) && (wasMPRegenerated) && (!PlayerHelpers.IsLucidDreamingActivated(currentPlayer));
-
+                this.MPTickBarPluginUI.IsMpTickBarProgressResumed = !isDead && !wasMPreset && wasMPRegenerated && !PlayerHelpers.IsLucidDreamingActivated(currentPlayer);
                 if (this.MPTickBarPluginUI.IsMpTickBarProgressResumed)
                 {
                     this.RealTime = ImGui.GetTime();
