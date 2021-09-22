@@ -148,12 +148,12 @@ namespace MPTickBar
 
             if (!this.MPTickBarPluginUI.IsMpTickBarProgressResumed)
             {
-                var wasMPreset = (this.LastCurrentMp == 0) && (currentMp == currentPlayer.MaxMp);
                 var wasMPRegenerated = (this.LastCurrentMp < currentMp);
-                var combatConditions = !isInCombat || (isInCombat && PlayerHelpers.GetUmbralIceStacks(clientState) > 0);
+                var wasMPreset = (this.LastCurrentMp == 0) && (currentMp == currentPlayer.MaxMp);
+                var checkCombatConditions = !isInCombat || (isInCombat && PlayerHelpers.GetUmbralIceStacks(clientState) > 0);
                 //Manafont/Ethers conditions not covered. Do NOT start syncing with them.
 
-                this.MPTickBarPluginUI.IsMpTickBarProgressResumed = wasMPRegenerated && combatConditions && !isDead && !wasMPreset && !PlayerHelpers.IsLucidDreamingActivated(currentPlayer);
+                this.MPTickBarPluginUI.IsMpTickBarProgressResumed = !isDead && wasMPRegenerated && !wasMPreset && checkCombatConditions && !PlayerHelpers.IsLucidDreamingActivated(currentPlayer);
                 if (this.MPTickBarPluginUI.IsMpTickBarProgressResumed)
                 {
                     this.RealTime = ImGui.GetTime();
