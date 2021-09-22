@@ -13,7 +13,7 @@ namespace MPTickBar
     {
         public string Name => "MP Tick Bar";
 
-        private static string CommandName => "/mptb";
+        private string CommandName => "/mptb";
 
         [PluginService]
         private static DalamudPluginInterface PluginInterface { get; set; }
@@ -38,7 +38,7 @@ namespace MPTickBar
 
         private double LastCurrentTime { get; set; }
 
-        private uint LastCurrentMp { get; set; } = int.MaxValue;
+        private uint LastCurrentMp { get; set; }
 
         private ushort LastTerritoryType { get; set; } = ushort.MaxValue;
 
@@ -54,9 +54,10 @@ namespace MPTickBar
             var GaugeMaterialUIDiscord = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.GaugeMaterialUIDiscord);
             var jobStackDefault = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.JobStackDefault);
             var jobStackMaterialUI = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.JobStackMaterialUI);
-            this.MPTickBarPluginUI = new MPTickBarPluginUI(this.Configuration, gaugeDefault, gaugeMaterialUIBlack, GaugeMaterialUIDiscord, jobStackDefault, jobStackMaterialUI);
+            var numberPercentage = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.NumberPercentage);
+            this.MPTickBarPluginUI = new MPTickBarPluginUI(this.Configuration, gaugeDefault, gaugeMaterialUIBlack, GaugeMaterialUIDiscord, jobStackDefault, jobStackMaterialUI, numberPercentage);
 
-            MPTickBarPlugin.CommandManager.AddHandler(MPTickBarPlugin.CommandName, new CommandInfo(OnCommand)
+            MPTickBarPlugin.CommandManager.AddHandler(this.CommandName, new CommandInfo(OnCommand)
             {
                 HelpMessage = "Open MP Tick Bar configuration menu.",
                 ShowInHelp = true
@@ -80,7 +81,7 @@ namespace MPTickBar
             MPTickBarPlugin.PluginInterface.UiBuilder.Draw -= this.Draw;
             MPTickBarPlugin.PluginInterface.UiBuilder.OpenConfigUi -= this.OpenConfigUi;
             MPTickBarPlugin.Framework.Update -= this.Update;
-            MPTickBarPlugin.CommandManager.RemoveHandler(MPTickBarPlugin.CommandName);
+            MPTickBarPlugin.CommandManager.RemoveHandler(this.CommandName);
             MPTickBarPlugin.Framework.Dispose();
             MPTickBarPlugin.ClientState.Dispose();
             MPTickBarPlugin.PluginInterface.Dispose();
@@ -127,8 +128,10 @@ namespace MPTickBar
             {
                 var wasMPreset = (this.LastCurrentMp == 0) && (currentMp == currentPlayer.MaxMp);
                 var wasMPRegenerated = (this.LastCurrentMp < currentMp);
+                var combatConditions = !isInCombat || (isInCombat && PlayerHelpers.GetUmbralIceStacks(MPTickBarPlugin.JobGauges) > 0);
+                //Manafont/Ethers conditions not covered. Do NOT start syncing with them.
 
-                this.MPTickBarPluginUI.IsMpTickBarProgressResumed = !isDead && !wasMPreset && wasMPRegenerated && !PlayerHelpers.IsLucidDreamingActivated(currentPlayer);
+                this.MPTickBarPluginUI.IsMpTickBarProgressResumed = wasMPRegenerated && combatConditions && !isDead && !wasMPreset && !PlayerHelpers.IsLucidDreamingActivated(currentPlayer);
                 if (this.MPTickBarPluginUI.IsMpTickBarProgressResumed)
                 {
                     this.RealTime = ImGui.GetTime();

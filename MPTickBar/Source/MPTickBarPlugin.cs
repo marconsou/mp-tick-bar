@@ -26,7 +26,7 @@ namespace MPTickBar
 
         private double LastCurrentTime { get; set; }
 
-        private int LastCurrentMp { get; set; } = int.MaxValue;
+        private int LastCurrentMp { get; set; }
 
         private ushort LastTerritoryType { get; set; } = ushort.MaxValue;
 
@@ -43,7 +43,8 @@ namespace MPTickBar
             var GaugeMaterialUIDiscord = this.LoadTexture(Resources.GaugeMaterialUIDiscord);
             var jobStackDefault = this.LoadTexture(Resources.JobStackDefault);
             var jobStackMaterialUI = this.LoadTexture(Resources.JobStackMaterialUI);
-            this.MPTickBarPluginUI = new MPTickBarPluginUI(this.Configuration, gaugeDefault, gaugeMaterialUIBlack, GaugeMaterialUIDiscord, jobStackDefault, jobStackMaterialUI);
+            var numberPercentage = this.LoadTexture(Resources.NumberPercentage);
+            this.MPTickBarPluginUI = new MPTickBarPluginUI(this.Configuration, gaugeDefault, gaugeMaterialUIBlack, GaugeMaterialUIDiscord, jobStackDefault, jobStackMaterialUI, numberPercentage);
 
             this.PluginInterface.CommandManager.AddHandler(this.CommandName, new CommandInfo(this.OnCommand)
             {
@@ -149,8 +150,10 @@ namespace MPTickBar
             {
                 var wasMPreset = (this.LastCurrentMp == 0) && (currentMp == currentPlayer.MaxMp);
                 var wasMPRegenerated = (this.LastCurrentMp < currentMp);
+                var combatConditions = !isInCombat || (isInCombat && PlayerHelpers.GetUmbralIceStacks(clientState) > 0);
+                //Manafont/Ethers conditions not covered. Do NOT start syncing with them.
 
-                this.MPTickBarPluginUI.IsMpTickBarProgressResumed = !isDead && !wasMPreset && wasMPRegenerated && !PlayerHelpers.IsLucidDreamingActivated(currentPlayer);
+                this.MPTickBarPluginUI.IsMpTickBarProgressResumed = wasMPRegenerated && combatConditions && !isDead && !wasMPreset && !PlayerHelpers.IsLucidDreamingActivated(currentPlayer);
                 if (this.MPTickBarPluginUI.IsMpTickBarProgressResumed)
                 {
                     this.RealTime = ImGui.GetTime();

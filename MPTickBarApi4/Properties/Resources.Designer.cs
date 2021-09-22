@@ -109,5 +109,15 @@ namespace MPTickBar.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] NumberPercentage {
+            get {
+                object obj = ResourceManager.GetObject("NumberPercentage", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

@@ -34,6 +34,11 @@ namespace MPTickBar
             return PlayerHelpers.IsEffectActivated(currentPlayer, 738);
         }
 
+        public static int GetUmbralIceStacks(JobGauges jobGauges)
+        {
+            return (jobGauges.Get<BLMGauge>().UmbralIceStacks);
+        }
+
         public static bool IsUmbralIceIIIActivated(JobGauges jobGauges)
         {
             return (jobGauges.Get<BLMGauge>().UmbralIceStacks == 3);

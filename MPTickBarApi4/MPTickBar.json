@@ -4,7 +4,7 @@
   "Description": "Visually tracks MP regeneration tick (Black Mage only).",
   "Tags": [ "mp", "tick", "bar" ],
   "InternalName": "MPTickBar",
-  "AssemblyVersion": "1.0.0",
+  "AssemblyVersion": "1.1.0",
   "DalamudApiLevel": 4,
   "RepoUrl": "https://github.com/marconsou/mp-tick-bar",
   "ImageUrls": [

@@ -35,14 +35,23 @@ namespace MPTickBar
             return PlayerHelpers.IsEffectActivated(currentPlayer, 738);
         }
 
-        public static bool IsUmbralIceIIIActivated(ClientState clientState)
+        public static int GetUmbralIceStacks(ClientState clientState)
         {
             if (clientState == null)
-                return false;
+                return 0;
 
             var BLMGaugeData = clientState.JobGauges.Get<BLMGauge>();
             var fieldInfo = typeof(BLMGauge).GetField("elementStance", BindingFlags.NonPublic | BindingFlags.Instance);
-            return ((byte)fieldInfo.GetValue(BLMGaugeData) == 253);
+            var stacks = 256 - (byte)fieldInfo.GetValue(BLMGaugeData);
+
+            if (Enumerable.Range(1, 3).Contains(stacks))
+                return stacks;
+            return 0;
+        }
+
+        public static bool IsUmbralIceIIIActivated(ClientState clientState)
+        {
+            return (PlayerHelpers.GetUmbralIceStacks(clientState) == 3);
         }
 
         public static float CalculatedFireIIICastTime(float fireIIICastTime, bool isUmbralIceIIIActivated, bool isCircleOfPowerActivated)

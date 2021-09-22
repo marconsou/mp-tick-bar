@@ -20,6 +20,8 @@ namespace MPTickBar
 
         private TextureWrap JobStackMaterialUI { get; set; }
 
+        private TextureWrap NumberPercentage { get; set; }
+
         public bool IsConfigurationWindowVisible { get; set; }
 
         public bool IsMPTickBarVisible { get; set; }
@@ -43,7 +45,7 @@ namespace MPTickBar
             public TextureWrap JobStack { get; set; }
         }
 
-        public MPTickBarPluginUI(Configuration configuration, TextureWrap gaugeDefault, TextureWrap gaugeMaterialUIBlack, TextureWrap gaugeMaterialUIDiscord, TextureWrap jobStackDefault, TextureWrap jobStackMaterialUI)
+        public MPTickBarPluginUI(Configuration configuration, TextureWrap gaugeDefault, TextureWrap gaugeMaterialUIBlack, TextureWrap gaugeMaterialUIDiscord, TextureWrap jobStackDefault, TextureWrap jobStackMaterialUI, TextureWrap numberPercentage)
         {
             this.Configuration = configuration;
             this.GaugeDefault = gaugeDefault;
@@ -51,6 +53,7 @@ namespace MPTickBar
             this.GaugeMaterialUIDiscord = gaugeMaterialUIDiscord;
             this.JobStackDefault = jobStackDefault;
             this.JobStackMaterialUI = jobStackMaterialUI;
+            this.NumberPercentage = numberPercentage;
         }
 
         public void Dispose()
@@ -60,6 +63,7 @@ namespace MPTickBar
             this.GaugeMaterialUIDiscord.Dispose();
             this.JobStackDefault.Dispose();
             this.JobStackMaterialUI.Dispose();
+            this.NumberPercentage.Dispose();
         }
 
         public void Draw()
@@ -105,13 +109,39 @@ namespace MPTickBar
             ImGui.Image(mpTickBarUI.JobStack.ImGuiHandle, new Vector2(scaledElementWidth, scaledElementHeight), new Vector2(textureX, 0.0f), new Vector2(textureX + 0.5f, 0.5f), tintColor);
         }
 
+        private void RenderNumbers(float uiScale, float offsetY, float progress, float barElementWidth)
+        {
+            var digitTotal = 10;
+            var elementWidth = this.NumberPercentage.Width / digitTotal;
+            var elementHeight = this.NumberPercentage.Height;
+            var scaledElementWidth = elementWidth * uiScale;
+            var scaledElementHeight = elementHeight * uiScale;
+            var percentage = (int)(progress * 100.0f);
+            var percentageText = percentage.ToString();
+            var baseX = this.Configuration.NumberPercentageOffsetX + (barElementWidth / 2.0f) - (percentageText.Length * elementWidth / 2.0f);
+            var baseY = this.Configuration.NumberPercentageOffsetY + 11.0f;
+            var digitOffsetX = 0.0f;
+            foreach (var digitText in percentageText)
+            {
+                var digit = char.GetNumericValue(digitText);
+                var baseTextureX = (elementWidth) * digit;
+                var textureX = (float)baseTextureX / this.NumberPercentage.Width;
+                var textureW = (float)(baseTextureX + elementWidth) / this.NumberPercentage.Width;
+                ImGui.SetCursorPos(new Vector2((baseX + digitOffsetX) * uiScale, (baseY + offsetY / uiScale) * uiScale));
+                ImGui.Image(this.NumberPercentage.ImGuiHandle, new Vector2(scaledElementWidth, scaledElementHeight), new Vector2(textureX, 0.0f), new Vector2(textureW, 1.0f), new Vector4(this.Configuration.NumberPercentageTintColor, 1.0f));
+
+                digitOffsetX += (elementWidth);
+            }
+        }
+
         private void DrawMPTickBar(bool isPreview)
         {
             var mpTickBarUI = this.GetMPTickBarUI();
             var progress = (float)(!isPreview ? (this.IsMpTickBarProgressResumed ? (this.ProgressTime % 1) : 0.0) : (((DateTime.Now.Second % 3) + (DateTime.Now.Millisecond / 1000.0)) / 3.0));
             var uiScale = !isPreview ? this.Configuration.UIScale : 2.0f;
-            var offsetY = !isPreview ? 25.0f : 0.0f;
-            var elementWidth = 160.0f;
+            var offsetY = !isPreview ? 25.0f : 40.0f;
+            var barElementWidth = 160.0f;
+            var elementWidth = barElementWidth;
 
             MPTickBarPluginUI.RenderGaugeUIElement(mpTickBarUI, uiScale, offsetY, elementWidth, 1.0f, 5, Vector4.One);
             MPTickBarPluginUI.RenderGaugeUIElement(mpTickBarUI, uiScale, offsetY, elementWidth, progress, 2, new Vector4(this.Configuration.ProgressBarTintColor, 1.0f));
@@ -122,7 +152,7 @@ namespace MPTickBar
                 elementWidth = (elementWidth) / 3.0f;
                 var fireIIICastTime = (!isPreview) ? this.FireIIICastTime : PlayerHelpers.CalculatedFireIIICastTime(this.Configuration.FireIIICastTime, true, this.IsCircleOfPowerPreviewActivated);
                 var FireIIICastOffset = (3.0f - fireIIICastTime) * elementWidth;
-                var fastFireIIIMarkerOffset = FireIIICastOffset + (this.Configuration.FastFireIIIMarkerOffset * 0.70f);
+                var fastFireIIIMarkerOffset = FireIIICastOffset + (this.Configuration.FastFireIIIMarkerTimeOffset * elementWidth);
 
                 if (this.Configuration.FastFireIIIMarkerType == FastFireIIIMarkerType.Icon)
                 {
@@ -143,6 +173,9 @@ namespace MPTickBar
                     ImGui.GetWindowDrawList().AddLine(new Vector2(startX, startY), new Vector2(startX, startY + lineHeight), ImGui.GetColorU32(new Vector4(this.Configuration.FastFireIIIMarkerTintColor, 1.0f)), thickness);
                 }
             }
+
+            if (this.Configuration.IsNumberPercentageVisible)
+                this.RenderNumbers(uiScale, offsetY, progress, barElementWidth);
         }
 
         private void DrawConfiguration()
@@ -159,6 +192,12 @@ namespace MPTickBar
                 if (ImGui.BeginTabItem("Fast Fire III Marker"))
                 {
                     this.DrawFastFireIIIMarkerTab();
+                    ImGui.EndTabItem();
+                }
+
+                if (ImGui.BeginTabItem("Number (%)"))
+                {
+                    this.DrawNumberPercentageTab();
                     ImGui.EndTabItem();
                 }
             }
@@ -226,24 +265,18 @@ namespace MPTickBar
                 this.Configuration.Save();
             }
 
-            var fastFireIIIMarkerOffset = this.Configuration.FastFireIIIMarkerOffset;
-            if (ImGui.DragInt("Offset", ref fastFireIIIMarkerOffset, 1, 0, 50, "%i"))
+            var fastFireIIIMarkerTimeOffset = this.Configuration.FastFireIIIMarkerTimeOffset;
+            if (ImGui.DragFloat("Time Offset (s)", ref fastFireIIIMarkerTimeOffset, 0.01f, 0.0f, 0.5f, "%.2f"))
             {
-                this.Configuration.FastFireIIIMarkerOffset = fastFireIIIMarkerOffset;
+                this.Configuration.FastFireIIIMarkerTimeOffset = fastFireIIIMarkerTimeOffset;
                 this.Configuration.Save();
             }
 
             var fireIIICastTime = this.Configuration.FireIIICastTime;
-            if (ImGui.DragFloat("Fire III Cast Time", ref fireIIICastTime, 0.01f, 2.95f, 3.5f, "%.2f"))
+            if (ImGui.DragFloat("Fire III Cast Time (s)", ref fireIIICastTime, 0.01f, 2.95f, 3.5f, "%.2f"))
             {
                 this.Configuration.FireIIICastTime = fireIIICastTime;
                 this.Configuration.Save();
-            }
-            if (ImGui.IsItemHovered())
-            {
-                ImGui.BeginTooltip();
-                ImGui.TextUnformatted("This value will be calculated automatically on the next Dalamud API update.");
-                ImGui.EndTooltip();
             }
 
             var fastFireIIIMarkerTypeItems = new List<string>();
@@ -254,6 +287,38 @@ namespace MPTickBar
             if (ImGui.Combo("Style", ref fastFireIIIMarkerType, fastFireIIIMarkerTypeItems.ToArray(), fastFireIIIMarkerTypeItems.Count))
             {
                 this.Configuration.FastFireIIIMarkerType = (FastFireIIIMarkerType)fastFireIIIMarkerType;
+                this.Configuration.Save();
+            }
+        }
+
+        private void DrawNumberPercentageTab()
+        {
+            var isNumberPercentageVisible = this.Configuration.IsNumberPercentageVisible;
+            if (ImGui.Checkbox("Show", ref isNumberPercentageVisible))
+            {
+                this.Configuration.IsNumberPercentageVisible = isNumberPercentageVisible;
+                this.Configuration.Save();
+            }
+
+            var numberPercentageTintColor = this.Configuration.NumberPercentageTintColor;
+            ImGui.SameLine(0.0f, 20.0f);
+            if (ImGui.ColorEdit3("Number (%)", ref numberPercentageTintColor, ImGuiColorEditFlags.NoInputs))
+            {
+                this.Configuration.NumberPercentageTintColor = numberPercentageTintColor;
+                this.Configuration.Save();
+            }
+
+            var numberPercentageOffsetX = this.Configuration.NumberPercentageOffsetX;
+            if (ImGui.DragInt("Offset X", ref numberPercentageOffsetX, 1, -50, 50, "%i"))
+            {
+                this.Configuration.NumberPercentageOffsetX = numberPercentageOffsetX;
+                this.Configuration.Save();
+            }
+
+            var numberPercentageOffsetY = this.Configuration.NumberPercentageOffsetY;
+            if (ImGui.DragInt("Offset Y", ref numberPercentageOffsetY, 1, -30, 10, "%i"))
+            {
+                this.Configuration.NumberPercentageOffsetY = numberPercentageOffsetY;
                 this.Configuration.Save();
             }
         }
@@ -307,25 +372,27 @@ namespace MPTickBar
                 ImGuiWindowFlags.NoScrollWithMouse |
                 ImGuiWindowFlags.NoCollapse;
 
-            ImGui.SetNextWindowSize(new Vector2(337.0f, 299.0f), ImGuiCond.Always);
+            ImGui.SetNextWindowSize(new Vector2(339.0f, 373.0f), ImGuiCond.Always);
             if (ImGui.Begin("MP Tick Bar Configuration", ref isConfigurationWindowVisible, windowFlags))
             {
                 ImGui.Text("Preview:");
-                if (ImGui.BeginChild("Child", new Vector2(0.0f, 0.0f), false, windowFlags))
+
+                if (ImGui.BeginChild("Child Preview", new Vector2(320.0f, 120.0f), false, windowFlags))
                 {
-                    this.PushStyleItemSpacing();
                     this.DrawMPTickBar(true);
-                    var isCircleOfPowerPreviewActivated = this.IsCircleOfPowerPreviewActivated;
-                    var fireIIICastTime = PlayerHelpers.CalculatedFireIIICastTime(this.Configuration.FireIIICastTime, true, this.IsCircleOfPowerPreviewActivated);
-                    if (ImGui.Checkbox($"Circle of Power ({Math.Round(fireIIICastTime, 2)}s)", ref isCircleOfPowerPreviewActivated))
-                    {
-                        this.IsCircleOfPowerPreviewActivated = isCircleOfPowerPreviewActivated;
-                    }
-                    this.PopStyleItemSpacing();
                     ImGui.EndChild();
                 }
 
-                if (ImGui.BeginChild("Child", new Vector2(0.0f, 0.0f), false, windowFlags))
+                var isCircleOfPowerPreviewActivated = this.IsCircleOfPowerPreviewActivated;
+                var fireIIICastTime = PlayerHelpers.CalculatedFireIIICastTime(this.Configuration.FireIIICastTime, true, this.IsCircleOfPowerPreviewActivated);
+                this.PushStyleItemSpacing();
+                if (ImGui.Checkbox($"Circle of Power ({Math.Round(fireIIICastTime, 2)}s)", ref isCircleOfPowerPreviewActivated))
+                {
+                    this.IsCircleOfPowerPreviewActivated = isCircleOfPowerPreviewActivated;
+                }
+                this.PopStyleItemSpacing();
+
+                if (ImGui.BeginChild("Child Configuration", new Vector2(0.0f, 0.0f), false, windowFlags))
                 {
                     this.DrawConfiguration();
                     ImGui.EndChild();
