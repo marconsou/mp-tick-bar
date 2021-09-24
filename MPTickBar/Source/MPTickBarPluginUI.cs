@@ -26,10 +26,6 @@ namespace MPTickBar
 
         public bool IsMPTickBarVisible { get; set; }
 
-        public bool IsMpTickBarProgressResumed { get; set; }
-
-        public bool IsUmbralIceIIIActivated { get; set; }
-
         private bool IsCircleOfPowerPreviewActivated { get; set; }
 
         public double ProgressTime { get; set; }
@@ -137,7 +133,7 @@ namespace MPTickBar
         private void DrawMPTickBar(bool isPreview)
         {
             var mpTickBarUI = this.GetMPTickBarUI();
-            var progress = (float)(!isPreview ? (this.IsMpTickBarProgressResumed ? (this.ProgressTime % 1) : 0.0) : (((DateTime.Now.Second % 3) + (DateTime.Now.Millisecond / 1000.0)) / 3.0));
+            var progress = (float)(!isPreview ? (this.ProgressTime % 1) : (((DateTime.Now.Second % 3) + (DateTime.Now.Millisecond / 1000.0)) / 3.0));
             var uiScale = !isPreview ? this.Configuration.UIScale : 2.0f;
             var offsetY = !isPreview ? 25.0f : 40.0f;
             var barElementWidth = 160.0f;
@@ -147,31 +143,28 @@ namespace MPTickBar
             MPTickBarPluginUI.RenderGaugeUIElement(mpTickBarUI, uiScale, offsetY, elementWidth, progress, 2, new Vector4(this.Configuration.ProgressBarTintColor, 1.0f));
             MPTickBarPluginUI.RenderGaugeUIElement(mpTickBarUI, uiScale, offsetY, elementWidth, 1.0f, 0, Vector4.One);
 
-            if (this.Configuration.IsFastFireIIIMarkerVisible && (this.IsUmbralIceIIIActivated || isPreview))
+            elementWidth = (elementWidth) / 3.0f;
+            var fireIIICastTime = (!isPreview) ? this.FireIIICastTime : PlayerHelpers.CalculatedFireIIICastTime(this.Configuration.FireIIICastTime, this.IsCircleOfPowerPreviewActivated);
+            var FireIIICastOffset = (3.0f - fireIIICastTime) * elementWidth;
+            var fastFireIIIMarkerOffset = FireIIICastOffset + (this.Configuration.FastFireIIIMarkerTimeOffset * elementWidth);
+
+            if (this.Configuration.FastFireIIIMarkerType == FastFireIIIMarkerType.Icon)
             {
-                elementWidth = (elementWidth) / 3.0f;
-                var fireIIICastTime = (!isPreview) ? this.FireIIICastTime : PlayerHelpers.CalculatedFireIIICastTime(this.Configuration.FireIIICastTime, true, this.IsCircleOfPowerPreviewActivated);
-                var FireIIICastOffset = (3.0f - fireIIICastTime) * elementWidth;
-                var fastFireIIIMarkerOffset = FireIIICastOffset + (this.Configuration.FastFireIIIMarkerTimeOffset * elementWidth);
+                var startX = (fastFireIIIMarkerOffset * uiScale);
+                var startY = offsetY - (this.Configuration.UIType == UIType.FinalFantasyXIVDefault ? 0.0f : 0.5f * uiScale);
 
-                if (this.Configuration.FastFireIIIMarkerType == FastFireIIIMarkerType.Icon)
-                {
-                    var startX = (fastFireIIIMarkerOffset * uiScale);
-                    var startY = offsetY - (this.Configuration.UIType == UIType.FinalFantasyXIVDefault ? 0.0f : 0.5f * uiScale);
-
-                    MPTickBarPluginUI.RenderJobStackUIElement(mpTickBarUI, uiScale, startX, startY, 0, Vector4.One);
-                    MPTickBarPluginUI.RenderJobStackUIElement(mpTickBarUI, uiScale, startX, startY, 1, new Vector4(this.Configuration.FastFireIIIMarkerTintColor, 1.0f));
-                }
-                else if (this.Configuration.FastFireIIIMarkerType == FastFireIIIMarkerType.Line)
-                {
-                    var windowPos = ImGui.GetWindowPos();
-                    var lineMarkerStartX = 10.0f;
-                    var startX = windowPos.X + ((lineMarkerStartX + fastFireIIIMarkerOffset) * uiScale);
-                    var startY = windowPos.Y + (5.35f * uiScale) + offsetY;
-                    var lineHeight = 8.0f * uiScale;
-                    var thickness = 5.0f * uiScale;
-                    ImGui.GetWindowDrawList().AddLine(new Vector2(startX, startY), new Vector2(startX, startY + lineHeight), ImGui.GetColorU32(new Vector4(this.Configuration.FastFireIIIMarkerTintColor, 1.0f)), thickness);
-                }
+                MPTickBarPluginUI.RenderJobStackUIElement(mpTickBarUI, uiScale, startX, startY, 0, Vector4.One);
+                MPTickBarPluginUI.RenderJobStackUIElement(mpTickBarUI, uiScale, startX, startY, 1, new Vector4(this.Configuration.FastFireIIIMarkerTintColor, 1.0f));
+            }
+            else if (this.Configuration.FastFireIIIMarkerType == FastFireIIIMarkerType.Line)
+            {
+                var windowPos = ImGui.GetWindowPos();
+                var lineMarkerStartX = 10.0f;
+                var startX = windowPos.X + ((lineMarkerStartX + fastFireIIIMarkerOffset) * uiScale);
+                var startY = windowPos.Y + (5.35f * uiScale) + offsetY;
+                var lineHeight = 8.0f * uiScale;
+                var thickness = 5.0f * uiScale;
+                ImGui.GetWindowDrawList().AddLine(new Vector2(startX, startY), new Vector2(startX, startY + lineHeight), ImGui.GetColorU32(new Vector4(this.Configuration.FastFireIIIMarkerTintColor, 1.0f)), thickness);
             }
 
             if (this.Configuration.IsNumberPercentageVisible)
@@ -384,7 +377,7 @@ namespace MPTickBar
                 }
 
                 var isCircleOfPowerPreviewActivated = this.IsCircleOfPowerPreviewActivated;
-                var fireIIICastTime = PlayerHelpers.CalculatedFireIIICastTime(this.Configuration.FireIIICastTime, true, this.IsCircleOfPowerPreviewActivated);
+                var fireIIICastTime = PlayerHelpers.CalculatedFireIIICastTime(this.Configuration.FireIIICastTime, this.IsCircleOfPowerPreviewActivated);
                 this.PushStyleItemSpacing();
                 if (ImGui.Checkbox($"Circle of Power ({Math.Round(fireIIICastTime, 2)}s)", ref isCircleOfPowerPreviewActivated))
                 {

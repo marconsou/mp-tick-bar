@@ -1,6 +1,5 @@
-﻿using Dalamud.Game.ClientState.JobGauge;
-using Dalamud.Game.ClientState.JobGauge.Types;
-using Dalamud.Game.ClientState.Objects.SubKinds;
+﻿using Dalamud.Game.ClientState.Objects.SubKinds;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using System.Linq;
 
 namespace MPTickBar
@@ -17,11 +16,7 @@ namespace MPTickBar
 
         public static bool IsBlackMage(PlayerCharacter currentPlayer)
         {
-            if (currentPlayer == null)
-                return false;
-
-            var jobBLMId = 25u;
-            return (currentPlayer.ClassJob?.Id == jobBLMId);
+            return (currentPlayer?.ClassJob?.Id == 25);
         }
 
         public static bool IsLucidDreamingActivated(PlayerCharacter currentPlayer)
@@ -34,25 +29,15 @@ namespace MPTickBar
             return PlayerHelpers.IsEffectActivated(currentPlayer, 738);
         }
 
-        public static int GetUmbralIceStacks(JobGauges jobGauges)
+        public static bool IsManafontOnCooldown(ActionManager actionManager)
         {
-            return (jobGauges.Get<BLMGauge>().UmbralIceStacks);
+            return actionManager.GetRecastTimeElapsed(ActionType.Spell, 158) != 0.0f;
         }
 
-        public static bool IsUmbralIceIIIActivated(JobGauges jobGauges)
+        public static float CalculatedFireIIICastTime(float fireIIICastTime, bool isCircleOfPowerActivated)
         {
-            return (jobGauges.Get<BLMGauge>().UmbralIceStacks == 3);
-        }
-
-        public static float CalculatedFireIIICastTime(float fireIIICastTime, bool isUmbralIceIIIActivated, bool isCircleOfPowerActivated)
-        {
-            //unsafe
-            //{
-                //var fireIIIId = 152u;
-                //ActionManager.Instance()->GetAdjustedCastTime(ActionType.Spell, fireIIIId);
-            //}
             var circleOfPowerModifier = 0.85f;
-            return (fireIIICastTime * (isCircleOfPowerActivated ? circleOfPowerModifier : 1.0f)) / (isUmbralIceIIIActivated ? 2.0f : 1.0f);
+            return fireIIICastTime * (isCircleOfPowerActivated ? circleOfPowerModifier : 1.0f) / 2.0f;
         }
     }
 }
