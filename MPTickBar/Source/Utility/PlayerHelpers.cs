@@ -1,16 +1,17 @@
-﻿using Dalamud.Game.ClientState.Actors.Types;
+﻿using Dalamud.Game.ClientState.Objects.SubKinds;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using System.Linq;
 
 namespace MPTickBar
 {
     public static class PlayerHelpers
     {
-        private static bool IsEffectActivated(PlayerCharacter currentPlayer, short effectId)
+        private static bool IsEffectActivated(PlayerCharacter currentPlayer, uint statusId)
         {
             if (currentPlayer == null)
                 return false;
 
-            return currentPlayer.StatusEffects.Any(x => x.EffectId == effectId);
+            return currentPlayer.StatusList.Any(x => x.StatusId == statusId);
         }
 
         public static bool IsBlackMage(PlayerCharacter currentPlayer)
@@ -30,7 +31,7 @@ namespace MPTickBar
 
         public static bool IsManafontOnCooldown(ActionManager actionManager)
         {
-            return actionManager?.GetRecastTimeElapsed(ActionType.Spell, 158) != 0.0f;
+            return actionManager.GetRecastTimeElapsed(ActionType.Spell, 158) != 0.0f;
         }
 
         public static float CalculatedFireIIICastTime(float fireIIICastTime, bool isCircleOfPowerActivated)

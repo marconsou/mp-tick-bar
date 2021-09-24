@@ -1,5 +1,6 @@
 ﻿using Dalamud.Game.ClientState;
-using Dalamud.Game.ClientState.Actors.Types;
+using Dalamud.Game.ClientState.Objects.SubKinds;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;
 using System;
 
@@ -9,7 +10,7 @@ namespace MPTickBar
     {
         private UpdateEventData<double> Time { get; set; } = new UpdateEventData<double>();
 
-        private UpdateEventData<int> MP { get; set; } = new UpdateEventData<int>();
+        private UpdateEventData<uint> MP { get; set; } = new UpdateEventData<uint>();
 
         private UpdateEventData<ushort> Territory { get; set; } = new UpdateEventData<ushort>();
 
@@ -31,12 +32,12 @@ namespace MPTickBar
 
         private bool IsFirstTimeReset { get; set; } = true;
 
-        public void OnLogin(object sender, EventArgs e)
+        public void Login(object sender, EventArgs e)
         {
             this.IsFirstTimeReset = true;
         }
-
-        public void OnUpdateEvent(PlayerCharacter currentPlayer, ClientState clientState, ActionManager actionManager, MPTickBarPluginUI mpTickBarPluginUI, Configuration configuration)
+        
+        public void Update(PlayerCharacter currentPlayer, ClientState clientState, ActionManager actionManager, MPTickBarPluginUI mpTickBarPluginUI, Configuration configuration)
         {
             this.Time.Current = ImGui.GetTime();
             this.MP.Current = currentPlayer.CurrentMp;
