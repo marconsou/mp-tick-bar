@@ -61,62 +61,62 @@ namespace MPTickBar.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static byte[] GaugeDefault {
+        internal static System.Drawing.Bitmap GaugeDefault {
             get {
                 object obj = ResourceManager.GetObject("GaugeDefault", resourceCulture);
-                return ((byte[])(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static byte[] GaugeMaterialUIBlack {
+        internal static System.Drawing.Bitmap GaugeMaterialUIBlack {
             get {
                 object obj = ResourceManager.GetObject("GaugeMaterialUIBlack", resourceCulture);
-                return ((byte[])(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static byte[] GaugeMaterialUIDiscord {
+        internal static System.Drawing.Bitmap GaugeMaterialUIDiscord {
             get {
                 object obj = ResourceManager.GetObject("GaugeMaterialUIDiscord", resourceCulture);
-                return ((byte[])(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static byte[] JobStackDefault {
+        internal static System.Drawing.Bitmap JobStackDefault {
             get {
                 object obj = ResourceManager.GetObject("JobStackDefault", resourceCulture);
-                return ((byte[])(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static byte[] JobStackMaterialUI {
+        internal static System.Drawing.Bitmap JobStackMaterialUI {
             get {
                 object obj = ResourceManager.GetObject("JobStackMaterialUI", resourceCulture);
-                return ((byte[])(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static byte[] NumberPercentage {
+        internal static System.Drawing.Bitmap NumberPercentage {
             get {
                 object obj = ResourceManager.GetObject("NumberPercentage", resourceCulture);
-                return ((byte[])(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
