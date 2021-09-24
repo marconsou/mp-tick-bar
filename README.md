@@ -1,7 +1,7 @@
-## MP Tick Bar
-<img src="https://user-images.githubusercontent.com/27457164/134722917-dd5967f9-2352-42d2-aeaf-ebf7dee49771.png" width="360" height="360" align="left">
+# MP Tick Bar
+<img src="https://user-images.githubusercontent.com/27457164/134722917-dd5967f9-2352-42d2-aeaf-ebf7dee49771.png" width="256" height="256" >
 
-<br> A Final Fantasy XIV [Dalamud](https://github.com/goatcorp/Dalamud) plugin to visually tracks MP regeneration tick (Black Mage only).
+A Final Fantasy XIV [Dalamud](https://github.com/goatcorp/Dalamud) plugin to visually tracks MP regeneration tick (Black Mage only).
 
 Type `/mptb` in game to open configuration menu.
 
@@ -13,7 +13,7 @@ Supports [FFXIV Material UI](https://github.com/skotlex/ffxiv-material-ui):
 
 ![Gauge Material UI Black](https://user-images.githubusercontent.com/27457164/133673741-07506333-7fda-4840-af9f-58284c74bfd0.png)
 
-
+## Examples
 ![image1](https://user-images.githubusercontent.com/27457164/134723061-b97a935c-f344-4993-9d08-9b80565b5a51.png)
 
 ![image2](https://user-images.githubusercontent.com/27457164/134723066-f725835f-3a01-4805-b556-6a20cc0d652a.png)
