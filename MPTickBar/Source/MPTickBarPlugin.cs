@@ -1,7 +1,6 @@
 ﻿using Dalamud.Game.Command;
 using Dalamud.Game.Internal;
 using Dalamud.Plugin;
-using ImGuiNET;
 using ImGuiScene;
 using MPTickBar.Properties;
 using System.Drawing;
@@ -22,21 +21,17 @@ namespace MPTickBar
 
         private Configuration Configuration { get; set; }
 
-        private double RealTime { get; set; }
+        private ActionManager ActionManager { get; set; }
 
-        private double LastCurrentTime { get; set; }
-
-        private int LastCurrentMp { get; set; }
-
-        private ushort LastTerritoryType { get; set; } = ushort.MaxValue;
-
-        private bool LastIsInCombat { get; set; }
+        private UpdateEventState UpdateEventState { get; set; }
 
         public void Initialize(DalamudPluginInterface pluginInterface)
         {
             this.PluginInterface = pluginInterface;
             this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             this.Configuration.Initialize(this.PluginInterface);
+            this.ActionManager = new ActionManager(this.PluginInterface.TargetModuleScanner);
+            this.UpdateEventState = new UpdateEventState();
 
             var gaugeDefault = this.LoadTexture(Resources.GaugeDefault);
             var gaugeMaterialUIBlack = this.LoadTexture(Resources.GaugeMaterialUIBlack);
@@ -57,7 +52,7 @@ namespace MPTickBar
             this.PluginInterface.UiBuilder.DisableGposeUiHide = false;
             this.PluginInterface.UiBuilder.DisableUserUiHide = false;
 
-            this.PluginInterface.ClientState.OnLogin += this.OnLogin;
+            this.PluginInterface.ClientState.OnLogin += this.UpdateEventState.OnLogin;
             this.PluginInterface.UiBuilder.OnBuildUi += this.OnBuildUi;
             this.PluginInterface.UiBuilder.OnOpenConfigUi += (sender, args) => this.OnOpenConfigUi();
             this.PluginInterface.Framework.OnUpdateEvent += this.OnUpdateEvent;
@@ -66,7 +61,7 @@ namespace MPTickBar
         public void Dispose()
         {
             this.MPTickBarPluginUI.Dispose();
-            this.PluginInterface.ClientState.OnLogin -= this.OnLogin;
+            this.PluginInterface.ClientState.OnLogin -= this.UpdateEventState.OnLogin;
             this.PluginInterface.UiBuilder.OnBuildUi -= this.OnBuildUi;
             this.PluginInterface.UiBuilder.OnOpenConfigUi -= (sender, args) => this.OnOpenConfigUi();
             this.PluginInterface.Framework.OnUpdateEvent -= this.OnUpdateEvent;
@@ -113,12 +108,6 @@ namespace MPTickBar
             this.OnOpenConfigUi();
         }
 
-        private void OnLogin(object sender, System.EventArgs e)
-        {
-            if (this.MPTickBarPluginUI != null)
-                this.MPTickBarPluginUI.IsMpTickBarProgressResumed = false;
-        }
-
         private void OnBuildUi()
         {
             this.MPTickBarPluginUI.Draw();
@@ -138,46 +127,7 @@ namespace MPTickBar
             if (!this.MPTickBarPluginUI.IsMPTickBarVisible)
                 return;
 
-            this.MPTickBarPluginUI.IsUmbralIceIIIActivated = PlayerHelpers.IsUmbralIceIIIActivated(clientState);
-            this.MPTickBarPluginUI.FireIIICastTime = PlayerHelpers.CalculatedFireIIICastTime(this.Configuration.FireIIICastTime, this.MPTickBarPluginUI.IsUmbralIceIIIActivated, PlayerHelpers.IsCircleOfPowerActivated(currentPlayer));
-
-            var currentMp = currentPlayer.CurrentMp;
-            var territoryType = clientState.TerritoryType;
-            var isInCombat = currentPlayer.StatusFlags.ToString().Contains("InCombat");
-            var isDead = (currentPlayer.CurrentHp == 0);
-
-            if (!this.MPTickBarPluginUI.IsMpTickBarProgressResumed)
-            {
-                var wasMPRegenerated = (this.LastCurrentMp < currentMp);
-                var wasMPreset = (this.LastCurrentMp == 0) && (currentMp == currentPlayer.MaxMp);
-                var checkCombatConditions = !isInCombat || (isInCombat && PlayerHelpers.GetUmbralIceStacks(clientState) > 0);
-                //Manafont/Ethers conditions not covered. Do NOT start syncing with them.
-
-                this.MPTickBarPluginUI.IsMpTickBarProgressResumed = !isDead && wasMPRegenerated && !wasMPreset && checkCombatConditions && !PlayerHelpers.IsLucidDreamingActivated(currentPlayer);
-                if (this.MPTickBarPluginUI.IsMpTickBarProgressResumed)
-                {
-                    this.RealTime = ImGui.GetTime();
-                }
-            }
-            else
-            {
-                var currentTime = ImGui.GetTime() - this.RealTime;
-                var incrementedTime = currentTime - this.LastCurrentTime;
-                this.MPTickBarPluginUI.ProgressTime += (float)(incrementedTime / 3.0f);
-                this.LastCurrentTime = currentTime;
-
-                var changingZones = (this.LastTerritoryType != territoryType);
-                var leavingBattle = (this.LastIsInCombat && !isInCombat);
-
-                if (isDead || changingZones || leavingBattle)
-                {
-                    this.MPTickBarPluginUI.IsMpTickBarProgressResumed = false;
-                }
-            }
-
-            this.LastCurrentMp = currentMp;
-            this.LastTerritoryType = territoryType;
-            this.LastIsInCombat = isInCombat;
+            this.UpdateEventState.OnUpdateEvent(currentPlayer, clientState, this.ActionManager, this.MPTickBarPluginUI, this.Configuration);
         }
     }
 }
