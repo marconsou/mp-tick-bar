@@ -32,7 +32,7 @@ namespace MPTickBar
 
         public Vector3 FastFireIIIMarkerTintColor { get; set; } = new Vector3(1.0f, 0.375f, 0.375f);
 
-        public Vector3 NumberPercentageTintColor { get; set; } = new Vector3(1.0f, 0.95f, 0.82f);
+        public Vector3 NumberPercentageTintColor { get; set; } = new Vector3(1.0f, 0.98f, 0.94f);
 
         public UIType UIType { get; set; } = UIType.FinalFantasyXIVDefault;
 

@@ -43,7 +43,7 @@ namespace MPTickBar
 
             this.PluginInterface.CommandManager.AddHandler(this.CommandName, new CommandInfo(this.OnCommand)
             {
-                HelpMessage = "Open MP Tick Bar configuration menu.",
+                HelpMessage = "Opens MP Tick Bar configuration menu.",
                 ShowInHelp = true
             });
 
