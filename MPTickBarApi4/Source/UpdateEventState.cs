@@ -36,7 +36,7 @@ namespace MPTickBar
         {
             this.IsFirstTimeReset = true;
         }
-
+        
         public void Update(PlayerCharacter currentPlayer, ClientState clientState, ActionManager actionManager, MPTickBarPluginUI mpTickBarPluginUI, Configuration configuration)
         {
             this.Time.Current = ImGui.GetTime();
