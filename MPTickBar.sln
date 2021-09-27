@@ -5,30 +5,16 @@ VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPTickBar", "MPTickBar\MPTickBar.csproj", "{E2EAECD4-75E4-456F-A08D-625E7F24D6B5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MPTickBarApi3", "MPTickBarApi3\MPTickBarApi3.csproj", "{2224771C-17B2-4F7C-AFE5-1B9C2F9572CA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
-		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E2EAECD4-75E4-456F-A08D-625E7F24D6B5}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{E2EAECD4-75E4-456F-A08D-625E7F24D6B5}.Debug|x64.ActiveCfg = Debug|x64
 		{E2EAECD4-75E4-456F-A08D-625E7F24D6B5}.Debug|x64.Build.0 = Debug|x64
-		{E2EAECD4-75E4-456F-A08D-625E7F24D6B5}.Release|Any CPU.ActiveCfg = Release|x64
 		{E2EAECD4-75E4-456F-A08D-625E7F24D6B5}.Release|x64.ActiveCfg = Release|x64
 		{E2EAECD4-75E4-456F-A08D-625E7F24D6B5}.Release|x64.Build.0 = Release|x64
-		{2224771C-17B2-4F7C-AFE5-1B9C2F9572CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2224771C-17B2-4F7C-AFE5-1B9C2F9572CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2224771C-17B2-4F7C-AFE5-1B9C2F9572CA}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{2224771C-17B2-4F7C-AFE5-1B9C2F9572CA}.Debug|x64.Build.0 = Debug|Any CPU
-		{2224771C-17B2-4F7C-AFE5-1B9C2F9572CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2224771C-17B2-4F7C-AFE5-1B9C2F9572CA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2224771C-17B2-4F7C-AFE5-1B9C2F9572CA}.Release|x64.ActiveCfg = Release|Any CPU
-		{2224771C-17B2-4F7C-AFE5-1B9C2F9572CA}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
