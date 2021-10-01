@@ -36,15 +36,15 @@ namespace MPTickBar
         {
             this.IsFirstTimeReset = true;
         }
-        
-        public void Update(PlayerCharacter currentPlayer, ClientState clientState, ActionManager actionManager, MPTickBarPluginUI mpTickBarPluginUI, Configuration configuration)
+
+        public void Update(PlayerCharacter currentPlayer, ClientState clientState, MPTickBarPluginUI mpTickBarPluginUI, Configuration configuration)
         {
             this.Time.Current = ImGui.GetTime();
             this.MP.Current = currentPlayer.CurrentMp;
             this.Territory.Current = clientState.TerritoryType;
             this.IsInCombat.Current = currentPlayer.StatusFlags.ToString().Contains("InCombat");
             this.IsDead.Current = (currentPlayer.CurrentHp == 0);
-            this.IsManafontOnCooldown.Current = PlayerHelpers.IsManafontOnCooldown(actionManager);
+            this.IsManafontOnCooldown.Current = PlayerHelpers.IsManafontOnCooldown();
 
             if (!this.WasDead)
                 this.WasDead = this.IsDead.Current;
@@ -100,7 +100,7 @@ namespace MPTickBar
             this.IsDead.SaveData();
             this.IsManafontOnCooldown.SaveData();
 
-            mpTickBarPluginUI.FireIIICastTime = PlayerHelpers.CalculatedFireIIICastTime(configuration.FireIIICastTime, PlayerHelpers.IsCircleOfPowerActivated(currentPlayer));
+            mpTickBarPluginUI.FireIIICastTime = PlayerHelpers.GetFastFireIIICastTime(currentPlayer.Level, PlayerHelpers.IsCircleOfPowerActivated(currentPlayer));
             mpTickBarPluginUI.ProgressTime += incrementedTime / 3.0;
         }
 

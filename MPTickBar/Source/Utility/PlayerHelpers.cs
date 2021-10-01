@@ -1,5 +1,9 @@
-﻿using Dalamud.Game.ClientState.Objects.SubKinds;
+﻿using Dalamud.Game.ClientState.JobGauge;
+using Dalamud.Game.ClientState.JobGauge.Types;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
+using System;
 using System.Linq;
 
 namespace MPTickBar
@@ -16,7 +20,10 @@ namespace MPTickBar
 
         public static bool IsBlackMage(PlayerCharacter currentPlayer)
         {
-            return (currentPlayer?.ClassJob?.Id == 25);
+            if (currentPlayer == null)
+                return false;
+
+            return (currentPlayer.ClassJob?.Id == 25);
         }
 
         public static bool IsLucidDreamingActivated(PlayerCharacter currentPlayer)
@@ -29,15 +36,30 @@ namespace MPTickBar
             return PlayerHelpers.IsEffectActivated(currentPlayer, 738);
         }
 
-        public static bool IsManafontOnCooldown(ActionManager actionManager)
+        public static bool IsManafontOnCooldown()
         {
-            return actionManager.GetRecastTimeElapsed(ActionType.Spell, 158) != 0.0f;
+            unsafe
+            {
+                return ActionManager.Instance()->IsRecastTimerActive(ActionType.Spell, 158);
+            }
         }
 
-        public static float CalculatedFireIIICastTime(float fireIIICastTime, bool isCircleOfPowerActivated)
+        public static bool IsUmbralIceIIIActivated(JobGauges jobGauges)
         {
-            var circleOfPowerModifier = 0.85f;
-            return fireIIICastTime * (isCircleOfPowerActivated ? circleOfPowerModifier : 1.0f) / 2.0f;
+            return (jobGauges.Get<BLMGauge>().UmbralIceStacks == 3);
+        }
+
+        public static float GetFastFireIIICastTime(int level, bool isCircleOfPowerActivated)
+        {
+            unsafe
+            {
+                var gcd35 = 3500;
+                var astralUmbral = 50;
+                var sub = LevelModifier.GetLevelModifierSub(level);
+                var div = LevelModifier.GetLevelModifierDiv(level);
+                var spellSpeed = UIState.pInstance->PlayerState.Attributes[46];
+                return (float)Math.Floor(Math.Floor(Math.Ceiling(Math.Floor(100.0 - (isCircleOfPowerActivated ? 15 : 0)) * 1) * Math.Floor((2000 - Math.Floor(130.0 * (spellSpeed - sub) / div + 1000)) * gcd35 / 1000) / 1000) * astralUmbral / 100) / 100;
+            }
         }
     }
 }
