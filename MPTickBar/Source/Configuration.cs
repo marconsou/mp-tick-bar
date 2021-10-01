@@ -10,13 +10,9 @@ namespace MPTickBar
     {
         public int Version { get; set; } = 1;
 
-        public bool IsMPTickBarVisible { get; set; } = true;
-
         public bool IsMPTickBarLocked { get; set; } = false;
 
-        public bool IsFastFireIIIMarkerVisible { get; set; } = true;
-
-        public bool IsNumberPercentageVisible { get; set; } = false;
+        public bool IsRegressEffectVisible { get; set; } = true;
 
         public int NumberPercentageOffsetX { get; set; } = 0;
 
@@ -24,9 +20,7 @@ namespace MPTickBar
 
         public float UIScale { get; set; } = 1.0f;
 
-        public float FastFireIIIMarkerTimeOffset { get; set; } = 0.25f;
-
-        public float FireIIICastTime { get; set; } = 3.2f;
+        public float FastFireIIIMarkerTimeOffset { get; set; } = 0.20f;
 
         public Vector3 ProgressBarTintColor { get; set; } = new Vector3(0.0f, 1.0f, 1.0f);
 
@@ -34,9 +28,15 @@ namespace MPTickBar
 
         public Vector3 NumberPercentageTintColor { get; set; } = new Vector3(1.0f, 0.98f, 0.94f);
 
+        public MPTickBarVisibility MPTickBarVisibility { get; set; } = MPTickBarVisibility.Visible;
+
         public UIType UIType { get; set; } = UIType.FinalFantasyXIVDefault;
 
+        public FastFireIIIMarkerVisibility FastFireIIIMarkerVisibility { get; set; } = FastFireIIIMarkerVisibility.Visible;
+
         public FastFireIIIMarkerType FastFireIIIMarkerType { get; set; } = FastFireIIIMarkerType.Icon;
+
+        public NumberPercentageVisibility NumberPercentageVisibility { get; set; } = NumberPercentageVisibility.Hidden;
 
         [NonSerialized]
         private DalamudPluginInterface pluginInterface;
