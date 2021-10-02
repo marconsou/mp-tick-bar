@@ -1,6 +1,5 @@
 ﻿using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Objects.SubKinds;
-using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;
 using System;
 
@@ -32,17 +31,29 @@ namespace MPTickBar
 
         private bool IsFirstTimeReset { get; set; } = true;
 
+        private class UpdateEventData<T> where T : struct
+        {
+            public T Current { get; set; }
+
+            public T Last { get; private set; }
+
+            public void SaveData()
+            {
+                this.Last = this.Current;
+            }
+        }
+
         public void Login(object sender, EventArgs e)
         {
             this.IsFirstTimeReset = true;
         }
 
-        public void Update(PlayerCharacter currentPlayer, ClientState clientState, MPTickBarPluginUI mpTickBarPluginUI, Configuration configuration)
+        public void Update(MPTickBarPluginUI mpTickBarPluginUI, PlayerCharacter currentPlayer, ushort territoryType, bool isInCombat)
         {
             this.Time.Current = ImGui.GetTime();
             this.MP.Current = currentPlayer.CurrentMp;
-            this.Territory.Current = clientState.TerritoryType;
-            this.IsInCombat.Current = currentPlayer.StatusFlags.ToString().Contains("InCombat");
+            this.Territory.Current = territoryType;
+            this.IsInCombat.Current = isInCombat;
             this.IsDead.Current = (currentPlayer.CurrentHp == 0);
             this.IsManafontOnCooldown.Current = PlayerHelpers.IsManafontOnCooldown();
 
@@ -59,7 +70,7 @@ namespace MPTickBar
                 this.WasManafontUsed = !this.IsManafontOnCooldown.Last && this.IsManafontOnCooldown.Current;
 
             if (!this.EnteringCombatWithoutProgress)
-                this.EnteringCombatWithoutProgress = !this.IsInCombat.Last && this.IsInCombat.Current && (mpTickBarPluginUI.ProgressTime == 0);
+                this.EnteringCombatWithoutProgress = !this.IsInCombat.Last && this.IsInCombat.Current && (mpTickBarPluginUI.GetProgressTime(false) == 0.0);
 
             var incrementedTime = this.Time.Current - this.Time.Last;
 
@@ -73,7 +84,7 @@ namespace MPTickBar
                 {
                     if (!this.WasManafontUsed)
                     {
-                        mpTickBarPluginUI.ProgressTime = 0;
+                        mpTickBarPluginUI.ResetProgressTime();
                         this.WasDead = false;
                         this.WasInCombat = false;
                         this.WasTerritoryChanged = false;
@@ -88,7 +99,7 @@ namespace MPTickBar
                 }
                 else if (resetHoldProgress)
                 {
-                    mpTickBarPluginUI.ProgressTime = 0;
+                    mpTickBarPluginUI.ResetProgressTime();
                     incrementedTime = 0;
                 }
             }
@@ -100,20 +111,7 @@ namespace MPTickBar
             this.IsDead.SaveData();
             this.IsManafontOnCooldown.SaveData();
 
-            mpTickBarPluginUI.FireIIICastTime = PlayerHelpers.GetFastFireIIICastTime(currentPlayer.Level, PlayerHelpers.IsCircleOfPowerActivated(currentPlayer));
-            mpTickBarPluginUI.ProgressTime += incrementedTime / 3.0;
-        }
-
-        private class UpdateEventData<T> where T : struct
-        {
-            public T Current { get; set; }
-
-            public T Last { get; private set; }
-
-            public void SaveData()
-            {
-                this.Last = this.Current;
-            }
+            mpTickBarPluginUI.UpdateProgressTime(incrementedTime);
         }
     }
 }

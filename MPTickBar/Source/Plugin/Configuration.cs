@@ -12,7 +12,7 @@ namespace MPTickBar
 
         public bool IsMPTickBarLocked { get; set; } = false;
 
-        public bool IsRegressEffectVisible { get; set; } = true;
+        public bool IsRegressEffectVisible { get; set; } = false;
 
         public int NumberPercentageOffsetX { get; set; } = 0;
 
