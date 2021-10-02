@@ -107,11 +107,12 @@ namespace MPTickBar
         {
             var currentPlayer = MPTickBarPlugin.ClientState.LocalPlayer;
             var isPlayingAsBLM = (currentPlayer != null) && MPTickBarPlugin.ClientState.IsLoggedIn && PlayerHelpers.IsBlackMage(currentPlayer);
+            var isInCombat = MPTickBarPlugin.Condition[ConditionFlag.InCombat];
 
             this.MPTickBarPluginUI.IsMPTickBarVisible = isPlayingAsBLM &&
                 (!this.Configuration.IsMPTickBarLocked ||
                 (this.Configuration.MPTickBarVisibility == MPTickBarVisibility.Visible) ||
-                (this.Configuration.MPTickBarVisibility == MPTickBarVisibility.InCombat && MPTickBarPlugin.Condition[ConditionFlag.InCombat]));
+                (this.Configuration.MPTickBarVisibility == MPTickBarVisibility.InCombat && isInCombat));
 
             this.MPTickBarPluginUI.Level = isPlayingAsBLM ? currentPlayer.Level : 0;
             this.MPTickBarPluginUI.IsPlayingAsBLM = isPlayingAsBLM;
@@ -119,9 +120,7 @@ namespace MPTickBar
             this.MPTickBarPluginUI.IsUmbralIceIIIActivated = isPlayingAsBLM && PlayerHelpers.IsUmbralIceIIIActivated(MPTickBarPlugin.JobGauges);
 
             if (isPlayingAsBLM)
-            {
-                this.UpdateEventState.Update(currentPlayer, MPTickBarPlugin.ClientState, this.MPTickBarPluginUI, this.Configuration);
-            }
+                this.UpdateEventState.Update(this.MPTickBarPluginUI, currentPlayer, MPTickBarPlugin.ClientState.TerritoryType, isInCombat);
         }
     }
 }
