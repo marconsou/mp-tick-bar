@@ -64,6 +64,16 @@ namespace MPTickBar
                 this.SaveConfiguration((T)(object)changedValue, setter);
         }
 
+        protected static void Tooltip(string message)
+        {
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.Text(message);
+                ImGui.EndTooltip();
+            }
+        }
+
         private static void SameLine(Vector2? sameLinePosition)
         {
             if (sameLinePosition != null)
