@@ -50,8 +50,9 @@ namespace MPTickBar
             var GaugeMaterialUIDiscord = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.GaugeMaterialUIDiscord);
             var jobStackDefault = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.JobStackDefault);
             var jobStackMaterialUI = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.JobStackMaterialUI);
+            var fireIIICastIndicator = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.FireIIICastIndicator);
             var numberPercentage = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.NumberPercentage);
-            this.MPTickBarPluginUI = new MPTickBarPluginUI(this.Configuration, gaugeDefault, gaugeMaterialUIBlack, GaugeMaterialUIDiscord, jobStackDefault, jobStackMaterialUI, numberPercentage);
+            this.MPTickBarPluginUI = new MPTickBarPluginUI(this.Configuration, gaugeDefault, gaugeMaterialUIBlack, GaugeMaterialUIDiscord, jobStackDefault, jobStackMaterialUI, fireIIICastIndicator, numberPercentage);
 
             MPTickBarPlugin.CommandManager.AddHandler(MPTickBarPlugin.CommandName, new CommandInfo(OnCommand)
             {
@@ -65,7 +66,6 @@ namespace MPTickBar
             MPTickBarPlugin.PluginInterface.UiBuilder.DisableUserUiHide = false;
 
             MPTickBarPlugin.ClientState.Login += this.UpdateEventState.Login;
-            MPTickBarPlugin.ClientState.TerritoryChanged += this.TerritoryChanged;
             MPTickBarPlugin.PluginInterface.UiBuilder.Draw += this.Draw;
             MPTickBarPlugin.PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfigUi;
             MPTickBarPlugin.Framework.Update += this.Update;
@@ -75,7 +75,6 @@ namespace MPTickBar
         {
             this.MPTickBarPluginUI.Dispose();
             MPTickBarPlugin.ClientState.Login -= this.UpdateEventState.Login;
-            MPTickBarPlugin.ClientState.TerritoryChanged -= this.TerritoryChanged;
             MPTickBarPlugin.PluginInterface.UiBuilder.Draw -= this.Draw;
             MPTickBarPlugin.PluginInterface.UiBuilder.OpenConfigUi -= this.OpenConfigUi;
             MPTickBarPlugin.Framework.Update -= this.Update;
@@ -86,11 +85,6 @@ namespace MPTickBar
         private void OnCommand(string command, string args)
         {
             this.OpenConfigUi();
-        }
-
-        private void TerritoryChanged(object sender, ushort e)
-        {
-            this.MPTickBarPluginUI.IsConfigurationWindowVisible = false;
         }
 
         private void Draw()

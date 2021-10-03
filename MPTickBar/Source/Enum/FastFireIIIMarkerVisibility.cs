@@ -6,7 +6,7 @@ namespace MPTickBar
     {
         Visible,
         [Description("Only under Umbral Ice III")]
-        InUmbralIceIII,
+        UnderUmbralIceIII,
         Hidden,
     }
 }

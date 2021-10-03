@@ -12,7 +12,11 @@ namespace MPTickBar
 
         public bool IsMPTickBarLocked { get; set; } = false;
 
-        public bool IsRegressEffectVisible { get; set; } = false;
+        public bool IsRegressEffectVisible { get; set; } = true;
+
+        public int FireIIICastIndicatorOffsetX { get; set; } = 0;
+
+        public int FireIIICastIndicatorOffsetY { get; set; } = 0;
 
         public int NumberPercentageOffsetX { get; set; } = 0;
 
@@ -26,6 +30,8 @@ namespace MPTickBar
 
         public Vector3 FastFireIIIMarkerTintColor { get; set; } = new Vector3(1.0f, 0.375f, 0.375f);
 
+        public Vector3 FireIIICastIndicatorTintColor { get; set; } = new Vector3(1.0f, 0.375f, 0.375f);
+
         public Vector3 NumberPercentageTintColor { get; set; } = new Vector3(1.0f, 0.98f, 0.94f);
 
         public MPTickBarVisibility MPTickBarVisibility { get; set; } = MPTickBarVisibility.Visible;
@@ -35,6 +41,8 @@ namespace MPTickBar
         public FastFireIIIMarkerVisibility FastFireIIIMarkerVisibility { get; set; } = FastFireIIIMarkerVisibility.Visible;
 
         public FastFireIIIMarkerType FastFireIIIMarkerType { get; set; } = FastFireIIIMarkerType.Icon;
+
+        public FireIIICastIndicatorVisibility FireIIICastIndicatorVisibility { get; set; } = FireIIICastIndicatorVisibility.UnderUmbralIceIII;
 
         public NumberPercentageVisibility NumberPercentageVisibility { get; set; } = NumberPercentageVisibility.Hidden;
 

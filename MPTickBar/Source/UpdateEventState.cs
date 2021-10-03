@@ -1,5 +1,4 @@
-﻿using Dalamud.Game.ClientState;
-using Dalamud.Game.ClientState.Objects.SubKinds;
+﻿using Dalamud.Game.ClientState.Objects.SubKinds;
 using ImGuiNET;
 using System;
 

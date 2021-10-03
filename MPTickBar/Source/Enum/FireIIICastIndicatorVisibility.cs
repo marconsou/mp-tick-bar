@@ -2,7 +2,7 @@
 
 namespace MPTickBar
 {
-    public enum NumberPercentageVisibility
+    public enum FireIIICastIndicatorVisibility
     {
         Visible,
         [Description("Only under Umbral Ice III")]
