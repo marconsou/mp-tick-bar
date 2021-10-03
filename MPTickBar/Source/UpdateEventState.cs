@@ -69,7 +69,7 @@ namespace MPTickBar
                 this.WasManafontUsed = !this.IsManafontOnCooldown.Last && this.IsManafontOnCooldown.Current;
 
             if (!this.EnteringCombatWithoutProgress)
-                this.EnteringCombatWithoutProgress = !this.IsInCombat.Last && this.IsInCombat.Current && (mpTickBarPluginUI.GetProgressTime(false) == 0.0);
+                this.EnteringCombatWithoutProgress = !this.IsInCombat.Last && this.IsInCombat.Current && (mpTickBarPluginUI.GetProgress(false) == 0.0);
 
             var incrementedTime = this.Time.Current - this.Time.Last;
 
@@ -83,7 +83,7 @@ namespace MPTickBar
                 {
                     if (!this.WasManafontUsed)
                     {
-                        mpTickBarPluginUI.ResetProgressTime();
+                        mpTickBarPluginUI.ResetProgress();
                         this.WasDead = false;
                         this.WasInCombat = false;
                         this.WasTerritoryChanged = false;
@@ -98,7 +98,7 @@ namespace MPTickBar
                 }
                 else if (resetHoldProgress)
                 {
-                    mpTickBarPluginUI.ResetProgressTime();
+                    mpTickBarPluginUI.ResetProgress();
                     incrementedTime = 0;
                 }
             }

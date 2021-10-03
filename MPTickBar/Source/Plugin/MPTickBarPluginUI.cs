@@ -36,9 +36,9 @@ namespace MPTickBar
 
         public bool IsUmbralIceIIIActivated { get; set; }
 
-        private double ProgressTime { get; set; }
+        private double Progress { get; set; }
 
-        private double ProgressTimePreview { get; set; }
+        private double ProgressPreview { get; set; }
 
         private List<RegressEffect> RegressEffects { get; set; } = new List<RegressEffect>();
 
@@ -51,38 +51,17 @@ namespace MPTickBar
 
         private class RegressEffect
         {
-            public bool IsRegressing => this.Regress > 0.0f;
+            public bool IsRegressing => this.Regress > 0;
 
             public double Regress { get; private set; }
 
-            private double LastProgress { get; set; }
-
-            private double CurrentTime { get; set; }
-
-            private double LastTime { get; set; }
-
-            private double Speed { get; set; }
-
             public void Update(double progress)
             {
-                this.CurrentTime = ImGui.GetTime();
+                var progressScale = 7.5;
+                this.Regress = 1.0f - (progress * progressScale);
 
-                if (progress < this.LastProgress)
-                {
-                    this.Regress = 1.0;
-                    this.Speed = 0.0;
-                    Dalamud.Logging.PluginLog.Information($"{progress:00.000} | {this.LastProgress:00.000} | {this.CurrentTime - this.LastTime}");
-                }
-
-                if (this.IsRegressing)
-                {
-                    var incrementedTime = this.CurrentTime - this.LastTime;
-                    this.Speed = 2.5;
-                    this.Regress -= (float)incrementedTime * this.Speed;
-                    this.Regress = Math.Max(this.Regress, 0.0);
-                }
-                this.LastProgress = progress;
-                this.LastTime = this.CurrentTime;
+                if (progress <= 0)
+                    this.Regress = 0;
             }
         }
 
@@ -124,20 +103,20 @@ namespace MPTickBar
             ImGui.GetStyle().ItemSpacing = styleDefault;
         }
 
-        public void ResetProgressTime()
+        public void ResetProgress()
         {
-            this.ProgressTime = 0.0;
+            this.Progress = 0.0;
         }
 
         public void UpdateProgressTime(double incrementedTime)
         {
-            this.ProgressTime = (this.ProgressTime + (incrementedTime / 3.0)) % 1.0;
-            this.ProgressTimePreview = ((DateTime.Now.Second % 3.0) + (DateTime.Now.Millisecond / 1000.0)) / 3.0;
+            this.Progress = (this.Progress + (incrementedTime / 3.0)) % 1.0;
+            this.ProgressPreview = ((DateTime.Now.Second % 3.0) + (DateTime.Now.Millisecond / 1000.0)) / 3.0;
         }
 
-        public double GetProgressTime(bool isPreview)
+        public double GetProgress(bool isPreview)
         {
-            return !isPreview ? this.ProgressTime : this.ProgressTimePreview;
+            return !isPreview ? this.Progress : this.ProgressPreview;
         }
 
         private MPTickBarUI GetMPTickBarUI()
@@ -176,7 +155,7 @@ namespace MPTickBar
             ImGui.Image(mpTickBarUI.Gauge.ImGuiHandle, new Vector2(width, height), new Vector2(textureX, textureY), new Vector2(textureW, textureH), Vector4.One);
         }
 
-        private static void RenderBarUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeElementWidth, float gaugeElementHeight, float barTextureOffsetX, float textureToElementScale, double progress, int uiNumber, Vector3 tintColor)
+        private static void RenderBarUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeElementWidth, float gaugeElementHeight, float barTextureOffsetX, float textureToElementScale, double progress, int uiNumber, bool isProgress, Vector3 tintColor)
         {
             var x = offsetX + barTextureOffsetX;
             var y = offsetY;
@@ -186,7 +165,7 @@ namespace MPTickBar
             var textureElementHeight = gaugeElementHeight / textureToElementScale;
             var textureX = textureElementX / mpTickBarUI.Gauge.Width;
             var textureY = (textureElementHeight * uiNumber) / mpTickBarUI.Gauge.Height;
-            var textureW = textureX + ((1.0f - (textureX * 2.0f)) * progress);
+            var textureW = textureX + ((1.0f - (textureX * 2.0f)) * (isProgress ? progress : 1.0f));
             var textureH = textureY + (textureElementHeight / mpTickBarUI.Gauge.Height);
             ImGui.SetCursorPos(new Vector2(x, y));
             ImGui.Image(mpTickBarUI.Gauge.ImGuiHandle, new Vector2((float)width, height), new Vector2(textureX, textureY), new Vector2((float)textureW, textureH), new Vector4(tintColor, 1.0f));
@@ -226,7 +205,7 @@ namespace MPTickBar
             var height = this.NumberPercentage.Height;
             var textureY = 0.0f;
             var textureH = 1.0f;
-            int percentage = (int)(this.GetProgressTime(isPreview) * 100.0);
+            int percentage = (int)(this.GetProgress(isPreview) * 100.0);
             var percentageText = percentage.ToString();
             var textAdjustY = 10.0f;
             var x = offsetX + this.Configuration.NumberPercentageOffsetX + (gaugeElementWidth / 2.0f) - (percentageText.Length * width / 2.0f);
@@ -272,11 +251,11 @@ namespace MPTickBar
             MPTickBarPluginUI.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, 5);
 
             var regressEffect = this.RegressEffects[!isPreview ? 0 : 1];
+            regressEffect.Update(this.GetProgress(isPreview));
             if (this.Configuration.IsRegressEffectVisible && regressEffect.IsRegressing)
-                MPTickBarPluginUI.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, barTextureOffsetX, textureToElementScale, regressEffect.Regress, 4, Vector3.One);
-            regressEffect.Update(this.GetProgressTime(isPreview));
+                MPTickBarPluginUI.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, barTextureOffsetX, textureToElementScale, regressEffect.Regress, 4, false, Vector3.One);
 
-            MPTickBarPluginUI.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, barTextureOffsetX, textureToElementScale, this.GetProgressTime(isPreview), 2, this.Configuration.ProgressBarTintColor);
+            MPTickBarPluginUI.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, barTextureOffsetX, textureToElementScale, this.GetProgress(isPreview), 2, true, this.Configuration.ProgressBarTintColor);
             MPTickBarPluginUI.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, 0);
 
             var fireIIICastSeconds = 3.0f;
@@ -303,7 +282,7 @@ namespace MPTickBar
                 this.RenderNumbers(offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, isPreview);
 
             var fastFireIIIMarkerIconAdjustX = (jobStackDimension / 2.0f) / gaugeElementWidth;
-            var isProgressAtMarker = this.GetProgressTime(isPreview) > (fastFireIIIMarkerOffset / gaugeElementWidth) + fastFireIIIMarkerIconAdjustX;
+            var isProgressAtMarker = this.GetProgress(isPreview) > (fastFireIIIMarkerOffset / gaugeElementWidth) + fastFireIIIMarkerIconAdjustX;
             if (((this.Configuration.FireIIICastIndicatorVisibility == FireIIICastIndicatorVisibility.Visible) ||
                 ((this.Configuration.FireIIICastIndicatorVisibility == FireIIICastIndicatorVisibility.UnderUmbralIceIII) && this.IsUmbralIceIIIActivated) ||
                 ((this.Configuration.FireIIICastIndicatorVisibility != FireIIICastIndicatorVisibility.Hidden) && isPreview)) && isProgressAtMarker)
