@@ -108,10 +108,15 @@ namespace MPTickBar
             this.Progress = 0.0;
         }
 
-        public void UpdateProgressTime(double incrementedTime)
+        public void Update(double incrementedTime)
         {
-            this.Progress = (this.Progress + (incrementedTime / 3.0)) % 1.0;
-            this.ProgressPreview = ((DateTime.Now.Second % 3.0) + (DateTime.Now.Millisecond / 1000.0)) / 3.0;
+            var fireIIICastSeconds = 3.0;
+
+            this.Progress += incrementedTime / fireIIICastSeconds;
+            if (this.Progress > 1)
+                this.Progress -= 1;
+
+            this.ProgressPreview = ((DateTime.Now.Second % fireIIICastSeconds) + (DateTime.Now.Millisecond / 1000.0)) / fireIIICastSeconds;
         }
 
         public double GetProgress(bool isPreview)
@@ -246,7 +251,7 @@ namespace MPTickBar
             var gaugeElementWidth = mpTickBarUI.Gauge.Width * textureToElementScale;
             var gaugeElementHeight = 40.0f * textureToElementScale;
             var offsetX = !isPreview ? 50.0f : 4.0f;
-            var offsetY = !isPreview ? 50.0f : 40.0f;
+            var offsetY = !isPreview ? 90.0f : 40.0f;
 
             MPTickBarPluginUI.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, 5);
 
