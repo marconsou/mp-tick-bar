@@ -71,9 +71,21 @@ namespace MPTickBar
             if (!this.EnteringCombatWithoutProgress)
                 this.EnteringCombatWithoutProgress = !this.IsInCombat.Last && this.IsInCombat.Current && (mpTickBarPluginUI.GetProgress(false) == 0.0);
 
+            var isLucidDreamingMPRecover = false;
+            if (PlayerHelpers.IsLucidDreamingActivated(currentPlayer))
+            {
+                var lucidDreamingPotency = 50;
+                var mpReturned = lucidDreamingPotency * 10000 / 1000;
+                var mpRecovered = this.MP.Current - this.MP.Last;
+                var iSrecoveringLastMPTick = (this.MP.Current == currentPlayer.MaxMp) && (this.MP.Last > (currentPlayer.MaxMp - mpReturned));
+
+                if (mpRecovered > 0 && (mpRecovered == mpReturned || iSrecoveringLastMPTick))
+                    isLucidDreamingMPRecover = true;
+            }
+
             var incrementedTime = this.Time.Current - this.Time.Last;
 
-            if (!PlayerHelpers.IsLucidDreamingActivated(currentPlayer))
+            if (!isLucidDreamingMPRecover)
             {
                 var wasMPReset = (this.MP.Last == 0) && (this.MP.Current == currentPlayer.MaxMp);
                 var wasMPRegenerated = (this.MP.Last < this.MP.Current) && !wasMPReset;
@@ -110,7 +122,7 @@ namespace MPTickBar
             this.IsDead.SaveData();
             this.IsManafontOnCooldown.SaveData();
 
-            mpTickBarPluginUI.UpdateProgressTime(incrementedTime);
+            mpTickBarPluginUI.Update(incrementedTime);
         }
     }
 }

@@ -24,7 +24,7 @@ namespace MPTickBar
 
         public float UIScale { get; set; } = 1.0f;
 
-        public float FastFireIIIMarkerTimeOffset { get; set; } = 0.20f;
+        public float FastFireIIIMarkerTimeOffset { get; set; } = 0.10f;
 
         public Vector3 ProgressBarTintColor { get; set; } = new Vector3(0.0f, 1.0f, 1.0f);
 
