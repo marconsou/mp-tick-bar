@@ -108,14 +108,10 @@ namespace MPTickBar
             this.Progress = 0.0;
         }
 
-        public void Update(double incrementedTime)
+        public void Update(double progress)
         {
             var fireIIICastSeconds = 3.0;
-
-            this.Progress += incrementedTime / fireIIICastSeconds;
-            if (this.Progress > 1)
-                this.Progress -= 1;
-
+            this.Progress = progress / fireIIICastSeconds;
             this.ProgressPreview = ((DateTime.Now.Second % fireIIICastSeconds) + (DateTime.Now.Millisecond / 1000.0)) / fireIIICastSeconds;
         }
 
