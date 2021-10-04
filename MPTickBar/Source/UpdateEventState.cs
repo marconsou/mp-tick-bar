@@ -18,17 +18,11 @@ namespace MPTickBar
 
         private UpdateEventData<bool> IsManafontOnCooldown { get; set; } = new UpdateEventData<bool>();
 
-        private bool WasDead { get; set; }
+        private double Progress { get; set; }
 
-        private bool WasInCombat { get; set; }
-
-        private bool WasTerritoryChanged { get; set; }
+        private bool IsProgressEnabled { get; set; }
 
         private bool WasManafontUsed { get; set; }
-
-        private bool EnteringCombatWithoutProgress { get; set; }
-
-        private bool IsFirstTimeReset { get; set; } = true;
 
         private class UpdateEventData<T> where T : struct
         {
@@ -44,7 +38,13 @@ namespace MPTickBar
 
         public void Login(object sender, EventArgs e)
         {
-            this.IsFirstTimeReset = true;
+            this.ResetDisableProgress();
+        }
+
+        private void ResetDisableProgress()
+        {
+            this.IsProgressEnabled = false;
+            this.Progress = 0;
         }
 
         public void Update(MPTickBarPluginUI mpTickBarPluginUI, PlayerCharacter currentPlayer, ushort territoryType, bool isInCombat)
@@ -56,22 +56,9 @@ namespace MPTickBar
             this.IsDead.Current = (currentPlayer.CurrentHp == 0);
             this.IsManafontOnCooldown.Current = PlayerHelpers.IsManafontOnCooldown();
 
-            if (!this.WasDead)
-                this.WasDead = this.IsDead.Current;
+            var incrementedTime = (this.Time.Current - this.Time.Last);
 
-            if (!this.WasInCombat)
-                this.WasInCombat = this.IsInCombat.Current;
-
-            if (!this.WasTerritoryChanged)
-                this.WasTerritoryChanged = this.Territory.Last != this.Territory.Current;
-
-            if (!this.WasManafontUsed)
-                this.WasManafontUsed = !this.IsManafontOnCooldown.Last && this.IsManafontOnCooldown.Current;
-
-            if (!this.EnteringCombatWithoutProgress)
-                this.EnteringCombatWithoutProgress = !this.IsInCombat.Last && this.IsInCombat.Current && (mpTickBarPluginUI.GetProgress(false) == 0.0);
-
-            var isLucidDreamingMPRecover = false;
+            var onMPRegenLucidDreaming = false;
             if (PlayerHelpers.IsLucidDreamingActivated(currentPlayer))
             {
                 var lucidDreamingPotency = 50;
@@ -79,41 +66,50 @@ namespace MPTickBar
                 var mpRecovered = this.MP.Current - this.MP.Last;
                 var iSrecoveringLastMPTick = (this.MP.Current == currentPlayer.MaxMp) && (this.MP.Last > (currentPlayer.MaxMp - mpReturned));
 
-                if (mpRecovered > 0 && (mpRecovered == mpReturned || iSrecoveringLastMPTick))
-                    isLucidDreamingMPRecover = true;
+                onMPRegenLucidDreaming = (mpRecovered > 0) && (mpRecovered == mpReturned || iSrecoveringLastMPTick);
             }
 
-            var incrementedTime = this.Time.Current - this.Time.Last;
+            if (!this.WasManafontUsed)
+                this.WasManafontUsed = !this.IsManafontOnCooldown.Last && this.IsManafontOnCooldown.Current;
 
-            if (!isLucidDreamingMPRecover)
+            var mpReset = (this.MP.Last == 0) && (this.MP.Current == currentPlayer.MaxMp);
+            var onMPRegen = (this.MP.Last < this.MP.Current) && !mpReset && !onMPRegenLucidDreaming;
+            if (onMPRegen)
             {
-                var wasMPReset = (this.MP.Last == 0) && (this.MP.Current == currentPlayer.MaxMp);
-                var wasMPRegenerated = (this.MP.Last < this.MP.Current) && !wasMPReset;
-                var resetHoldProgress = this.WasDead || (this.WasInCombat && !this.IsInCombat.Current) || this.WasTerritoryChanged || this.EnteringCombatWithoutProgress || this.IsFirstTimeReset;
-
-                if (wasMPRegenerated)
+                if (!this.WasManafontUsed)
                 {
-                    if (!this.WasManafontUsed)
-                    {
-                        mpTickBarPluginUI.ResetProgress();
-                        this.WasDead = false;
-                        this.WasInCombat = false;
-                        this.WasTerritoryChanged = false;
-                        this.EnteringCombatWithoutProgress = false;
-                        this.IsFirstTimeReset = false;
-                    }
-                    else
-                    {
-                        if (this.IsManafontOnCooldown.Current)
-                            this.WasManafontUsed = false;
-                    }
+                    this.ResetDisableProgress();
+                    this.IsProgressEnabled = true;
                 }
-                else if (resetHoldProgress)
+                else
                 {
-                    mpTickBarPluginUI.ResetProgress();
-                    incrementedTime = 0;
+                    if (this.IsManafontOnCooldown.Current)
+                        this.WasManafontUsed = false;
                 }
             }
+
+            var onZoneChange = this.Territory.Last != this.Territory.Current;
+            if (onZoneChange)
+                this.ResetDisableProgress();
+
+            var onLeaveCombat = this.IsInCombat.Last && !this.IsInCombat.Current;
+            if (onLeaveCombat)
+                this.ResetDisableProgress();
+
+            var onDeath = !this.IsDead.Last && this.IsDead.Current;
+            if (onDeath)
+                this.ResetDisableProgress();
+
+            if (this.IsProgressEnabled)
+            {
+                this.Progress += incrementedTime;
+                if (this.Progress >= 3)
+                    this.Progress -= 3;
+            }
+            else
+                this.WasManafontUsed = false;
+
+            mpTickBarPluginUI.Update(this.Progress);
 
             this.Time.SaveData();
             this.MP.SaveData();
@@ -121,8 +117,6 @@ namespace MPTickBar
             this.IsInCombat.SaveData();
             this.IsDead.SaveData();
             this.IsManafontOnCooldown.SaveData();
-
-            mpTickBarPluginUI.Update(incrementedTime);
         }
     }
 }
