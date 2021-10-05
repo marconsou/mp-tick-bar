@@ -43,8 +43,9 @@ namespace MPTickBar
 
         private void ResetDisableProgress()
         {
-            this.IsProgressEnabled = false;
             this.Progress = 0;
+            this.IsProgressEnabled = false;
+            this.WasManafontUsed = false;
         }
 
         public void Update(MPTickBarPluginUI mpTickBarPluginUI, PlayerCharacter currentPlayer, ushort territoryType, bool isInCombat)
@@ -70,7 +71,7 @@ namespace MPTickBar
             }
 
             if (!this.WasManafontUsed)
-                this.WasManafontUsed = !this.IsManafontOnCooldown.Last && this.IsManafontOnCooldown.Current;
+                this.WasManafontUsed = (!this.IsManafontOnCooldown.Last && this.IsManafontOnCooldown.Current) && this.MP.Current < currentPlayer.MaxMp;
 
             var mpReset = (this.MP.Last == 0) && (this.MP.Current == currentPlayer.MaxMp);
             var onMPRegen = (this.MP.Last < this.MP.Current) && !mpReset && !onMPRegenLucidDreaming;
@@ -78,7 +79,7 @@ namespace MPTickBar
             {
                 if (!this.WasManafontUsed)
                 {
-                    this.ResetDisableProgress();
+                    this.Progress = 0;
                     this.IsProgressEnabled = true;
                 }
                 else
@@ -103,11 +104,10 @@ namespace MPTickBar
             if (this.IsProgressEnabled)
             {
                 this.Progress += incrementedTime;
-                if (this.Progress >= 3)
-                    this.Progress -= 3;
+                var fireIIICastSeconds = 3.0;
+                if (this.Progress >= fireIIICastSeconds)
+                    this.Progress -= fireIIICastSeconds;
             }
-            else
-                this.WasManafontUsed = false;
 
             mpTickBarPluginUI.Update(this.Progress);
 
