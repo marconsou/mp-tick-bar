@@ -1,2 +1,2 @@
-﻿#MP Recovery items (Ethers) will not be supported.
+﻿#MP recovery items (Ethers) will not be supported.
 #Better image quality for: Material UI Discord.

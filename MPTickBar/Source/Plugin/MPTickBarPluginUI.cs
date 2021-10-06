@@ -352,7 +352,7 @@ namespace MPTickBar
                 }
                 ImGui.EndChild();
 
-                static string CastTimeFormat(bool isPlayingAsBLM, float castTime) => isPlayingAsBLM ? (((int)(castTime * 100)) / 100.0f).ToString("0.00s") : "?";
+                static string CastTimeFormat(bool isPlayingAsBLM, float castTime) => isPlayingAsBLM ? (((int)(castTime * 100)) / 100.0f).ToString("0.00s") : "N/A";
                 var previewFastFireIIICastTime = CastTimeFormat(this.IsPlayingAsBLM, PlayerHelpers.GetFastFireIIICastTime(this.Level, this.IsCircleOfPowerActivatedPreview));
                 var currentFastFireIIICastTime = CastTimeFormat(this.IsPlayingAsBLM, PlayerHelpers.GetFastFireIIICastTime(this.Level, this.IsCircleOfPowerActivated));
 
