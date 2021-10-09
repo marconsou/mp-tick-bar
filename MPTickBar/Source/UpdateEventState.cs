@@ -78,7 +78,8 @@ namespace MPTickBar
             var onMPRegen = (this.MP.Last < this.MP.Current) && !mpReset && !onMPRegenLucidDreaming && (this.MPRegenSkipTime == 0);
             if (onMPRegen)
             {
-                this.Progress = 0;
+                if (this.Progress > 0.5)
+                    this.Progress = 0;
                 this.IsProgressEnabled = true;
             }
         }
