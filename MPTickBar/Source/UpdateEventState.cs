@@ -68,7 +68,7 @@ namespace MPTickBar
                 this.MPRegenSkipTime = mpRegenSkipSecondsTotal;
         }
 
-        private void OnMPRegen(PlayerCharacter currentPlayer, bool onMPRegenLucidDreaming, double interval)
+        private bool OnMPRegen(PlayerCharacter currentPlayer, bool onMPRegenLucidDreaming, double interval)
         {
             this.MPRegenSkipTime -= interval;
             if (this.MPRegenSkipTime < 0)
@@ -80,8 +80,11 @@ namespace MPTickBar
             {
                 if (this.Progress > 0.5)
                     this.Progress = 0;
+
                 this.IsProgressEnabled = true;
+                return true;
             }
+            return false;
         }
 
         private void OnZoneChange()
@@ -126,12 +129,13 @@ namespace MPTickBar
 
             var onMPRegenLucidDreaming = this.OnMPRegenLucidDreaming(currentPlayer);
             this.OnManafontUsage();
-            this.OnMPRegen(currentPlayer, onMPRegenLucidDreaming, interval);
+            var onMPRegen = OnMPRegen(currentPlayer, onMPRegenLucidDreaming, interval);
             this.OnZoneChange();
             this.OnLeaveCombat();
             this.OnDeath();
 
-            this.ProgressUpdate(interval);
+            if (!onMPRegen)
+                this.ProgressUpdate(interval);
 
             mpTickBarPluginUI.Update(this.Progress);
 
