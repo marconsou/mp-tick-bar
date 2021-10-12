@@ -8,11 +8,15 @@ namespace MPTickBar
     [Serializable]
     public class Configuration : IPluginConfiguration
     {
-        public int Version { get; set; } = 2;
+        public int Version { get; set; } = 3;
 
         public bool IsMPTickBarLocked { get; set; } = false;
 
         public bool IsRegressEffectVisible { get; set; } = true;
+
+        public int MPTickBarOffsetX { get; set; } = 0;
+
+        public int MPTickBarOffsetY { get; set; } = 0;
 
         public int FireIIICastIndicatorOffsetX { get; set; } = 0;
 
@@ -22,7 +26,15 @@ namespace MPTickBar
 
         public int NumberPercentageOffsetY { get; set; } = 0;
 
-        public float UIScale { get; set; } = 1.0f;
+        public float MPTickBarScale { get; set; } = 1.0f;
+
+        public float ProgressBarScaleHorizontal { get; set; } = 1.0f;
+
+        public float ProgressBarScaleVertical { get; set; } = 1.0f;
+
+        public float FireIIICastIndicatorScale { get; set; } = 1.0f;
+
+        public float NumberPercentageScale { get; set; } = 1.0f;
 
         public float FastFireIIIMarkerTimeOffset { get; set; } = 0.10f;
 

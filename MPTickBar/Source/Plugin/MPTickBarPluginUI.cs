@@ -136,123 +136,134 @@ namespace MPTickBar
             return mpTickBarUI;
         }
 
-        private static void RenderBackgroundUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeElementWidth, float gaugeElementHeight, float textureToElementScale, int uiNumber)
+        private void RenderBackgroundUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeElementWidth, float gaugeElementHeight, float textureToElementScale, int uiNumber)
         {
-            var x = offsetX;
-            var y = offsetY;
             var width = gaugeElementWidth;
             var height = gaugeElementHeight;
+            var scaledWidth = width * this.Configuration.ProgressBarScaleHorizontal;
+            var scaledHeight = height * this.Configuration.ProgressBarScaleVertical;
+            var x = offsetX;
+            var y = offsetY;
             var textureElementHeight = gaugeElementHeight / textureToElementScale;
             var textureX = 0.0f;
             var textureY = (textureElementHeight * uiNumber) / mpTickBarUI.Gauge.Height;
             var textureW = 1.0f;
             var textureH = textureY + (textureElementHeight / mpTickBarUI.Gauge.Height);
             ImGui.SetCursorPos(new Vector2(x, y));
-            ImGui.Image(mpTickBarUI.Gauge.ImGuiHandle, new Vector2(width, height), new Vector2(textureX, textureY), new Vector2(textureW, textureH), Vector4.One);
+            ImGui.Image(mpTickBarUI.Gauge.ImGuiHandle, new Vector2(scaledWidth, scaledHeight), new Vector2(textureX, textureY), new Vector2(textureW, textureH), Vector4.One);
         }
 
-        private static void RenderBarUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeElementWidth, float gaugeElementHeight, float barTextureOffsetX, float textureToElementScale, double progress, int uiNumber, bool isProgress, Vector3 tintColor)
+        private void RenderBarUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeElementWidth, float gaugeElementHeight, float textureToElementScale, double progress, int uiNumber, bool isProgress, Vector3 tintColor)
         {
-            var x = offsetX + barTextureOffsetX;
-            var y = offsetY;
+            var barTextureOffsetX = 12.0f * textureToElementScale;
             var width = (gaugeElementWidth - (barTextureOffsetX * 2.0f)) * progress;
             var height = gaugeElementHeight;
+            var scaledWidth = width * this.Configuration.ProgressBarScaleHorizontal;
+            var scaledHeight = height * this.Configuration.ProgressBarScaleVertical;
+            var x = offsetX + (barTextureOffsetX * this.Configuration.ProgressBarScaleHorizontal);
+            var y = offsetY;
             var textureElementX = barTextureOffsetX / textureToElementScale;
             var textureElementHeight = gaugeElementHeight / textureToElementScale;
             var textureX = textureElementX / mpTickBarUI.Gauge.Width;
             var textureY = (textureElementHeight * uiNumber) / mpTickBarUI.Gauge.Height;
             var textureW = textureX + ((1.0f - (textureX * 2.0f)) * (isProgress ? progress : 1.0f));
             var textureH = textureY + (textureElementHeight / mpTickBarUI.Gauge.Height);
-            ImGui.SetCursorPos(new Vector2(x, y));
-            ImGui.Image(mpTickBarUI.Gauge.ImGuiHandle, new Vector2((float)width, height), new Vector2(textureX, textureY), new Vector2((float)textureW, textureH), new Vector4(tintColor, 1.0f));
+            ImGui.SetCursorPos(new Vector2((float)(x), y));
+            ImGui.Image(mpTickBarUI.Gauge.ImGuiHandle, new Vector2((float)scaledWidth, scaledHeight), new Vector2(textureX, textureY), new Vector2((float)textureW, textureH), new Vector4(tintColor, 1.0f));
         }
 
-        private static void RenderJobStackUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float jobStackDimension, float fastFireIIIMarkerOffset, int uiNumber, Vector3 tintColor)
+        private void RenderJobStackUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float jobStackDimension, float fastFireIIIMarkerOffset, int uiNumber, Vector3 tintColor)
         {
-            var x = offsetX + fastFireIIIMarkerOffset;
+            var x = offsetX + (fastFireIIIMarkerOffset * this.Configuration.ProgressBarScaleHorizontal);
             var y = offsetY;
             var width = jobStackDimension;
             var height = jobStackDimension;
+            var scaledWidth = width * this.Configuration.ProgressBarScaleHorizontal;
+            var scaledHeight = height * this.Configuration.ProgressBarScaleVertical;
             var textureX = uiNumber * 0.5f;
             var textureY = 0.0f;
             var textureW = textureX + 0.5f;
             var textureH = 0.5f;
             ImGui.SetCursorPos(new Vector2(x, y));
-            ImGui.Image(mpTickBarUI.JobStack.ImGuiHandle, new Vector2(width, height), new Vector2(textureX, textureY), new Vector2(textureW, textureH), new Vector4(tintColor, 1.0f));
+            ImGui.Image(mpTickBarUI.JobStack.ImGuiHandle, new Vector2(scaledWidth, scaledHeight), new Vector2(textureX, textureY), new Vector2(textureW, textureH), new Vector4(tintColor, 1.0f));
         }
 
-        private static void RenderLine(float offsetX, float offsetY, float fastFireIIIMarkerOffset, Vector3 tintColor)
+        private void RenderLine(float offsetX, float offsetY, float fastFireIIIMarkerOffset, Vector3 tintColor)
         {
             var windowPos = ImGui.GetWindowPos();
-            var adjustX = 10.5f;
-            var adjustY = 6.0f;
-            var xBegin = offsetX + fastFireIIIMarkerOffset + windowPos.X + adjustX;
-            var yBegin = offsetY + windowPos.Y + adjustY;
+            var adjustBeginX = 9.5f;
+            var adjustBeginY = 6.0f;
+            var adjustEndY = 8.0f;
+            var xBegin = offsetX + windowPos.X + ((fastFireIIIMarkerOffset + adjustBeginX) * this.Configuration.ProgressBarScaleHorizontal);
+            var yBegin = offsetY + windowPos.Y + (adjustBeginY * this.Configuration.ProgressBarScaleVertical);
             var xEnd = xBegin;
-            var yEnd = yBegin + 8.0f;
-            var thickness = 5.0f;
+            var yEnd = yBegin + (adjustEndY * this.Configuration.ProgressBarScaleVertical);
+            var thickness = 5.0f * this.Configuration.ProgressBarScaleHorizontal;
             ImGui.GetWindowDrawList().AddLine(new Vector2(xBegin, yBegin), new Vector2(xEnd, yEnd), ImGui.GetColorU32(new Vector4(tintColor, 1.0f)), thickness);
+        }
+
+        private void RenderFireIIICastIndicator(float offsetX, float offsetY, float gaugeElementWidth, float gaugeElementHeight)
+        {
+            var adjustX = 20.0f;
+            var width = this.FireIIICastIndicator.Width;
+            var height = this.FireIIICastIndicator.Height;
+            var scaledWidth = width * this.Configuration.FireIIICastIndicatorScale;
+            var scaledHeight = height * this.Configuration.FireIIICastIndicatorScale;
+            var x = offsetX + this.Configuration.FireIIICastIndicatorOffsetX + gaugeElementWidth + adjustX;
+            var y = offsetY + this.Configuration.FireIIICastIndicatorOffsetY + (gaugeElementHeight / 2.0f);
+            var textureX = 0.0f;
+            var textureY = 0.0f;
+            var textureW = 1.0f;
+            var textureH = 1.0f;
+            ImGui.SetCursorPos(new Vector2(x - (scaledWidth / 2.0f), y - (scaledHeight / 2.0f)));
+            ImGui.Image(this.FireIIICastIndicator.ImGuiHandle, new Vector2(scaledWidth, scaledHeight), new Vector2(textureX, textureY), new Vector2(textureW, textureH), new Vector4(this.Configuration.FireIIICastIndicatorTintColor, 1.0f));
         }
 
         private void RenderNumbers(float offsetX, float offsetY, float gaugeElementWidth, float gaugeElementHeight, bool isPreview)
         {
+            var adjustY = 10.0f;
             var digitTotal = 10.0f;
-            var width = this.NumberPercentage.Width / digitTotal;
+            var width = (this.NumberPercentage.Width / digitTotal);
             var height = this.NumberPercentage.Height;
+            var scaledWidth = width * this.Configuration.NumberPercentageScale;
+            var scaledHeight = height * this.Configuration.NumberPercentageScale;
             var textureY = 0.0f;
             var textureH = 1.0f;
             int percentage = (int)(this.GetProgress(isPreview) * 100.0);
             var percentageText = percentage.ToString();
-            var textAdjustY = 10.0f;
-            var x = offsetX + this.Configuration.NumberPercentageOffsetX + (gaugeElementWidth / 2.0f) - (percentageText.Length * width / 2.0f);
-            var y = offsetY + this.Configuration.NumberPercentageOffsetY + (gaugeElementHeight / 2.0f) - (height / 2.0f) + textAdjustY;
+            var x = offsetX + this.Configuration.NumberPercentageOffsetX + (gaugeElementWidth / 2.0f);
+            var y = offsetY + this.Configuration.NumberPercentageOffsetY + (gaugeElementHeight / 2.0f) + adjustY;
+            var totalNumberWidth = scaledWidth * percentageText.Length;
 
             foreach (var digitText in percentageText)
             {
                 var digit = char.GetNumericValue(digitText);
                 var textureX = (width * digit) / this.NumberPercentage.Width;
                 var textureW = textureX + (width / this.NumberPercentage.Width);
-                ImGui.SetCursorPos(new Vector2(x, y));
-                ImGui.Image(this.NumberPercentage.ImGuiHandle, new Vector2(23, 18), new Vector2((float)textureX, textureY), new Vector2((float)textureW, textureH), new Vector4(this.Configuration.NumberPercentageTintColor, 1.0f));
-                x += width;
+                ImGui.SetCursorPos(new Vector2(x - (totalNumberWidth / 2.0f), y - (scaledHeight / 2.0f)));
+                ImGui.Image(this.NumberPercentage.ImGuiHandle, new Vector2(scaledWidth, scaledHeight), new Vector2((float)textureX, textureY), new Vector2((float)textureW, textureH), new Vector4(this.Configuration.NumberPercentageTintColor, 1.0f));
+                x += scaledWidth;
             }
-        }
-
-        private void RenderFireIIICastIndicator(float offsetX, float offsetY, float gaugeElementWidth, float gaugeElementHeight)
-        {
-            var adjustX = 7.0f;
-            var adjustSize = 0.8f;
-            var width = this.FireIIICastIndicator.Width * adjustSize;
-            var height = this.FireIIICastIndicator.Height * adjustSize;
-            var x = offsetX + this.Configuration.FireIIICastIndicatorOffsetX + gaugeElementWidth - adjustX;
-            var y = offsetY + this.Configuration.FireIIICastIndicatorOffsetY + (gaugeElementHeight / 2.0f) - (height / 2.0f);
-            var textureX = 0.0f;
-            var textureY = 0.0f;
-            var textureW = 1.0f;
-            var textureH = 1.0f;
-            ImGui.SetCursorPos(new Vector2(x, y));
-            ImGui.Image(this.FireIIICastIndicator.ImGuiHandle, new Vector2(width, height), new Vector2(textureX, textureY), new Vector2(textureW, textureH), new Vector4(this.Configuration.FireIIICastIndicatorTintColor, 1.0f));
         }
 
         private void DrawMPTickBar(bool isPreview)
         {
             var mpTickBarUI = this.GetMPTickBarUI();
             var textureToElementScale = 0.5f;
-            var barTextureOffsetX = 12.0f * textureToElementScale;
             var gaugeElementWidth = mpTickBarUI.Gauge.Width * textureToElementScale;
             var gaugeElementHeight = 40.0f * textureToElementScale;
-            var offsetX = !isPreview ? 50.0f : 4.0f;
-            var offsetY = !isPreview ? 90.0f : 40.0f;
+            var offsetX = !isPreview ? (this.Configuration.MPTickBarOffsetX + 50.0f) : 60.0f;
+            var offsetY = !isPreview ? (this.Configuration.MPTickBarOffsetY + 90.0f) : 45.0f;
 
-            MPTickBarPluginUI.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, 5);
+            this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, 5);
 
             var regressEffect = this.RegressEffects[!isPreview ? 0 : 1];
             regressEffect.Update(this.GetProgress(isPreview));
             if (this.Configuration.IsRegressEffectVisible && regressEffect.IsRegressing)
-                MPTickBarPluginUI.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, barTextureOffsetX, textureToElementScale, regressEffect.Regress, 4, false, Vector3.One);
-
-            MPTickBarPluginUI.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, barTextureOffsetX, textureToElementScale, this.GetProgress(isPreview), 2, true, this.Configuration.ProgressBarTintColor);
-            MPTickBarPluginUI.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, 0);
+                this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, regressEffect.Regress, 4, false, Vector3.One);
+            
+            this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, this.GetProgress(isPreview), 2, true, this.Configuration.ProgressBarTintColor);
+            this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, 0);
 
             var mpTickSecondsTotal = 3.0f;
             var fastFireIIICastTime = PlayerHelpers.GetFastFireIIICastTime(this.Level, (!isPreview) ? this.IsCircleOfPowerActivated : this.IsCircleOfPowerActivatedPreview);
@@ -265,32 +276,32 @@ namespace MPTickBar
             {
                 if (this.Configuration.FastFireIIIMarkerType == FastFireIIIMarkerType.Icon)
                 {
-                    MPTickBarPluginUI.RenderJobStackUIElement(mpTickBarUI, offsetX, offsetY, jobStackDimension, fastFireIIIMarkerOffset, 0, Vector3.One);
-                    MPTickBarPluginUI.RenderJobStackUIElement(mpTickBarUI, offsetX, offsetY, jobStackDimension, fastFireIIIMarkerOffset, 1, this.Configuration.FastFireIIIMarkerTintColor);
+                    this.RenderJobStackUIElement(mpTickBarUI, offsetX, offsetY, jobStackDimension, fastFireIIIMarkerOffset, 0, Vector3.One);
+                    this.RenderJobStackUIElement(mpTickBarUI, offsetX, offsetY, jobStackDimension, fastFireIIIMarkerOffset, 1, this.Configuration.FastFireIIIMarkerTintColor);
                 }
                 else if (this.Configuration.FastFireIIIMarkerType == FastFireIIIMarkerType.Line)
-                    MPTickBarPluginUI.RenderLine(offsetX, offsetY, fastFireIIIMarkerOffset, this.Configuration.FastFireIIIMarkerTintColor);
+                    this.RenderLine(offsetX, offsetY, fastFireIIIMarkerOffset, this.Configuration.FastFireIIIMarkerTintColor);
             }
+
+            var fastFireIIIMarkerIconAdjustX = (jobStackDimension / 2.0f) / gaugeElementWidth;
+            var isProgressAtMarker = this.GetProgress(isPreview) > (fastFireIIIMarkerOffset / gaugeElementWidth) + fastFireIIIMarkerIconAdjustX;
+            if (((this.Configuration.FireIIICastIndicatorVisibility == FireIIICastIndicatorVisibility.Visible) ||
+                ((this.Configuration.FireIIICastIndicatorVisibility == FireIIICastIndicatorVisibility.UnderUmbralIceIII) && this.IsUmbralIceIIIActivated) ||
+                ((this.Configuration.FireIIICastIndicatorVisibility != FireIIICastIndicatorVisibility.Hidden) && isPreview)) && ((isProgressAtMarker && !isPreview) || isPreview))
+                this.RenderFireIIICastIndicator(offsetX, offsetY, gaugeElementWidth, gaugeElementHeight);
 
             if ((this.Configuration.NumberPercentageVisibility == NumberPercentageVisibility.Visible) ||
                ((this.Configuration.NumberPercentageVisibility == NumberPercentageVisibility.UnderUmbralIceIII) && this.IsUmbralIceIIIActivated) ||
                ((this.Configuration.NumberPercentageVisibility != NumberPercentageVisibility.Hidden) && isPreview))
                 this.RenderNumbers(offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, isPreview);
 
-            var fastFireIIIMarkerIconAdjustX = (jobStackDimension / 2.0f) / gaugeElementWidth;
-            var isProgressAtMarker = this.GetProgress(isPreview) > (fastFireIIIMarkerOffset / gaugeElementWidth) + fastFireIIIMarkerIconAdjustX;
-            if (((this.Configuration.FireIIICastIndicatorVisibility == FireIIICastIndicatorVisibility.Visible) ||
-                ((this.Configuration.FireIIICastIndicatorVisibility == FireIIICastIndicatorVisibility.UnderUmbralIceIII) && this.IsUmbralIceIIIActivated) ||
-                ((this.Configuration.FireIIICastIndicatorVisibility != FireIIICastIndicatorVisibility.Hidden) && isPreview)) && isProgressAtMarker)
-                this.RenderFireIIICastIndicator(offsetX, offsetY, gaugeElementWidth, gaugeElementHeight);
-
             var windowPos = ImGui.GetWindowPos();
             var vertexBuffer = ImGui.GetWindowDrawList().VtxBuffer;
-            var uiScale = (!isPreview ? this.Configuration.UIScale : 2.0f) - 1.0f;
+            var scale = (!isPreview ? this.Configuration.MPTickBarScale : 1.5f) - 1.0f;
             for (int i = 0; i < vertexBuffer.Size; i++)
             {
-                vertexBuffer[i].pos.X += (vertexBuffer[i].pos.X - windowPos.X) * uiScale - (offsetX * uiScale);
-                vertexBuffer[i].pos.Y += (vertexBuffer[i].pos.Y - windowPos.Y) * uiScale - (offsetY * uiScale);
+                vertexBuffer[i].pos.X += (vertexBuffer[i].pos.X - windowPos.X) * scale - (offsetX * scale);
+                vertexBuffer[i].pos.Y += (vertexBuffer[i].pos.Y - windowPos.Y) * scale - (offsetY * scale);
             }
         }
 
@@ -339,13 +350,13 @@ namespace MPTickBar
                 ImGuiWindowFlags.NoResize |
                 ImGuiWindowFlags.NoCollapse;
 
-            ImGui.SetNextWindowSize(new Vector2(418.0f, 413.0f), ImGuiCond.Always);
+            ImGui.SetNextWindowSize(new Vector2(481.0f, 446.0f), ImGuiCond.Always);
             if (ImGui.Begin("MP Tick Bar configuration", ref isConfigurationWindowVisible, windowFlags))
             {
                 this.IsConfigurationWindowVisible = isConfigurationWindowVisible;
 
                 ImGui.Text("Preview:");
-                if (ImGui.BeginChild("Preview (Child)", new Vector2(402.0f, 122.0f), false))
+                if (ImGui.BeginChild("Preview (Child)", new Vector2(465.0f, 122.0f), false, ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse))
                 {
                     if (this.IsPlayingAsBLM)
                         this.DrawMPTickBar(true);
@@ -367,15 +378,24 @@ namespace MPTickBar
                 {
                     if (ImGui.BeginTabBar("Tab Bar"))
                     {
-                        if (ImGui.BeginTabItem("MP Tick Bar"))
+                        if (ImGui.BeginTabItem("General"))
                         {
                             this.CheckBox(this.Configuration.IsMPTickBarLocked, x => this.Configuration.IsMPTickBarLocked = x, "Lock");
+                            this.Combo(this.Configuration.UIType, x => this.Configuration.UIType = x, "UI");
+                            this.DragInt(this.Configuration.MPTickBarOffsetX, x => this.Configuration.MPTickBarOffsetX = x, "Offset X", 1, -300, 300, "%i");
+                            this.DragInt(this.Configuration.MPTickBarOffsetY, x => this.Configuration.MPTickBarOffsetY = x, "Offset Y", 1, -300, 300, "%i");
+                            this.DragFloat(this.Configuration.MPTickBarScale, x => this.Configuration.MPTickBarScale = x, "Scale", 0.1f, 0.1f, 5.0f, "%.1f");
+                            ImGui.EndTabItem();
+                        }
+
+                        if (ImGui.BeginTabItem("Progress Bar"))
+                        {
+                            this.ColorEdit3(this.Configuration.ProgressBarTintColor, x => this.Configuration.ProgressBarTintColor = x, "Bar");
                             this.CheckBox(this.Configuration.IsRegressEffectVisible, x => this.Configuration.IsRegressEffectVisible = x, "Regress Effect", new Vector2(0.0f, 20.0f));
                             PluginUI.Tooltip("Show/Hide bar effect animation when it goes from full to empty state.");
-                            this.ColorEdit3(this.Configuration.ProgressBarTintColor, x => this.Configuration.ProgressBarTintColor = x, "Progress Bar", new Vector2(0.0f, 20.0f));
                             this.Combo(this.Configuration.MPTickBarVisibility, x => this.Configuration.MPTickBarVisibility = x, "Visibility");
-                            this.Combo(this.Configuration.UIType, x => this.Configuration.UIType = x, "UI");
-                            this.DragFloat(this.Configuration.UIScale, x => this.Configuration.UIScale = x, "UI Scale", 0.1f, 1.0f, 5.0f, "%.1f");
+                            this.DragFloat(this.Configuration.ProgressBarScaleHorizontal, x => this.Configuration.ProgressBarScaleHorizontal = x, "Scale (Horizontal)", 0.01f, 0.1f, 3.0f, "%.2f");
+                            this.DragFloat(this.Configuration.ProgressBarScaleVertical, x => this.Configuration.ProgressBarScaleVertical = x, "Scale (Vertical)", 0.01f, 0.1f, 3.0f, "%.2f");
                             ImGui.EndTabItem();
                         }
 
@@ -392,8 +412,9 @@ namespace MPTickBar
                         {
                             this.ColorEdit3(this.Configuration.FireIIICastIndicatorTintColor, x => this.Configuration.FireIIICastIndicatorTintColor = x, "Indicator");
                             this.Combo(this.Configuration.FireIIICastIndicatorVisibility, x => this.Configuration.FireIIICastIndicatorVisibility = x, "Visibility");
-                            this.DragInt(this.Configuration.FireIIICastIndicatorOffsetX, x => this.Configuration.FireIIICastIndicatorOffsetX = x, "Offset X", 1, -10, 10, "%i");
-                            this.DragInt(this.Configuration.FireIIICastIndicatorOffsetY, x => this.Configuration.FireIIICastIndicatorOffsetY = x, "Offset Y", 1, -10, 10, "%i");
+                            this.DragInt(this.Configuration.FireIIICastIndicatorOffsetX, x => this.Configuration.FireIIICastIndicatorOffsetX = x, "Offset X", 1, -300, 300, "%i");
+                            this.DragInt(this.Configuration.FireIIICastIndicatorOffsetY, x => this.Configuration.FireIIICastIndicatorOffsetY = x, "Offset Y", 1, -300, 300, "%i");
+                            this.DragFloat(this.Configuration.FireIIICastIndicatorScale, x => this.Configuration.FireIIICastIndicatorScale = x, "Scale", 0.1f, 0.1f, 3.0f, "%.1f");
                             ImGui.EndTabItem();
                         }
 
@@ -401,8 +422,9 @@ namespace MPTickBar
                         {
                             this.ColorEdit3(this.Configuration.NumberPercentageTintColor, x => this.Configuration.NumberPercentageTintColor = x, "Number (%)");
                             this.Combo(this.Configuration.NumberPercentageVisibility, x => this.Configuration.NumberPercentageVisibility = x, "Visibility");
-                            this.DragInt(this.Configuration.NumberPercentageOffsetX, x => this.Configuration.NumberPercentageOffsetX = x, "Offset X", 1, -50, 50, "%i");
-                            this.DragInt(this.Configuration.NumberPercentageOffsetY, x => this.Configuration.NumberPercentageOffsetY = x, "Offset Y", 1, -30, 10, "%i");
+                            this.DragInt(this.Configuration.NumberPercentageOffsetX, x => this.Configuration.NumberPercentageOffsetX = x, "Offset X", 1, -300, 300, "%i");
+                            this.DragInt(this.Configuration.NumberPercentageOffsetY, x => this.Configuration.NumberPercentageOffsetY = x, "Offset Y", 1, -300, 300, "%i");
+                            this.DragFloat(this.Configuration.NumberPercentageScale, x => this.Configuration.NumberPercentageScale = x, "Scale", 0.1f, 0.1f, 3.0f, "%.1f");
                             ImGui.EndTabItem();
                         }
                     }
