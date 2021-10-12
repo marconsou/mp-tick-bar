@@ -1,2 +1,2 @@
-﻿#MP recovery items (Ethers) will not be supported.
-#Better quality for image: Material UI Discord.
+﻿#MP recovery items (Ethers) and any other MP regeneration outside of Black Mage's spells/abilities will not be supported.
+#Better image (quality) for: Material UI Discord.
