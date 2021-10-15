@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Objects.SubKinds;
 using ImGuiNET;
 using System;
+using System.Runtime.InteropServices;
 
 namespace MPTickBar
 {
@@ -18,7 +19,7 @@ namespace MPTickBar
 
         private UpdateEventData<bool> IsManafontOnCooldown { get; set; } = new UpdateEventData<bool>();
 
-        private double Progress { get; set; }
+        private UpdateEventData<double> Progress { get; set; } = new UpdateEventData<double>();
 
         private double MPRegenSkipTime { get; set; }
 
@@ -41,10 +42,31 @@ namespace MPTickBar
             this.ResetDisableProgress();
         }
 
+        public void NetworkMessage(IntPtr dataPtr, PlayerCharacter currentPlayer)
+        {
+            if ((currentPlayer.CurrentHp > 0) && (currentPlayer.CurrentMp == currentPlayer.MaxMp) && (this.Progress.Current == 0) && (this.Progress.Last == 0))
+            {
+                var data = Marshal.ReadInt32(dataPtr, 0);
+                if (data == currentPlayer.CurrentHp)
+                {
+                    Dalamud.Logging.PluginLog.Information($"{data}");
+                    this.RestartProgress();
+                }
+            }
+        }
+
         private void ResetDisableProgress()
         {
-            this.Progress = 0;
+            this.Progress.Current = 0;
             this.IsProgressEnabled = false;
+        }
+
+        private void RestartProgress()
+        {
+            if (this.Progress.Current > 0.5)
+                this.Progress.Current = 0;
+
+            this.IsProgressEnabled = true;
         }
 
         private bool OnMPRegenLucidDreaming(PlayerCharacter currentPlayer)
@@ -77,14 +99,9 @@ namespace MPTickBar
             var mpReset = (this.MP.Last == 0) && (this.MP.Current == currentPlayer.MaxMp);
             var onMPRegen = (this.MP.Last < this.MP.Current) && !mpReset && !onMPRegenLucidDreaming && (this.MPRegenSkipTime == 0);
             if (onMPRegen)
-            {
-                if (this.Progress > 0.5)
-                    this.Progress = 0;
+                this.RestartProgress();
 
-                this.IsProgressEnabled = true;
-                return true;
-            }
-            return false;
+            return onMPRegen;
         }
 
         private void OnZoneChange()
@@ -109,10 +126,10 @@ namespace MPTickBar
         {
             if (this.IsProgressEnabled)
             {
-                this.Progress += interval;
                 var mpTickSecondsTotal = 3.0;
-                if (this.Progress >= mpTickSecondsTotal)
-                    this.Progress -= mpTickSecondsTotal;
+                this.Progress.Current += interval;
+                if (this.Progress.Current >= mpTickSecondsTotal)
+                    this.Progress.Current -= mpTickSecondsTotal;
             }
         }
 
@@ -137,7 +154,7 @@ namespace MPTickBar
             if (!onMPRegen)
                 this.ProgressUpdate(interval);
 
-            mpTickBarPluginUI.Update(this.Progress);
+            mpTickBarPluginUI.Update(this.Progress.Current);
 
             this.Time.SaveData();
             this.MP.SaveData();
@@ -145,6 +162,7 @@ namespace MPTickBar
             this.IsInCombat.SaveData();
             this.IsDead.SaveData();
             this.IsManafontOnCooldown.SaveData();
+            this.Progress.SaveData();
         }
     }
 }

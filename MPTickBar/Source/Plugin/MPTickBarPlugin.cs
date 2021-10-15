@@ -2,10 +2,13 @@
 using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.JobGauge;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Command;
+using Dalamud.Game.Network;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using MPTickBar.Properties;
+using System;
 
 namespace MPTickBar
 {
@@ -32,6 +35,9 @@ namespace MPTickBar
 
         [PluginService]
         private static Condition Condition { get; set; }
+
+        [PluginService]
+        private static GameNetwork GameNetwork { get; set; }
 
         private MPTickBarPluginUI MPTickBarPluginUI { get; set; }
 
@@ -69,6 +75,7 @@ namespace MPTickBar
             MPTickBarPlugin.PluginInterface.UiBuilder.Draw += this.Draw;
             MPTickBarPlugin.PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfigUi;
             MPTickBarPlugin.Framework.Update += this.Update;
+            MPTickBarPlugin.GameNetwork.NetworkMessage += this.NetworkMessage;
         }
 
         public void Dispose()
@@ -78,9 +85,20 @@ namespace MPTickBar
             MPTickBarPlugin.PluginInterface.UiBuilder.Draw -= this.Draw;
             MPTickBarPlugin.PluginInterface.UiBuilder.OpenConfigUi -= this.OpenConfigUi;
             MPTickBarPlugin.Framework.Update -= this.Update;
+            MPTickBarPlugin.GameNetwork.NetworkMessage -= this.NetworkMessage;
             MPTickBarPlugin.CommandManager.RemoveHandler(MPTickBarPlugin.CommandName);
             MPTickBarPlugin.PluginInterface.Dispose();
         }
+
+        private static PlayerCharacter GetCurrentPlayer() => MPTickBarPlugin.ClientState.LocalPlayer;
+
+        private static bool IsPlayingAsBLM()
+        {
+            var currentPlayer = MPTickBarPlugin.GetCurrentPlayer();
+            return (currentPlayer != null) && MPTickBarPlugin.ClientState.IsLoggedIn && PlayerHelpers.IsBlackMage(currentPlayer);
+        }
+
+        private static bool IsInCombat() => MPTickBarPlugin.Condition[ConditionFlag.InCombat];
 
         private void OnCommand(string command, string args)
         {
@@ -99,9 +117,9 @@ namespace MPTickBar
 
         private void Update(Framework framework)
         {
-            var currentPlayer = MPTickBarPlugin.ClientState.LocalPlayer;
-            var isPlayingAsBLM = (currentPlayer != null) && MPTickBarPlugin.ClientState.IsLoggedIn && PlayerHelpers.IsBlackMage(currentPlayer);
-            var isInCombat = MPTickBarPlugin.Condition[ConditionFlag.InCombat];
+            var currentPlayer = MPTickBarPlugin.GetCurrentPlayer();
+            var isPlayingAsBLM = MPTickBarPlugin.IsPlayingAsBLM();
+            var isInCombat = MPTickBarPlugin.IsInCombat();
 
             this.MPTickBarPluginUI.IsMPTickBarVisible = isPlayingAsBLM &&
                 (!this.Configuration.IsMPTickBarLocked ||
@@ -115,6 +133,19 @@ namespace MPTickBar
 
             if (isPlayingAsBLM)
                 this.UpdateEventState.Update(this.MPTickBarPluginUI, currentPlayer, MPTickBarPlugin.ClientState.TerritoryType, isInCombat);
+        }
+
+        private void NetworkMessage(IntPtr dataPtr, ushort opCode, uint sourceActorId, uint targetActorId, NetworkMessageDirection direction)
+        {
+            if (this.Configuration.IsAutostartEnabled && (opCode == 423) && (sourceActorId == 0) && (direction == NetworkMessageDirection.ZoneDown))
+            {
+                var currentPlayer = MPTickBarPlugin.GetCurrentPlayer();
+                var isPlayingAsBLM = MPTickBarPlugin.IsPlayingAsBLM();
+                var isInCombat = MPTickBarPlugin.IsInCombat();
+
+                if (isPlayingAsBLM && (!isInCombat) && (currentPlayer != null) && (currentPlayer.ObjectId == targetActorId))
+                    this.UpdateEventState.NetworkMessage(dataPtr, currentPlayer);
+            }
         }
     }
 }
