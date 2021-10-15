@@ -261,7 +261,7 @@ namespace MPTickBar
             regressEffect.Update(this.GetProgress(isPreview));
             if (this.Configuration.IsRegressEffectVisible && regressEffect.IsRegressing)
                 this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, regressEffect.Regress, 4, false, Vector3.One);
-            
+
             this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, this.GetProgress(isPreview), 2, true, this.Configuration.ProgressBarTintColor);
             this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, 0);
 
@@ -381,6 +381,8 @@ namespace MPTickBar
                         if (ImGui.BeginTabItem("General"))
                         {
                             this.CheckBox(this.Configuration.IsMPTickBarLocked, x => this.Configuration.IsMPTickBarLocked = x, "Lock");
+                            this.CheckBox(this.Configuration.IsAutostartEnabled, x => this.Configuration.IsAutostartEnabled = x, "Autostart (Experimental)", new Vector2(0.0f, 20.0f));
+                            PluginUI.Tooltip("Enable/Disable progress bar to start automatically when changing zones or before combat starts (at full MP).");
                             this.Combo(this.Configuration.UIType, x => this.Configuration.UIType = x, "UI");
                             this.DragInt(this.Configuration.MPTickBarOffsetX, x => this.Configuration.MPTickBarOffsetX = x, "Offset X", 1, -300, 300, "%i");
                             this.DragInt(this.Configuration.MPTickBarOffsetY, x => this.Configuration.MPTickBarOffsetY = x, "Offset Y", 1, -300, 300, "%i");

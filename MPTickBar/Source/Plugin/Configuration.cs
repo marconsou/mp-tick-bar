@@ -8,9 +8,11 @@ namespace MPTickBar
     [Serializable]
     public class Configuration : IPluginConfiguration
     {
-        public int Version { get; set; } = 3;
+        public int Version { get; set; } = 4;
 
         public bool IsMPTickBarLocked { get; set; } = false;
+
+        public bool IsAutostartEnabled { get; set; } = false;
 
         public bool IsRegressEffectVisible { get; set; } = true;
 
