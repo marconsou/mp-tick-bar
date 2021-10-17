@@ -407,6 +407,7 @@ namespace MPTickBar
                             this.Combo(this.Configuration.FastFireIIIMarkerVisibility, x => this.Configuration.FastFireIIIMarkerVisibility = x, "Visibility");
                             this.Combo(this.Configuration.FastFireIIIMarkerType, x => this.Configuration.FastFireIIIMarkerType = x, "Style");
                             this.DragFloat(this.Configuration.FastFireIIIMarkerTimeOffset, x => this.Configuration.FastFireIIIMarkerTimeOffset = x, "Time Offset (s)", 0.01f, 0.0f, 0.5f, "%.2f");
+                            this.Configuration.FastFireIIIMarkerTimeOffset = Math.Clamp(this.Configuration.FastFireIIIMarkerTimeOffset, -0.5f, 1.0f);
                             ImGui.EndTabItem();
                         }
 

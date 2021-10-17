@@ -143,7 +143,7 @@ namespace MPTickBar
                 var isPlayingAsBLM = MPTickBarPlugin.IsPlayingAsBLM();
                 var isInCombat = MPTickBarPlugin.IsInCombat();
 
-                if (isPlayingAsBLM && (!isInCombat) && (currentPlayer != null) && (currentPlayer.ObjectId == targetActorId))
+                if (isPlayingAsBLM && !isInCombat)
                     this.UpdateEventState.NetworkMessage(dataPtr, currentPlayer);
             }
         }

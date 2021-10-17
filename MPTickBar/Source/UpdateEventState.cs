@@ -48,10 +48,7 @@ namespace MPTickBar
             {
                 var data = Marshal.ReadInt32(dataPtr, 0);
                 if (data == currentPlayer.CurrentHp)
-                {
-                    Dalamud.Logging.PluginLog.Information($"{data}");
                     this.RestartProgress();
-                }
             }
         }
 
