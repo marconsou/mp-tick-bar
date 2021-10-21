@@ -131,21 +131,13 @@ namespace MPTickBar
             this.MPTickBarPluginUI.IsCircleOfPowerActivated = isPlayingAsBLM && PlayerHelpers.IsCircleOfPowerActivated(currentPlayer);
             this.MPTickBarPluginUI.IsUmbralIceIIIActivated = isPlayingAsBLM && PlayerHelpers.IsUmbralIceIIIActivated(MPTickBarPlugin.JobGauges);
 
-            if (isPlayingAsBLM)
-                this.UpdateEventState.Update(this.MPTickBarPluginUI, currentPlayer, MPTickBarPlugin.ClientState.TerritoryType, isInCombat);
+            this.UpdateEventState.Update(this.MPTickBarPluginUI, currentPlayer, MPTickBarPlugin.ClientState.TerritoryType, isInCombat);
         }
 
         private void NetworkMessage(IntPtr dataPtr, ushort opCode, uint sourceActorId, uint targetActorId, NetworkMessageDirection direction)
         {
-            if (this.Configuration.IsAutostartEnabled && (opCode == 423) && (sourceActorId == 0) && (direction == NetworkMessageDirection.ZoneDown))
-            {
-                var currentPlayer = MPTickBarPlugin.GetCurrentPlayer();
-                var isPlayingAsBLM = MPTickBarPlugin.IsPlayingAsBLM();
-                var isInCombat = MPTickBarPlugin.IsInCombat();
-
-                if (isPlayingAsBLM && !isInCombat)
-                    this.UpdateEventState.NetworkMessage(dataPtr, currentPlayer);
-            }
+            if (this.Configuration.IsAutostartEnabled && (opCode == 423) && (direction == NetworkMessageDirection.ZoneDown) && MPTickBarPlugin.IsPlayingAsBLM())
+                this.UpdateEventState.NetworkMessage(dataPtr, MPTickBarPlugin.GetCurrentPlayer(), targetActorId);
         }
     }
 }
