@@ -69,7 +69,9 @@ namespace MPTickBar
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
+                ImGui.PushTextWrapPos(400.0f);
                 ImGui.Text(message);
+                ImGui.PopTextWrapPos();
                 ImGui.EndTooltip();
             }
         }

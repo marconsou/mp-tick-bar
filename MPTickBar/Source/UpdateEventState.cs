@@ -42,14 +42,41 @@ namespace MPTickBar
             this.ResetDisableProgress();
         }
 
-        public void NetworkMessage(IntPtr dataPtr, PlayerCharacter currentPlayer)
+        private static int GetData(IntPtr dataPtr, int offset, int size)
         {
-            if ((currentPlayer.CurrentHp > 0) && (currentPlayer.CurrentMp == currentPlayer.MaxMp) && (this.Progress.Current == 0) && (this.Progress.Last == 0))
-            {
-                var data = Marshal.ReadInt32(dataPtr, 0);
-                if (data == currentPlayer.CurrentHp)
-                    this.RestartProgress();
-            }
+            var bytes = new byte[4];
+            Marshal.Copy(dataPtr + offset, bytes, 0, size);
+            return BitConverter.ToInt32(bytes);
+        }
+
+        private static int GetHP(IntPtr dataPtr)
+        {
+            return UpdateEventState.GetData(dataPtr, 0, 3);
+        }
+
+        private static int GetMP(IntPtr dataPtr)
+        {
+            return UpdateEventState.GetData(dataPtr, 4, 2);
+        }
+
+        private static int GetTickIncrement(IntPtr dataPtr)
+        {
+            return UpdateEventState.GetData(dataPtr, 6, 2);
+        }
+
+        public static void _DEBUG_LOG_DATA_(IntPtr dataPtr, PlayerCharacter currentPlayer, uint targetActorId)
+        {
+            var bytes = new byte[384];
+            Marshal.Copy(dataPtr, bytes, 0, bytes.Length);
+            Dalamud.Logging.PluginLog.Information($"{UpdateEventState.GetHP(dataPtr):000000}|{UpdateEventState.GetMP(dataPtr):00000}|{UpdateEventState.GetTickIncrement(dataPtr):00000}|{targetActorId:0000000000} ({((targetActorId == currentPlayer.ObjectId) ? "X" : " ")}): {BitConverter.ToString(bytes)}");
+        }
+
+        public void NetworkMessage(IntPtr dataPtr, PlayerCharacter currentPlayer, uint targetActorId)
+        {
+            var isProgressStopped = (this.Progress.Current == 0) && (this.Progress.Last == 0);
+            var idCheck = (currentPlayer != null) && (currentPlayer.ObjectId == targetActorId);
+            if (!this.IsDead.Current && !this.IsInCombat.Current && isProgressStopped && idCheck && (UpdateEventState.GetHP(dataPtr) == currentPlayer.CurrentHp) && (UpdateEventState.GetMP(dataPtr) == currentPlayer.MaxMp))
+                this.RestartProgress();
         }
 
         private void ResetDisableProgress()
@@ -132,6 +159,9 @@ namespace MPTickBar
 
         public void Update(MPTickBarPluginUI mpTickBarPluginUI, PlayerCharacter currentPlayer, ushort territoryType, bool isInCombat)
         {
+            if (currentPlayer == null)
+                return;
+
             this.Time.Current = ImGui.GetTime();
             this.MP.Current = currentPlayer.CurrentMp;
             this.Territory.Current = territoryType;

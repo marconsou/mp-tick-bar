@@ -382,7 +382,7 @@ namespace MPTickBar
                         {
                             this.CheckBox(this.Configuration.IsMPTickBarLocked, x => this.Configuration.IsMPTickBarLocked = x, "Lock");
                             this.CheckBox(this.Configuration.IsAutostartEnabled, x => this.Configuration.IsAutostartEnabled = x, "Autostart (Experimental)", new Vector2(0.0f, 20.0f));
-                            PluginUI.Tooltip("Enable/Disable progress bar to start automatically when changing zones or before combat starts (at full MP).");
+                            PluginUI.Tooltip("Enable/Disable progress bar to start automatically when changing zones or before combat starts (at full MP). After a while, the game stops sending the required data to trigger this functionality. Once you die, it should work again.");
                             this.Combo(this.Configuration.UIType, x => this.Configuration.UIType = x, "UI");
                             this.DragInt(this.Configuration.MPTickBarOffsetX, x => this.Configuration.MPTickBarOffsetX = x, "Offset X", 1, -300, 300, "%i");
                             this.DragInt(this.Configuration.MPTickBarOffsetY, x => this.Configuration.MPTickBarOffsetY = x, "Offset Y", 1, -300, 300, "%i");
@@ -394,7 +394,7 @@ namespace MPTickBar
                         {
                             this.ColorEdit3(this.Configuration.ProgressBarTintColor, x => this.Configuration.ProgressBarTintColor = x, "Bar");
                             this.CheckBox(this.Configuration.IsRegressEffectVisible, x => this.Configuration.IsRegressEffectVisible = x, "Regress Effect", new Vector2(0.0f, 20.0f));
-                            PluginUI.Tooltip("Show/Hide bar effect animation when it goes from full to empty state.");
+                            PluginUI.Tooltip("Show/Hide bar effect animation when it goes from full to an empty state.");
                             this.Combo(this.Configuration.MPTickBarVisibility, x => this.Configuration.MPTickBarVisibility = x, "Visibility");
                             this.DragFloat(this.Configuration.ProgressBarScaleHorizontal, x => this.Configuration.ProgressBarScaleHorizontal = x, "Scale (Horizontal)", 0.01f, 0.1f, 3.0f, "%.2f");
                             this.DragFloat(this.Configuration.ProgressBarScaleVertical, x => this.Configuration.ProgressBarScaleVertical = x, "Scale (Vertical)", 0.01f, 0.1f, 3.0f, "%.2f");
