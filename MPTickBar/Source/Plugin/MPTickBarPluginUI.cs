@@ -105,9 +105,8 @@ namespace MPTickBar
 
         public void Update(double progress)
         {
-            var mpTickSecondsTotal = 3.0;
-            this.Progress = progress / mpTickSecondsTotal;
-            this.ProgressPreview = ((DateTime.Now.Second % mpTickSecondsTotal) + (DateTime.Now.Millisecond / 1000.0)) / mpTickSecondsTotal;
+            this.Progress = progress;
+            this.ProgressPreview = ImGui.GetTime() % 3.0 / 3.0;
         }
 
         public double GetProgress(bool isPreview)
@@ -265,9 +264,8 @@ namespace MPTickBar
             this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, this.GetProgress(isPreview), 2, true, this.Configuration.ProgressBarTintColor);
             this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeElementWidth, gaugeElementHeight, textureToElementScale, 0);
 
-            var mpTickSecondsTotal = 3.0f;
             var fastFireIIICastTime = PlayerHelpers.GetFastFireIIICastTime(this.Level, (!isPreview) ? this.IsCircleOfPowerActivated : this.IsCircleOfPowerActivatedPreview);
-            var fastFireIIIMarkerOffset = (mpTickSecondsTotal - fastFireIIICastTime + this.Configuration.FastFireIIIMarkerTimeOffset) * (gaugeElementWidth / mpTickSecondsTotal);
+            var fastFireIIIMarkerOffset = (3.0f - fastFireIIICastTime + this.Configuration.FastFireIIIMarkerTimeOffset) * (gaugeElementWidth / 3.0f);
             var jobStackDimension = 20.0f;
 
             if ((this.Configuration.FastFireIIIMarkerVisibility == FastFireIIIMarkerVisibility.Visible) ||
