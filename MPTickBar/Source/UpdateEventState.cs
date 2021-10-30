@@ -7,8 +7,6 @@ namespace MPTickBar
 {
     public class UpdateEventState
     {
-        private UpdateEventData<double> Time { get; set; } = new UpdateEventData<double>();
-
         private UpdateEventData<uint> MP { get; set; } = new UpdateEventData<uint>();
 
         private UpdateEventData<ushort> Territory { get; set; } = new UpdateEventData<ushort>();
@@ -21,9 +19,11 @@ namespace MPTickBar
 
         private UpdateEventData<double> Progress { get; set; } = new UpdateEventData<double>();
 
+        private double MPTickTime { get; set; }
+
         private double MPRegenSkipTime { get; set; }
 
-        private bool IsProgressEnabled { get; set; }
+        private bool IsProgressStopped => this.MPTickTime == 0.0;
 
         private class UpdateEventData<T> where T : struct
         {
@@ -81,16 +81,16 @@ namespace MPTickBar
 
         private void ResetDisableProgress()
         {
-            this.Progress.Current = 0;
-            this.IsProgressEnabled = false;
+            this.MPTickTime = 0;
         }
 
         private void RestartProgress()
         {
-            if (this.Progress.Current > 0.5)
-                this.Progress.Current = 0;
-
-            this.IsProgressEnabled = true;
+            var interval = ImGui.GetTime() - this.MPTickTime;
+            var mod = interval % 3.0;
+            var adjustTime = mod < 0.25 ? -mod : 0.0;
+            this.MPTickTime = ImGui.GetTime() + ((!this.IsProgressStopped) ? adjustTime : 0.0);
+            Dalamud.Logging.PluginLog.Information($"{interval:000000.000000}|{mod:000000.000000}|{adjustTime:000000.000000}|{this.MPTickTime:000000.000000}");
         }
 
         private bool OnMPRegenLucidDreaming(PlayerCharacter currentPlayer)
@@ -109,23 +109,17 @@ namespace MPTickBar
 
         private void OnManafontUsage()
         {
-            var mpRegenSkipSecondsTotal = 3.0;
             if (!this.IsManafontOnCooldown.Last && this.IsManafontOnCooldown.Current)
-                this.MPRegenSkipTime = mpRegenSkipSecondsTotal;
+                this.MPRegenSkipTime = ImGui.GetTime();
         }
 
-        private bool OnMPRegen(PlayerCharacter currentPlayer, bool onMPRegenLucidDreaming, double interval)
+        private void OnMPRegen(PlayerCharacter currentPlayer, bool onMPRegenLucidDreaming)
         {
-            this.MPRegenSkipTime -= interval;
-            if (this.MPRegenSkipTime < 0)
-                this.MPRegenSkipTime = 0;
-
-            var mpReset = (this.MP.Last == 0) && (this.MP.Current == currentPlayer.MaxMp);
-            var onMPRegen = (this.MP.Last < this.MP.Current) && !mpReset && !onMPRegenLucidDreaming && (this.MPRegenSkipTime == 0);
+            var onMPRegenSkipTime = (ImGui.GetTime() - this.MPRegenSkipTime) < 3.0;
+            var onMPReset = (this.MP.Last == 0) && (this.MP.Current == currentPlayer.MaxMp);
+            var onMPRegen = (this.MP.Last < this.MP.Current) && !onMPRegenLucidDreaming && !onMPReset && !onMPRegenSkipTime;
             if (onMPRegen)
                 this.RestartProgress();
-
-            return onMPRegen;
         }
 
         private void OnZoneChange()
@@ -146,50 +140,33 @@ namespace MPTickBar
                 this.ResetDisableProgress();
         }
 
-        private void ProgressUpdate(double interval)
-        {
-            if (this.IsProgressEnabled)
-            {
-                var mpTickSecondsTotal = 3.0;
-                this.Progress.Current += interval;
-                if (this.Progress.Current >= mpTickSecondsTotal)
-                    this.Progress.Current -= mpTickSecondsTotal;
-            }
-        }
-
-        public void Update(MPTickBarPluginUI mpTickBarPluginUI, PlayerCharacter currentPlayer, ushort territoryType, bool isInCombat)
+        public double Update(PlayerCharacter currentPlayer, ushort territoryType, bool isInCombat)
         {
             if (currentPlayer == null)
-                return;
+                return 0.0;
 
-            this.Time.Current = ImGui.GetTime();
             this.MP.Current = currentPlayer.CurrentMp;
             this.Territory.Current = territoryType;
             this.IsInCombat.Current = isInCombat;
             this.IsDead.Current = (currentPlayer.CurrentHp == 0);
             this.IsManafontOnCooldown.Current = PlayerHelpers.IsManafontOnCooldown();
-
-            var interval = (this.Time.Current - this.Time.Last);
+            this.Progress.Current = !this.IsProgressStopped ? (ImGui.GetTime() - this.MPTickTime) % 3.0 / 3.0 : 0.0;
 
             var onMPRegenLucidDreaming = this.OnMPRegenLucidDreaming(currentPlayer);
             this.OnManafontUsage();
-            var onMPRegen = OnMPRegen(currentPlayer, onMPRegenLucidDreaming, interval);
+            this.OnMPRegen(currentPlayer, onMPRegenLucidDreaming);
             this.OnZoneChange();
             this.OnLeaveCombat();
             this.OnDeath();
 
-            if (!onMPRegen)
-                this.ProgressUpdate(interval);
-
-            mpTickBarPluginUI.Update(this.Progress.Current);
-
-            this.Time.SaveData();
             this.MP.SaveData();
             this.Territory.SaveData();
             this.IsInCombat.SaveData();
             this.IsDead.SaveData();
             this.IsManafontOnCooldown.SaveData();
             this.Progress.SaveData();
+
+            return this.Progress.Current;
         }
     }
 }

@@ -131,7 +131,8 @@ namespace MPTickBar
             this.MPTickBarPluginUI.IsCircleOfPowerActivated = isPlayingAsBLM && PlayerHelpers.IsCircleOfPowerActivated(currentPlayer);
             this.MPTickBarPluginUI.IsUmbralIceIIIActivated = isPlayingAsBLM && PlayerHelpers.IsUmbralIceIIIActivated(MPTickBarPlugin.JobGauges);
 
-            this.UpdateEventState.Update(this.MPTickBarPluginUI, currentPlayer, MPTickBarPlugin.ClientState.TerritoryType, isInCombat);
+            var progress = this.UpdateEventState.Update(currentPlayer, MPTickBarPlugin.ClientState.TerritoryType, isInCombat);
+            this.MPTickBarPluginUI.Update(progress);
         }
 
         private void NetworkMessage(IntPtr dataPtr, ushort opCode, uint sourceActorId, uint targetActorId, NetworkMessageDirection direction)
