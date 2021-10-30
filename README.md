@@ -7,7 +7,7 @@ Type `/mptb` in game to open configuration menu.
 
 ## Features
 - Fast Fire III marker on the bar.
-- Autostarts the bar before the combat starts.
+- Autostarts the bar before combat starts.
 - Supports [FFXIV Material UI](https://github.com/skotlex/ffxiv-material-ui).
 
 ## Examples
