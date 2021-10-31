@@ -12,6 +12,9 @@ Type `/mptb` in game to open configuration menu.
 
 ## Examples
 ![image1](https://user-images.githubusercontent.com/27457164/139568424-886f4c2e-ca2b-424b-bc2c-79c94dd4d8c3.png)
+
 ![image2](https://user-images.githubusercontent.com/27457164/139568425-02d71041-0385-4f5b-bfe4-5728fe01fde6.png)
+
 ![image3](https://user-images.githubusercontent.com/27457164/139568427-e906450e-951e-4902-b138-e8a0c10b7bd4.png)
+
 ![image4](https://user-images.githubusercontent.com/27457164/139568428-b81ac552-fcad-4b7f-8003-9fcb4038d3ce.png)
