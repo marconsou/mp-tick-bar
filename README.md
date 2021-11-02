@@ -11,4 +11,4 @@ Type `/mptb` in game to open configuration menu.
 - Supports [FFXIV Material UI](https://github.com/skotlex/ffxiv-material-ui).
 
 ## Examples
-![image1](https://user-images.githubusercontent.com/27457164/139569362-3f29d2b7-bcd3-4053-a48e-4fe7d7f7b438.png)
+![Examples](https://user-images.githubusercontent.com/27457164/139941913-24b1b1a7-b080-47f5-aa97-b2dca556c2d7.png)
