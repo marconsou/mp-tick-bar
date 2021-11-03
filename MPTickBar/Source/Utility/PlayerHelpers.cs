@@ -10,31 +10,15 @@ namespace MPTickBar
 {
     public static class PlayerHelpers
     {
-        private static bool IsEffectActivated(PlayerCharacter currentPlayer, uint statusId)
-        {
-            if (currentPlayer == null)
-                return false;
+        private static bool IsEffectActivated(PlayerCharacter currentPlayer, uint statusId) => (currentPlayer != null) && currentPlayer.StatusList.Any(x => x.StatusId == statusId);
 
-            return currentPlayer.StatusList.Any(x => x.StatusId == statusId);
-        }
+        public static bool IsBlackMage(PlayerCharacter currentPlayer) => (currentPlayer != null) && (currentPlayer.ClassJob?.Id == 25);
 
-        public static bool IsBlackMage(PlayerCharacter currentPlayer)
-        {
-            if (currentPlayer == null)
-                return false;
+        public static bool IsLucidDreamingActivated(PlayerCharacter currentPlayer) => PlayerHelpers.IsEffectActivated(currentPlayer, 1204);
 
-            return (currentPlayer.ClassJob?.Id == 25);
-        }
+        public static bool IsCircleOfPowerActivated(PlayerCharacter currentPlayer) => PlayerHelpers.IsEffectActivated(currentPlayer, 738);
 
-        public static bool IsLucidDreamingActivated(PlayerCharacter currentPlayer)
-        {
-            return PlayerHelpers.IsEffectActivated(currentPlayer, 1204);
-        }
-
-        public static bool IsCircleOfPowerActivated(PlayerCharacter currentPlayer)
-        {
-            return PlayerHelpers.IsEffectActivated(currentPlayer, 738);
-        }
+        public static bool IsUmbralIceIIIActivated(JobGauges jobGauges) => (jobGauges.Get<BLMGauge>().UmbralIceStacks == 3);
 
         public static bool IsManafontOnCooldown()
         {
@@ -42,11 +26,6 @@ namespace MPTickBar
             {
                 return ActionManager.Instance()->IsRecastTimerActive(ActionType.Spell, 158);
             }
-        }
-
-        public static bool IsUmbralIceIIIActivated(JobGauges jobGauges)
-        {
-            return (jobGauges.Get<BLMGauge>().UmbralIceStacks == 3);
         }
 
         public static float GetFastFireIIICastTime(int level, bool isCircleOfPowerActivated)
