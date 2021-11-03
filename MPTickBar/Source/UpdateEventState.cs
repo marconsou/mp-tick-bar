@@ -113,7 +113,7 @@ namespace MPTickBar
                 this.MPRegenSkipTime = ImGui.GetTime();
         }
 
-        private void OnMPRegen(PlayerCharacter currentPlayer, bool onMPRegenLucidDreaming)
+        private void OnMPRegen(PlayerCharacter currentPlayer, bool onMPRegenLucidDreaming, double interval)
         {
             var onMPRegenSkipTime = (ImGui.GetTime() - this.MPRegenSkipTime) < 3.0;
             var onMPReset = (this.MP.Last == 0) && (this.MP.Current == currentPlayer.MaxMp);
@@ -140,6 +140,17 @@ namespace MPTickBar
                 this.ResetDisableProgress();
         }
 
+        private void ProgressUpdate(double interval)
+        {
+            if (this.IsProgressEnabled)
+            {
+                var mpTickSecondsTotal = 3.0;
+                this.Progress.Current += interval;
+                if (this.Progress.Current >= mpTickSecondsTotal)
+                    this.Progress.Current -= mpTickSecondsTotal;
+            }
+        }
+
         public double Update(PlayerCharacter currentPlayer, ushort territoryType, bool isInCombat)
         {
             if (currentPlayer == null)
@@ -154,11 +165,14 @@ namespace MPTickBar
 
             var onMPRegenLucidDreaming = this.OnMPRegenLucidDreaming(currentPlayer);
             this.OnManafontUsage();
-            this.OnMPRegen(currentPlayer, onMPRegenLucidDreaming);
+            this.OnMPRegen(currentPlayer, onMPRegenLucidDreaming, interval);
             this.OnZoneChange();
             this.OnLeaveCombat();
             this.OnDeath();
 
+            this.ProgressUpdate(interval);
+
+            this.Time.SaveData();
             this.MP.SaveData();
             this.Territory.SaveData();
             this.IsInCombat.SaveData();
