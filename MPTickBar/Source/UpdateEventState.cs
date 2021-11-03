@@ -114,7 +114,7 @@ namespace MPTickBar
                 this.MPRegenSkipTime = mpRegenSkipSecondsTotal;
         }
 
-        private bool OnMPRegen(PlayerCharacter currentPlayer, bool onMPRegenLucidDreaming, double interval)
+        private void OnMPRegen(PlayerCharacter currentPlayer, bool onMPRegenLucidDreaming, double interval)
         {
             this.MPRegenSkipTime -= interval;
             if (this.MPRegenSkipTime < 0)
@@ -124,8 +124,6 @@ namespace MPTickBar
             var onMPRegen = (this.MP.Last < this.MP.Current) && !mpReset && !onMPRegenLucidDreaming && (this.MPRegenSkipTime == 0);
             if (onMPRegen)
                 this.RestartProgress();
-
-            return onMPRegen;
         }
 
         private void OnZoneChange()
@@ -157,10 +155,10 @@ namespace MPTickBar
             }
         }
 
-        public void Update(MPTickBarPluginUI mpTickBarPluginUI, PlayerCharacter currentPlayer, ushort territoryType, bool isInCombat)
+        public double Update(PlayerCharacter currentPlayer, ushort territoryType, bool isInCombat)
         {
             if (currentPlayer == null)
-                return;
+                return 0.0;
 
             this.Time.Current = ImGui.GetTime();
             this.MP.Current = currentPlayer.CurrentMp;
@@ -173,15 +171,12 @@ namespace MPTickBar
 
             var onMPRegenLucidDreaming = this.OnMPRegenLucidDreaming(currentPlayer);
             this.OnManafontUsage();
-            var onMPRegen = OnMPRegen(currentPlayer, onMPRegenLucidDreaming, interval);
+            this.OnMPRegen(currentPlayer, onMPRegenLucidDreaming, interval);
             this.OnZoneChange();
             this.OnLeaveCombat();
             this.OnDeath();
 
-            if (!onMPRegen)
-                this.ProgressUpdate(interval);
-
-            mpTickBarPluginUI.Update(this.Progress.Current);
+            this.ProgressUpdate(interval);
 
             this.Time.SaveData();
             this.MP.SaveData();
@@ -190,6 +185,8 @@ namespace MPTickBar
             this.IsDead.SaveData();
             this.IsManafontOnCooldown.SaveData();
             this.Progress.SaveData();
+
+            return this.Progress.Current;
         }
     }
 }
