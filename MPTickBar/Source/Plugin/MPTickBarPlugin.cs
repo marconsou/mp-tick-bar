@@ -2,7 +2,6 @@
 using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.JobGauge;
-using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Command;
 using Dalamud.Game.Network;
 using Dalamud.IoC;
@@ -44,13 +43,15 @@ namespace MPTickBar
 
         private UpdateEventState UpdateEventState { get; } = new();
 
+        private PlayerState PlayerState { get; } = new();
+
         public MPTickBarPlugin()
         {
-            this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+            this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new();
             this.Configuration.Initialize(this.PluginInterface);
-            this.MPTickBarPluginUI = new MPTickBarPluginUI(this.Configuration, this.PluginInterface.UiBuilder);
+            this.MPTickBarPluginUI = new(this.Configuration, this.PluginInterface.UiBuilder);
 
-            this.CommandManager.AddHandler(MPTickBarPlugin.CommandName, new CommandInfo(OnCommand)
+            this.CommandManager.AddHandler(MPTickBarPlugin.CommandName, new(this.OnCommand)
             {
                 HelpMessage = "Opens MP Tick Bar configuration menu.",
                 ShowInHelp = true
@@ -80,55 +81,34 @@ namespace MPTickBar
             this.PluginInterface.Dispose();
         }
 
-        private PlayerCharacter GetCurrentPlayer() => this.ClientState.LocalPlayer;
-
-        private bool IsPlayingAsBLM()
+        private void PlayerStateUpdate()
         {
-            var currentPlayer = this.GetCurrentPlayer();
-            return (currentPlayer != null) && this.ClientState.IsLoggedIn && PlayerHelpers.IsBlackMage(currentPlayer);
+            this.PlayerState.ServicesUpdate(this.ClientState, this.JobGauges, this.Condition);
+            this.UpdateEventState.PlayerState = this.PlayerState;
+            this.MPTickBarPluginUI.PlayerState = this.PlayerState;
         }
 
-        private bool IsInCombat() => this.Condition[ConditionFlag.InCombat];
+        private void OnCommand(string command, string args) => this.OpenConfigUi();
 
-        private void OnCommand(string command, string args)
-        {
-            this.OpenConfigUi();
-        }
+        private void Draw() => this.MPTickBarPluginUI.Draw();
 
-        private void Draw()
-        {
-            this.MPTickBarPluginUI.Draw();
-        }
-
-        private void OpenConfigUi()
-        {
-            this.MPTickBarPluginUI.IsConfigurationWindowVisible = !this.MPTickBarPluginUI.IsConfigurationWindowVisible;
-        }
+        private void OpenConfigUi() => this.MPTickBarPluginUI.IsConfigurationWindowVisible = !this.MPTickBarPluginUI.IsConfigurationWindowVisible;
 
         private void Update(Framework framework)
         {
-            var currentPlayer = this.GetCurrentPlayer();
-            var isPlayingAsBLM = this.IsPlayingAsBLM();
-            var isInCombat = this.IsInCombat();
+            this.PlayerStateUpdate();
 
-            this.MPTickBarPluginUI.IsMPTickBarVisible = isPlayingAsBLM &&
-                (!this.Configuration.General.IsLocked ||
-                (this.Configuration.General.Visibility == MPTickBarVisibility.Visible) ||
-                (this.Configuration.General.Visibility == MPTickBarVisibility.InCombat && isInCombat));
-
-            this.MPTickBarPluginUI.Level = isPlayingAsBLM ? currentPlayer.Level : 0;
-            this.MPTickBarPluginUI.IsPlayingAsBLM = isPlayingAsBLM;
-            this.MPTickBarPluginUI.IsCircleOfPowerActivated = isPlayingAsBLM && PlayerHelpers.IsCircleOfPowerActivated(currentPlayer);
-            this.MPTickBarPluginUI.IsUmbralIceIIIActivated = isPlayingAsBLM && PlayerHelpers.IsUmbralIceIIIActivated(this.JobGauges);
-
-            var progress = this.UpdateEventState.Update(currentPlayer, this.ClientState.TerritoryType, isInCombat);
+            var progress = this.UpdateEventState.Update();
             this.MPTickBarPluginUI.Update(progress);
         }
 
         private void NetworkMessage(IntPtr dataPtr, ushort opCode, uint sourceActorId, uint targetActorId, NetworkMessageDirection direction)
         {
-            if (this.Configuration.General.IsAutostartEnabled && (opCode == 423) && (direction == NetworkMessageDirection.ZoneDown) && this.IsPlayingAsBLM())
-                this.UpdateEventState.NetworkMessage(dataPtr, this.GetCurrentPlayer(), targetActorId);
+            if (this.Configuration.General.IsAutostartEnabled && (opCode == 423) && (direction == NetworkMessageDirection.ZoneDown) && this.PlayerState.IsPlayingAsBlackMage)
+            {
+                this.PlayerStateUpdate();
+                this.UpdateEventState.NetworkMessage(dataPtr, targetActorId);
+            }
         }
     }
 }

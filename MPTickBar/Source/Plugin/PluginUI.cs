@@ -10,11 +10,11 @@ namespace MPTickBar
     {
         protected Configuration Configuration { get; init; }
 
+        private GroupPanelData GroupPanel { get; set; }
+
         private static float ItemSpacingVertical => 8.0f;
 
-        private GroupPanel GroupPanelData { get; set; }
-
-        private readonly struct GroupPanel
+        private readonly struct GroupPanelData
         {
             public string Text { get; init; }
 
@@ -62,7 +62,7 @@ namespace MPTickBar
 
             var changedValue = value;
             PluginUI.SameLine(sameLinePosition);
-            if (ImGui.ColorEdit4(label, ref changedValue, ImGuiColorEditFlags.NoInputs))
+            if (ImGui.ColorEdit4(label, ref changedValue, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.AlphaBar | ImGuiColorEditFlags.NoTooltip))
                 this.SaveConfiguration(changedValue, setter);
 
             ImGui.PopStyleVar();
@@ -83,22 +83,8 @@ namespace MPTickBar
 
         protected void DragFloat(float valueLeft, float valueRight, Action<float> setterLeft, Action<float> setterRight, string label, float speed, float min, float max, string format, float width, Vector2? sameLinePosition = null)
         {
-            PluginUI.PushItemSpacingVar();
-
-            var changedValue = valueLeft;
-            PluginUI.SameLine(sameLinePosition);
-            ImGui.SetNextItemWidth(width);
-            if (ImGui.DragFloat("", ref changedValue, speed, min, max, format))
-                this.SaveConfiguration(changedValue, setterLeft);
-
-            ImGui.SameLine(0.0f, PluginUI.ItemSpacingVertical);
-
-            changedValue = valueRight;
-            ImGui.SetNextItemWidth(width);
-            if (ImGui.DragFloat(label, ref changedValue, speed, min, max, format))
-                this.SaveConfiguration(changedValue, setterRight);
-
-            ImGui.PopStyleVar();
+            this.DragFloat(valueLeft, setterLeft, "", speed, min, max, format, width, sameLinePosition);
+            this.DragFloat(valueRight, setterRight, label, speed, min, max, format, width, new(0.0f, PluginUI.ItemSpacingVertical));
         }
 
         protected void DragInt(int value, Action<int> setter, string label, int speed, int min, int max, string format, float width, Vector2? sameLinePosition = null)
@@ -116,34 +102,20 @@ namespace MPTickBar
 
         protected void DragInt(int valueLeft, int valueRight, Action<int> setterLeft, Action<int> setterRight, string label, int speed, int min, int max, string format, float width, Vector2? sameLinePosition = null)
         {
-            PluginUI.PushItemSpacingVar();
-
-            var changedValue = valueLeft;
-            PluginUI.SameLine(sameLinePosition);
-            ImGui.SetNextItemWidth(width);
-            if (ImGui.DragInt("", ref changedValue, speed, min, max, format))
-                this.SaveConfiguration(changedValue, setterLeft);
-
-            ImGui.SameLine(0.0f, PluginUI.ItemSpacingVertical);
-
-            changedValue = valueRight;
-            ImGui.SetNextItemWidth(width);
-            if (ImGui.DragInt(label, ref changedValue, speed, min, max, format))
-                this.SaveConfiguration(changedValue, setterRight);
-
-            ImGui.PopStyleVar();
+            this.DragInt(valueLeft, setterLeft, "", speed, min, max, format, width, sameLinePosition);
+            this.DragInt(valueRight, setterRight, label, speed, min, max, format, width, new(0.0f, PluginUI.ItemSpacingVertical));
         }
 
         protected void Combo<T>(T value, Action<T> setter, string label, float width)
         {
             PluginUI.PushItemSpacingVar();
 
-            var method = typeof(EnumExtensions).GetMethod("GetDescription", BindingFlags.Public | BindingFlags.Static, null, new Type[] { value.GetType() }, null);
+            var method = typeof(EnumExtensions).GetMethod("GetDescription", BindingFlags.Public | BindingFlags.Static, null, new[] { value.GetType() }, null);
             var options = new List<string>();
             var values = Enum.GetValues(typeof(T));
             foreach (var item in values)
             {
-                var description = (string)method.Invoke(null, new object[] { item });
+                var description = (string)method.Invoke(null, new[] { item });
                 options.Add(description);
             }
 
@@ -157,17 +129,17 @@ namespace MPTickBar
 
         protected bool BeginGroupPanel(string strId, string label, int numberOfLines)
         {
-            this.GroupPanelData = new()
+            this.GroupPanel = new()
             {
                 Text = label,
-                Offset = new Vector2(PluginUI.ItemSpacingVertical, 0.0f),
-                Padding = new Vector2(4.0f, 2.0f),
+                Offset = new(PluginUI.ItemSpacingVertical, 0.0f),
+                Padding = new(4.0f, 2.0f),
                 Position = ImGui.GetCursorPos(),
                 BackgroundPosition = ImGui.GetCursorScreenPos()
             };
 
             ImGui.SetCursorPos(ImGui.GetCursorPos() + new Vector2(0.0f, PluginUI.ItemSpacingVertical));
-            if (ImGui.BeginChild($"{strId}.{label}", new Vector2(0.0f, 20.0f + (numberOfLines * 31.0f)), true))
+            if (ImGui.BeginChild($"{strId}.{label}", new(0.0f, 20.0f + (numberOfLines * 31.0f)), true))
             {
                 ImGui.SetCursorPos(ImGui.GetCursorPos() + new Vector2(0.0f, 11.0f));
                 return true;
@@ -179,20 +151,20 @@ namespace MPTickBar
         {
             ImGui.EndChild();
 
-            var textSize = ImGui.CalcTextSize(this.GroupPanelData.Text);
-            var textBgPos = this.GroupPanelData.BackgroundPosition + this.GroupPanelData.Offset;
+            var textSize = ImGui.CalcTextSize(this.GroupPanel.Text);
+            var textBgPos = this.GroupPanel.BackgroundPosition + this.GroupPanel.Offset;
             var xMin = textBgPos.X;
-            var yMin = textBgPos.Y - this.GroupPanelData.Padding.Y;
-            var xMax = textBgPos.X + textSize.X + (this.GroupPanelData.Padding.X * 2.0f);
-            var yMax = textBgPos.Y + textSize.Y + this.GroupPanelData.Padding.Y;
+            var yMin = textBgPos.Y - this.GroupPanel.Padding.Y;
+            var xMax = textBgPos.X + textSize.X + (this.GroupPanel.Padding.X * 2.0f);
+            var yMax = textBgPos.Y + textSize.Y + this.GroupPanel.Padding.Y;
             var color = ImGui.GetStyle().Colors[(int)ImGuiCol.TabActive];
             var rounding = ImGui.GetStyle().TabRounding;
-            ImGui.GetWindowDrawList().AddRectFilled(new Vector2(xMin, yMin), new Vector2(xMax, yMax), ImGui.GetColorU32(new Vector4(color.X, color.Y, color.Z, 1.0f)), rounding);
+            ImGui.GetWindowDrawList().AddRectFilled(new(xMin, yMin), new(xMax, yMax), ImGui.GetColorU32(new Vector4(color.X, color.Y, color.Z, 1.0f)), rounding);
 
             var nextCursorPos = ImGui.GetCursorPos();
-            ImGui.SetCursorPosX(this.GroupPanelData.Position.X + this.GroupPanelData.Offset.X + this.GroupPanelData.Padding.X);
-            ImGui.SetCursorPosY(this.GroupPanelData.Position.Y + this.GroupPanelData.Offset.Y);
-            ImGui.Text(this.GroupPanelData.Text);
+            ImGui.SetCursorPosX(this.GroupPanel.Position.X + this.GroupPanel.Offset.X + this.GroupPanel.Padding.X);
+            ImGui.SetCursorPosY(this.GroupPanel.Position.Y + this.GroupPanel.Offset.Y);
+            ImGui.Text(this.GroupPanel.Text);
             ImGui.SetCursorPos(nextCursorPos);
         }
 

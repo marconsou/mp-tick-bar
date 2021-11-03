@@ -43,9 +43,9 @@ namespace MPTickBar
 
             public int Rotate { get; set; } = 0;
 
-            public Vector4 ProgressBarColor { get; set; } = new Vector4(0.0f, 1.0f, 1.0f, 1.0f);
+            public Vector4 ProgressBarColor { get; set; } = new(0.0f, 1.0f, 1.0f, 1.0f);
 
-            public Vector4 ProgressBarAfterMarkerColor { get; set; } = new Vector4(0.0f, 1.0f, 1.0f, 1.0f);
+            public Vector4 ProgressBarAfterMarkerColor { get; set; } = new(0.0f, 1.0f, 1.0f, 1.0f);
 
             public Vector4 BackgroundColor { get; set; } = Vector4.One;
 
@@ -60,7 +60,7 @@ namespace MPTickBar
 
         public class FastFireIIIMarkerTab
         {
-            public Vector4 MarkerColor { get; set; } = new Vector4(1.0f, 0.25f, 0.25f, 1.0f);
+            public Vector4 MarkerColor { get; set; } = new(1.0f, 0.25f, 0.25f, 1.0f);
 
             public Vector4 BackgroundColor { get; set; } = Vector4.One;
 
@@ -79,7 +79,7 @@ namespace MPTickBar
 
             public float Scale { get; set; } = 1.0f;
 
-            public Vector4 IndicatorColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+            public Vector4 IndicatorColor { get; set; } = new(1.0f, 0.0f, 0.0f, 1.0f);
 
             public FireIIICastIndicatorVisibility Visibility { get; set; } = FireIIICastIndicatorVisibility.Visible;
         }
@@ -92,7 +92,7 @@ namespace MPTickBar
 
             public float Scale { get; set; } = 1.0f;
 
-            public Vector4 NumberPercentageColor { get; set; } = new Vector4(1.0f, 0.98f, 0.94f, 1.0f);
+            public Vector4 NumberPercentageColor { get; set; } = new(1.0f, 0.98f, 0.94f, 1.0f);
 
             public NumberPercentageVisibility Visibility { get; set; } = NumberPercentageVisibility.Hidden;
         }
@@ -102,23 +102,17 @@ namespace MPTickBar
 
         public Configuration() => this.Reset();
 
-        public void Initialize(DalamudPluginInterface pluginInterface)
-        {
-            this.pluginInterface = pluginInterface;
-        }
+        public void Initialize(DalamudPluginInterface pluginInterface) => this.pluginInterface = pluginInterface;
 
-        public void Save()
-        {
-            this.pluginInterface.SavePluginConfig(this);
-        }
+        public void Save() => this.pluginInterface.SavePluginConfig(this);
 
         public void Reset()
         {
-            this.General = new GeneralTab();
-            this.ProgressBar = new ProgressBarTab();
-            this.FastFireIIIMarker = new FastFireIIIMarkerTab();
-            this.FireIIICastIndicator = new FireIIICastIndicatorTab();
-            this.NumberPercentage = new NumberPercentageTab();
+            this.General = new();
+            this.ProgressBar = new();
+            this.FastFireIIIMarker = new();
+            this.FireIIICastIndicator = new();
+            this.NumberPercentage = new();
         }
     }
 }

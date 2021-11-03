@@ -1,5 +1,4 @@
 ﻿using MPTickBar.Properties;
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -39,7 +38,7 @@ namespace MPTickBar
                     var data = line.Split('|');
 
                     if (data.Length != 2)
-                        throw new Exception($"The level {level} data is invalid!");
+                        throw new($"The level {level} data is invalid!");
 
                     sub = int.Parse(data[0]);
                     div = int.Parse(data[1]);
