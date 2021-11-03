@@ -7,7 +7,6 @@ using Dalamud.Game.Command;
 using Dalamud.Game.Network;
 using Dalamud.IoC;
 using Dalamud.Plugin;
-using MPTickBar.Properties;
 using System;
 
 namespace MPTickBar
@@ -19,86 +18,77 @@ namespace MPTickBar
         private static string CommandName => "/mptb";
 
         [PluginService]
-        private static DalamudPluginInterface PluginInterface { get; set; }
+        private DalamudPluginInterface PluginInterface { get; init; }
 
         [PluginService]
-        private static CommandManager CommandManager { get; set; }
+        private CommandManager CommandManager { get; init; }
 
         [PluginService]
-        private static Framework Framework { get; set; }
+        private Framework Framework { get; init; }
 
         [PluginService]
-        private static ClientState ClientState { get; set; }
+        private ClientState ClientState { get; init; }
 
         [PluginService]
-        private static JobGauges JobGauges { get; set; }
+        private JobGauges JobGauges { get; init; }
 
         [PluginService]
-        private static Condition Condition { get; set; }
+        private Condition Condition { get; init; }
 
         [PluginService]
-        private static GameNetwork GameNetwork { get; set; }
+        private GameNetwork GameNetwork { get; init; }
 
-        private MPTickBarPluginUI MPTickBarPluginUI { get; set; }
+        private MPTickBarPluginUI MPTickBarPluginUI { get; }
 
-        private Configuration Configuration { get; set; }
+        private Configuration Configuration { get; }
 
-        private UpdateEventState UpdateEventState { get; set; }
+        private UpdateEventState UpdateEventState { get; } = new();
 
         public MPTickBarPlugin()
         {
-            this.Configuration = MPTickBarPlugin.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-            this.Configuration.Initialize(MPTickBarPlugin.PluginInterface);
-            this.UpdateEventState = new UpdateEventState();
+            this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+            this.Configuration.Initialize(this.PluginInterface);
+            this.MPTickBarPluginUI = new MPTickBarPluginUI(this.Configuration, this.PluginInterface.UiBuilder);
 
-            var gaugeDefault = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.GaugeDefault);
-            var gaugeMaterialUIBlack = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.GaugeMaterialUIBlack);
-            var GaugeMaterialUIDiscord = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.GaugeMaterialUIDiscord);
-            var jobStackDefault = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.JobStackDefault);
-            var jobStackMaterialUI = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.JobStackMaterialUI);
-            var fireIIICastIndicator = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.FireIIICastIndicator);
-            var numberPercentage = MPTickBarPlugin.PluginInterface.UiBuilder.LoadImage(Resources.NumberPercentage);
-            this.MPTickBarPluginUI = new MPTickBarPluginUI(this.Configuration, gaugeDefault, gaugeMaterialUIBlack, GaugeMaterialUIDiscord, jobStackDefault, jobStackMaterialUI, fireIIICastIndicator, numberPercentage);
-
-            MPTickBarPlugin.CommandManager.AddHandler(MPTickBarPlugin.CommandName, new CommandInfo(OnCommand)
+            this.CommandManager.AddHandler(MPTickBarPlugin.CommandName, new CommandInfo(OnCommand)
             {
                 HelpMessage = "Opens MP Tick Bar configuration menu.",
                 ShowInHelp = true
             });
 
-            MPTickBarPlugin.PluginInterface.UiBuilder.DisableAutomaticUiHide = false;
-            MPTickBarPlugin.PluginInterface.UiBuilder.DisableCutsceneUiHide = false;
-            MPTickBarPlugin.PluginInterface.UiBuilder.DisableGposeUiHide = false;
-            MPTickBarPlugin.PluginInterface.UiBuilder.DisableUserUiHide = false;
+            this.PluginInterface.UiBuilder.DisableAutomaticUiHide = false;
+            this.PluginInterface.UiBuilder.DisableCutsceneUiHide = false;
+            this.PluginInterface.UiBuilder.DisableGposeUiHide = false;
+            this.PluginInterface.UiBuilder.DisableUserUiHide = false;
 
-            MPTickBarPlugin.ClientState.Login += this.UpdateEventState.Login;
-            MPTickBarPlugin.PluginInterface.UiBuilder.Draw += this.Draw;
-            MPTickBarPlugin.PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfigUi;
-            MPTickBarPlugin.Framework.Update += this.Update;
-            MPTickBarPlugin.GameNetwork.NetworkMessage += this.NetworkMessage;
+            this.ClientState.Login += this.UpdateEventState.Login;
+            this.PluginInterface.UiBuilder.Draw += this.Draw;
+            this.PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfigUi;
+            this.Framework.Update += this.Update;
+            this.GameNetwork.NetworkMessage += this.NetworkMessage;
         }
 
         public void Dispose()
         {
             this.MPTickBarPluginUI.Dispose();
-            MPTickBarPlugin.ClientState.Login -= this.UpdateEventState.Login;
-            MPTickBarPlugin.PluginInterface.UiBuilder.Draw -= this.Draw;
-            MPTickBarPlugin.PluginInterface.UiBuilder.OpenConfigUi -= this.OpenConfigUi;
-            MPTickBarPlugin.Framework.Update -= this.Update;
-            MPTickBarPlugin.GameNetwork.NetworkMessage -= this.NetworkMessage;
-            MPTickBarPlugin.CommandManager.RemoveHandler(MPTickBarPlugin.CommandName);
-            MPTickBarPlugin.PluginInterface.Dispose();
+            this.ClientState.Login -= this.UpdateEventState.Login;
+            this.PluginInterface.UiBuilder.Draw -= this.Draw;
+            this.PluginInterface.UiBuilder.OpenConfigUi -= this.OpenConfigUi;
+            this.Framework.Update -= this.Update;
+            this.GameNetwork.NetworkMessage -= this.NetworkMessage;
+            this.CommandManager.RemoveHandler(MPTickBarPlugin.CommandName);
+            this.PluginInterface.Dispose();
         }
 
-        private static PlayerCharacter GetCurrentPlayer() => MPTickBarPlugin.ClientState.LocalPlayer;
+        private PlayerCharacter GetCurrentPlayer() => this.ClientState.LocalPlayer;
 
-        private static bool IsPlayingAsBLM()
+        private bool IsPlayingAsBLM()
         {
-            var currentPlayer = MPTickBarPlugin.GetCurrentPlayer();
-            return (currentPlayer != null) && MPTickBarPlugin.ClientState.IsLoggedIn && PlayerHelpers.IsBlackMage(currentPlayer);
+            var currentPlayer = this.GetCurrentPlayer();
+            return (currentPlayer != null) && this.ClientState.IsLoggedIn && PlayerHelpers.IsBlackMage(currentPlayer);
         }
 
-        private static bool IsInCombat() => MPTickBarPlugin.Condition[ConditionFlag.InCombat];
+        private bool IsInCombat() => this.Condition[ConditionFlag.InCombat];
 
         private void OnCommand(string command, string args)
         {
@@ -117,28 +107,28 @@ namespace MPTickBar
 
         private void Update(Framework framework)
         {
-            var currentPlayer = MPTickBarPlugin.GetCurrentPlayer();
-            var isPlayingAsBLM = MPTickBarPlugin.IsPlayingAsBLM();
-            var isInCombat = MPTickBarPlugin.IsInCombat();
+            var currentPlayer = this.GetCurrentPlayer();
+            var isPlayingAsBLM = this.IsPlayingAsBLM();
+            var isInCombat = this.IsInCombat();
 
             this.MPTickBarPluginUI.IsMPTickBarVisible = isPlayingAsBLM &&
-                (!this.Configuration.IsMPTickBarLocked ||
-                (this.Configuration.MPTickBarVisibility == MPTickBarVisibility.Visible) ||
-                (this.Configuration.MPTickBarVisibility == MPTickBarVisibility.InCombat && isInCombat));
+                (!this.Configuration.General.IsLocked ||
+                (this.Configuration.General.Visibility == MPTickBarVisibility.Visible) ||
+                (this.Configuration.General.Visibility == MPTickBarVisibility.InCombat && isInCombat));
 
             this.MPTickBarPluginUI.Level = isPlayingAsBLM ? currentPlayer.Level : 0;
             this.MPTickBarPluginUI.IsPlayingAsBLM = isPlayingAsBLM;
             this.MPTickBarPluginUI.IsCircleOfPowerActivated = isPlayingAsBLM && PlayerHelpers.IsCircleOfPowerActivated(currentPlayer);
-            this.MPTickBarPluginUI.IsUmbralIceIIIActivated = isPlayingAsBLM && PlayerHelpers.IsUmbralIceIIIActivated(MPTickBarPlugin.JobGauges);
+            this.MPTickBarPluginUI.IsUmbralIceIIIActivated = isPlayingAsBLM && PlayerHelpers.IsUmbralIceIIIActivated(this.JobGauges);
 
-            var progress = this.UpdateEventState.Update(currentPlayer, MPTickBarPlugin.ClientState.TerritoryType, isInCombat);
+            var progress = this.UpdateEventState.Update(currentPlayer, this.ClientState.TerritoryType, isInCombat);
             this.MPTickBarPluginUI.Update(progress);
         }
 
         private void NetworkMessage(IntPtr dataPtr, ushort opCode, uint sourceActorId, uint targetActorId, NetworkMessageDirection direction)
         {
-            if (this.Configuration.IsAutostartEnabled && (opCode == 423) && (direction == NetworkMessageDirection.ZoneDown) && MPTickBarPlugin.IsPlayingAsBLM())
-                this.UpdateEventState.NetworkMessage(dataPtr, MPTickBarPlugin.GetCurrentPlayer(), targetActorId);
+            if (this.Configuration.General.IsAutostartEnabled && (opCode == 423) && (direction == NetworkMessageDirection.ZoneDown) && this.IsPlayingAsBLM())
+                this.UpdateEventState.NetworkMessage(dataPtr, this.GetCurrentPlayer(), targetActorId);
         }
     }
 }

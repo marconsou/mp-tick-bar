@@ -7,20 +7,14 @@ namespace MPTickBar
 {
     public static class LevelModifier
     {
-        private struct Data
+        private static List<Data> LevelModifierData { get; } = new();
+
+        private readonly struct Data
         {
             public int Sub { get; init; }
 
             public int Div { get; init; }
-
-            public Data(int sub, int div)
-            {
-                this.Sub = sub;
-                this.Div = div;
-            }
         }
-
-        private static List<Data> DataList { get; set; } = new List<Data>();
 
         static LevelModifier()
         {
@@ -45,26 +39,24 @@ namespace MPTickBar
                     var data = line.Split('|');
 
                     if (data.Length != 2)
-                        throw new Exception("LevelModifier invalid!");
+                        throw new Exception($"The level {level} data is invalid!");
 
                     sub = int.Parse(data[0]);
                     div = int.Parse(data[1]);
                 }
-                LevelModifier.DataList.Add(new Data(sub, div));
+                LevelModifier.LevelModifierData.Add(new() { Sub = sub, Div = div });
                 level++;
             }
         }
 
         public static int GetLevelModifierSub(int level)
         {
-            if (level <= 0) return 0;
-            return LevelModifier.DataList[level - 1].Sub;
+            return (level > 0) ? LevelModifier.LevelModifierData[level - 1].Sub : 0;
         }
 
         public static int GetLevelModifierDiv(int level)
         {
-            if (level <= 0) return 0;
-            return LevelModifier.DataList[level - 1].Div;
+            return (level > 0) ? LevelModifier.LevelModifierData[level - 1].Div : 0;
         }
     }
 }
