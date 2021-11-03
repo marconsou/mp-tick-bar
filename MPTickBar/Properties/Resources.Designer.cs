@@ -103,9 +103,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] JobStackDefault {
+        internal static byte[] GaugeMaterialUISilver {
             get {
-                object obj = ResourceManager.GetObject("JobStackDefault", resourceCulture);
+                object obj = ResourceManager.GetObject("GaugeMaterialUISilver", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -113,9 +113,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] JobStackMaterialUI {
+        internal static byte[] GaugeSolidBar {
             get {
-                object obj = ResourceManager.GetObject("JobStackMaterialUI", resourceCulture);
+                object obj = ResourceManager.GetObject("GaugeSolidBar", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -133,9 +133,39 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] NumberPercentage {
+        internal static byte[] MarkerDefault {
             get {
-                object obj = ResourceManager.GetObject("NumberPercentage", resourceCulture);
+                object obj = ResourceManager.GetObject("MarkerDefault", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MarkerLine {
+            get {
+                object obj = ResourceManager.GetObject("MarkerLine", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MarkerMaterialUI {
+            get {
+                object obj = ResourceManager.GetObject("MarkerMaterialUI", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Numbers {
+            get {
+                object obj = ResourceManager.GetObject("Numbers", resourceCulture);
                 return ((byte[])(obj));
             }
         }
