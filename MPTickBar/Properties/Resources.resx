@@ -130,16 +130,25 @@
   <data name="GaugeMaterialUIDiscord" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\gaugematerialuidiscord.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="JobStackDefault" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\jobstackdefault.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="GaugeMaterialUISilver" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\gaugematerialuisilver.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="JobStackMaterialUI" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\jobstackmaterialui.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="GaugeSolidBar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\gaugesolidbar.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="LevelModifier" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\levelmodifier.data;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="NumberPercentage" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\numberpercentage.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="MarkerDefault" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\markerdefault.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MarkerLine" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\markerline.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MarkerMaterialUI" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\markermaterialui.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Numbers" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\numbers.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>
