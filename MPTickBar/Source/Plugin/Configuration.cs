@@ -8,60 +8,99 @@ namespace MPTickBar
     [Serializable]
     public class Configuration : IPluginConfiguration
     {
-        public int Version { get; set; } = 4;
+        public int Version { get; set; } = 5;
 
-        public bool IsMPTickBarLocked { get; set; } = false;
+        public GeneralTab General { get; set; }
 
-        public bool IsAutostartEnabled { get; set; } = false;
+        public ProgressBarTab ProgressBar { get; set; }
 
-        public bool IsRegressEffectVisible { get; set; } = true;
+        public FastFireIIIMarkerTab FastFireIIIMarker { get; set; }
 
-        public int MPTickBarOffsetX { get; set; } = 0;
+        public FireIIICastIndicatorTab FireIIICastIndicator { get; set; }
 
-        public int MPTickBarOffsetY { get; set; } = 0;
+        public NumberPercentageTab NumberPercentage { get; set; }
 
-        public int FireIIICastIndicatorOffsetX { get; set; } = 0;
+        public class GeneralTab
+        {
+            public bool IsLocked { get; set; } = true;
 
-        public int FireIIICastIndicatorOffsetY { get; set; } = 0;
+            public int OffsetX { get; set; } = 0;
 
-        public int NumberPercentageOffsetX { get; set; } = 0;
+            public int OffsetY { get; set; } = 0;
 
-        public int NumberPercentageOffsetY { get; set; } = 0;
+            public float Scale { get; set; } = 1.0f;
 
-        public float MPTickBarScale { get; set; } = 1.0f;
+            public bool IsAutostartEnabled { get; set; } = true;
 
-        public float ProgressBarScaleHorizontal { get; set; } = 1.0f;
+            public MPTickBarVisibility Visibility { get; set; } = MPTickBarVisibility.Visible;
+        }
 
-        public float ProgressBarScaleVertical { get; set; } = 1.0f;
+        public class ProgressBarTab
+        {
+            public float ScaleHorizontal { get; set; } = 1.0f;
 
-        public float FireIIICastIndicatorScale { get; set; } = 1.0f;
+            public float ScaleVertical { get; set; } = 1.0f;
 
-        public float NumberPercentageScale { get; set; } = 1.0f;
+            public int Rotate { get; set; } = 0;
 
-        public float FastFireIIIMarkerTimeOffset { get; set; } = 0.10f;
+            public Vector4 ProgressBarColor { get; set; } = new Vector4(0.0f, 1.0f, 1.0f, 1.0f);
 
-        public Vector3 ProgressBarTintColor { get; set; } = new Vector3(0.0f, 1.0f, 1.0f);
+            public Vector4 ProgressBarAfterMarkerColor { get; set; } = new Vector4(0.0f, 1.0f, 1.0f, 1.0f);
 
-        public Vector3 FastFireIIIMarkerTintColor { get; set; } = new Vector3(1.0f, 0.375f, 0.375f);
+            public Vector4 BackgroundColor { get; set; } = Vector4.One;
 
-        public Vector3 FireIIICastIndicatorTintColor { get; set; } = new Vector3(1.0f, 0.375f, 0.375f);
+            public Vector4 EdgeColor { get; set; } = Vector4.One;
 
-        public Vector3 NumberPercentageTintColor { get; set; } = new Vector3(1.0f, 0.98f, 0.94f);
+            public bool IsRegressEffectEnabled { get; set; } = true;
 
-        public MPTickBarVisibility MPTickBarVisibility { get; set; } = MPTickBarVisibility.Visible;
+            public Vector4 RegressBarColor { get; set; } = Vector4.One;
 
-        public UIType UIType { get; set; } = UIType.FinalFantasyXIVDefault;
+            public ProgressBarUI UI { get; set; } = ProgressBarUI.Default;
+        }
 
-        public FastFireIIIMarkerVisibility FastFireIIIMarkerVisibility { get; set; } = FastFireIIIMarkerVisibility.Visible;
+        public class FastFireIIIMarkerTab
+        {
+            public Vector4 MarkerColor { get; set; } = new Vector4(1.0f, 0.25f, 0.25f, 1.0f);
 
-        public FastFireIIIMarkerType FastFireIIIMarkerType { get; set; } = FastFireIIIMarkerType.Icon;
+            public Vector4 BackgroundColor { get; set; } = Vector4.One;
 
-        public FireIIICastIndicatorVisibility FireIIICastIndicatorVisibility { get; set; } = FireIIICastIndicatorVisibility.UnderUmbralIceIII;
+            public FastFireIIIMarkerUI UI { get; set; } = FastFireIIIMarkerUI.Default;
 
-        public NumberPercentageVisibility NumberPercentageVisibility { get; set; } = NumberPercentageVisibility.Hidden;
+            public float TimeOffset { get; set; } = 0.0f;
+
+            public FastFireIIIMarkerVisibility Visibility { get; set; } = FastFireIIIMarkerVisibility.Visible;
+        }
+
+        public class FireIIICastIndicatorTab
+        {
+            public int OffsetX { get; set; } = 0;
+
+            public int OffsetY { get; set; } = 0;
+
+            public float Scale { get; set; } = 1.0f;
+
+            public Vector4 IndicatorColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+            public FireIIICastIndicatorVisibility Visibility { get; set; } = FireIIICastIndicatorVisibility.Visible;
+        }
+
+        public class NumberPercentageTab
+        {
+            public int OffsetX { get; set; } = 0;
+
+            public int OffsetY { get; set; } = 0;
+
+            public float Scale { get; set; } = 1.0f;
+
+            public Vector4 NumberPercentageColor { get; set; } = new Vector4(1.0f, 0.98f, 0.94f, 1.0f);
+
+            public NumberPercentageVisibility Visibility { get; set; } = NumberPercentageVisibility.Hidden;
+        }
 
         [NonSerialized]
         private DalamudPluginInterface pluginInterface;
+
+        public Configuration() => this.Reset();
 
         public void Initialize(DalamudPluginInterface pluginInterface)
         {
@@ -71,6 +110,15 @@ namespace MPTickBar
         public void Save()
         {
             this.pluginInterface.SavePluginConfig(this);
+        }
+
+        public void Reset()
+        {
+            this.General = new GeneralTab();
+            this.ProgressBar = new ProgressBarTab();
+            this.FastFireIIIMarker = new FastFireIIIMarkerTab();
+            this.FireIIICastIndicator = new FireIIICastIndicatorTab();
+            this.NumberPercentage = new NumberPercentageTab();
         }
     }
 }
