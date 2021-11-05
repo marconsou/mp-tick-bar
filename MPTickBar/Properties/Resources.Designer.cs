@@ -73,6 +73,16 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] FireIIIIcon {
+            get {
+                object obj = ResourceManager.GetObject("FireIIIIcon", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] GaugeDefault {
             get {
                 object obj = ResourceManager.GetObject("GaugeDefault", resourceCulture);

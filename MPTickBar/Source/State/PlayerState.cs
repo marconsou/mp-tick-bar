@@ -20,8 +20,6 @@ namespace MPTickBar
 
         private PlayerCharacter Player => this.ClientState?.LocalPlayer;
 
-        public int Level => this.IsPlayingAsBlackMage ? this.Player.Level : 0;
-
         public bool IsPlayingAsBlackMage => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn && (this.Player.ClassJob?.Id == 25);
 
         private bool IsEffectActivated(uint statusId) => this.IsPlayingAsBlackMage && this.Player.StatusList.Any(x => x.StatusId == statusId);
@@ -61,17 +59,20 @@ namespace MPTickBar
             }
         }
 
-        public float GetFastFireIIICastTime(int level, bool isCircleOfPowerActivated)
+        public float GetFastFireIIICastTime()
         {
             unsafe
             {
+                var level = this.IsPlayingAsBlackMage ? this.Player.Level : 0;
+                if (level == 0)
+                    return 0.0f;
+
                 var gcd35 = 3500;
                 var astralUmbral = 50;
                 var sub = LevelModifier.GetLevelModifierSub(level);
                 var div = LevelModifier.GetLevelModifierDiv(level);
                 var spellSpeed = UIState.pInstance->PlayerState.Attributes[46];
-                var castTime = (float)Math.Floor(Math.Floor(Math.Ceiling(Math.Floor(100.0 - (isCircleOfPowerActivated ? 15 : 0)) * 1) * Math.Floor((2000 - Math.Floor(130.0 * (spellSpeed - sub) / div + 1000)) * gcd35 / 1000) / 1000) * astralUmbral / 100) / 100;
-                return this.IsPlayingAsBlackMage ? castTime : 0.0f;
+                return (float)Math.Floor(Math.Floor(Math.Ceiling(Math.Floor(100.0 - (this.IsCircleOfPowerActivated ? 15 : 0)) * 1) * Math.Floor((2000 - Math.Floor(130.0 * (spellSpeed - sub) / div + 1000)) * gcd35 / 1000) / 1000) * astralUmbral / 100) / 100;
             }
         }
     }
