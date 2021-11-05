@@ -22,7 +22,7 @@ namespace MPTickBar
 
         public class GeneralTab
         {
-            public bool IsLocked { get; set; } = true;
+            public bool IsLocked { get; set; } = false;
 
             public int OffsetX { get; set; } = 0;
 
@@ -60,13 +60,17 @@ namespace MPTickBar
 
         public class FastFireIIIMarkerTab
         {
+            public float ScaleHorizontal { get; set; } = 1.0f;
+
+            public float ScaleVertical { get; set; } = 1.0f;
+
             public Vector4 MarkerColor { get; set; } = new(1.0f, 0.25f, 0.25f, 1.0f);
 
             public Vector4 BackgroundColor { get; set; } = Vector4.One;
 
             public FastFireIIIMarkerUI UI { get; set; } = FastFireIIIMarkerUI.Default;
 
-            public float TimeOffset { get; set; } = 0.0f;
+            public float TimeOffset { get; set; } = 0.25f;
 
             public FastFireIIIMarkerVisibility Visibility { get; set; } = FastFireIIIMarkerVisibility.Visible;
         }
