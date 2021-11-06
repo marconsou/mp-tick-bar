@@ -43,7 +43,7 @@ namespace MPTickBar
         {
             var changedValue = value;
             PluginUI.SameLine(spacing);
-            if (ImGui.DragFloat(label, ref changedValue, speed, min, max, format))
+            if (ImGui.DragFloat(label, ref changedValue, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp))
                 this.SaveConfiguration(changedValue, setter);
         }
 
@@ -57,7 +57,7 @@ namespace MPTickBar
         {
             var changedValue = value;
             PluginUI.SameLine(spacing);
-            if (ImGui.DragInt(label, ref changedValue, speed, min, max, format))
+            if (ImGui.DragInt(label, ref changedValue, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp))
                 this.SaveConfiguration(changedValue, setter);
         }
 

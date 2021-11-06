@@ -83,9 +83,12 @@ namespace MPTickBar
 
         private void PlayerStateUpdate()
         {
-            this.PlayerState.ServicesUpdate(this.ClientState, this.JobGauges, this.Condition);
-            this.UpdateEventState.PlayerState = this.PlayerState;
-            this.MPTickBarPluginUI.PlayerState = this.PlayerState;
+            if (this.PlayerState != null)
+            {
+                this.PlayerState.ServicesUpdate(this.ClientState, this.JobGauges, this.Condition);
+                this.UpdateEventState.PlayerState = this.PlayerState;
+                this.MPTickBarPluginUI.PlayerState = this.PlayerState;
+            }
         }
 
         private void OnCommand(string command, string args) => this.OpenConfigUi();
