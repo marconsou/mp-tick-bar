@@ -104,7 +104,7 @@ namespace MPTickBar
 
         private void NetworkMessage(IntPtr dataPtr, ushort opCode, uint sourceActorId, uint targetActorId, NetworkMessageDirection direction)
         {
-            if (this.Configuration.General.IsAutostartEnabled && (opCode == 423) && (direction == NetworkMessageDirection.ZoneDown) && this.PlayerState.IsPlayingAsBlackMage)
+            if (this.Configuration.General.IsAutostartEnabled && (opCode == 423) && (direction == NetworkMessageDirection.ZoneDown) && (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage)
             {
                 this.PlayerStateUpdate();
                 this.UpdateEventState.NetworkMessage(dataPtr, targetActorId);
