@@ -501,7 +501,6 @@ namespace MPTickBar
             PluginUI.CollapsingHeader("Functional", () =>
             {
                 this.DragFloat(config.TimeOffset, x => config.TimeOffset = x, "Time Offset (s)", 0.01f, 0.0f, 0.5f, "%.2f");
-                config.TimeOffset = Math.Clamp(config.TimeOffset, -0.5f, 0.5f);
                 this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
             });
         }
