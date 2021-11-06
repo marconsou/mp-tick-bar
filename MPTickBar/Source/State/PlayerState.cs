@@ -34,7 +34,7 @@ namespace MPTickBar
 
         public bool IsDead => this.IsPlayingAsBlackMage && (this.Player.CurrentHp == 0);
 
-        public ushort TerritoryType => this.IsPlayingAsBlackMage ? this.ClientState.TerritoryType : (ushort)0;
+        public ushort TerritoryType => this.IsPlayingAsBlackMage ? this.ClientState.TerritoryType : ushort.MaxValue;
 
         public uint HP => this.IsPlayingAsBlackMage ? this.Player.CurrentHp : 0;
 

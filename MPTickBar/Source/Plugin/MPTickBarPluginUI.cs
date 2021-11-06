@@ -402,8 +402,6 @@ namespace MPTickBar
             if (ImGui.Begin("MP Tick Bar configuration", ref isConfigurationWindowVisible, ImGuiWindowFlags.AlwaysAutoResize))
             {
                 this.IsConfigurationWindowVisible = isConfigurationWindowVisible;
-
-                this.Top();
                 if (ImGui.BeginTabBar("Tab Bar"))
                 {
                     ImGui.PushItemWidth(180.0f * ImGuiHelpers.GlobalScale);
@@ -547,16 +545,6 @@ namespace MPTickBar
             });
         }
 
-        private void Top()
-        {
-            var iconDimension = 23.0f * ImGuiHelpers.GlobalScale;
-            ImGui.Image(this.FireIIIIcon.ImGuiHandle, new(iconDimension, iconDimension));
-            var fastFireIIICastTime = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage ? (((int)(this.PlayerState.GetFastFireIIICastTime() * 100)) / 100.0f).ToString("0.00s") : "N/A";
-            PluginUI.Tooltip($"Current fast Fire III cast time: {fastFireIIICastTime}");
-            ImGui.SameLine();
-            ImGui.TextColored(new(0.0f, 1.0f, 0.0f, 1.0f), fastFireIIICastTime);
-        }
-
         private void Bottom()
         {
             ImGui.Separator();
@@ -565,6 +553,15 @@ namespace MPTickBar
                 this.Configuration.Reset();
                 this.Configuration.Save();
             }
+
+            var iconDimension = 23.0f * ImGuiHelpers.GlobalScale;
+            var fastFireIIICastTime = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage ? (((int)(this.PlayerState.GetFastFireIIICastTime() * 100)) / 100.0f).ToString("0.00s") : "N/A";
+            var textWidth = ImGui.CalcTextSize(fastFireIIICastTime).X;
+            ImGui.SameLine(ImGui.GetWindowWidth() - textWidth - iconDimension - 32.0f);
+            ImGui.TextColored(new(0.0f, 1.0f, 0.0f, 1.0f), fastFireIIICastTime);
+            ImGui.SameLine();
+            ImGui.Image(this.FireIIIIcon.ImGuiHandle, new(iconDimension, iconDimension));
+            PluginUI.Tooltip($"Current fast Fire III cast time: {fastFireIIICastTime}");
         }
     }
 }
