@@ -62,16 +62,32 @@ namespace MPTickBar
 
             private double LastProgress { get; set; }
 
+            private double TimeStayingPaused { get; set; }
+
+            private double TimeSpeedInterval { get; set; }
+
+            private double Speed { get; set; }
+
             public void Update(double progress)
             {
-                if ((progress == 0.0) && (this.LastProgress == 0.0))
-                    this.Regress = 0.0;
-                else if (this.LastProgress > progress)
-                    this.Regress = this.LastProgress;
-                else if (progress > 0.08)
-                    this.Regress -= (progress - this.LastProgress) * 12.0;
+                var time = ImGui.GetTime();
 
-                this.Regress = Math.Clamp(this.Regress, 0.0, 1.0);
+                if ((this.LastProgress > progress) && this.TimeStayingPaused == 0.0)
+                {
+                    this.TimeStayingPaused = time + 0.200;
+                    this.Regress = this.LastProgress;
+                    this.Speed = this.LastProgress / 20.0;
+                }
+
+                if ((time > this.TimeStayingPaused) && (time > this.TimeSpeedInterval))
+                {
+                    this.TimeSpeedInterval = time + 0.008;
+                    this.Regress = Math.Clamp(this.Regress - this.Speed, 0.0, 1.0);
+
+                    if (this.Regress == 0.0)
+                        this.TimeStayingPaused = 0.0;
+                }
+
                 this.LastProgress = progress;
             }
         }
@@ -126,8 +142,8 @@ namespace MPTickBar
 
         public void Update(double progress)
         {
-            this.Progress = progress / 3.0;
-            this.RegressEffect.Update(this.Progress);
+            this.Progress = progress;
+            this.RegressEffect.Update(progress);
         }
 
         private MPTickBarUI GetMPTickBarUI()
