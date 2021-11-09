@@ -169,7 +169,7 @@ namespace MPTickBar
             return new() { Gauge = gauge, Marker = marker };
         }
 
-        private void RenderBackgroundUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeWidth, float gaugeHeight, float textureToElementScale, int uiNumber, Vector4 color)
+        private static void RenderBackgroundUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeWidth, float gaugeHeight, float textureToElementScale, int uiNumber, Vector4 color)
         {
             var x = offsetX;
             var y = offsetY;
@@ -184,7 +184,7 @@ namespace MPTickBar
             ImGui.Image(mpTickBarUI.Gauge.ImGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), color);
         }
 
-        private void RenderBarUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeWidth, float gaugeHeight, float textureToElementScale, double progress, int uiNumber, bool isProgress, Vector4 color)
+        private static void RenderBarUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeWidth, float gaugeHeight, float textureToElementScale, double progress, int uiNumber, bool isProgress, Vector4 color)
         {
             var barTextureOffsetX = 12.0f * textureToElementScale;
             var width = (float)((gaugeWidth - (barTextureOffsetX * 2.0f)) * progress);
@@ -338,17 +338,17 @@ namespace MPTickBar
             var offsetX = this.Configuration.General.OffsetX + 20.0f;
             var offsetY = this.Configuration.General.OffsetY + 20.0f;
 
-            this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, 5, this.Configuration.ProgressBar.BackgroundColor);
+            MPTickBarPluginUI.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, 5, this.Configuration.ProgressBar.BackgroundColor);
 
             if (this.Configuration.ProgressBar.IsRegressEffectEnabled && this.RegressEffect.IsRegressing)
-                this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, this.RegressEffect.Regress, 4, false, this.Configuration.ProgressBar.RegressBarColor);
+                MPTickBarPluginUI.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, this.RegressEffect.Regress, 4, false, this.Configuration.ProgressBar.RegressBarColor);
 
             var progressWidth = 296.0f * textureToElementScale;
             var fastFireIIIMarkerOffset = Math.Clamp((3.0f - this.PlayerState.GetFastFireIIICastTime() + this.Configuration.FastFireIIIMarker.TimeOffset) * (progressWidth / 3.0f), 0.0f, progressWidth);
             var isProgressAfterMarker = this.Progress > (fastFireIIIMarkerOffset / progressWidth);
 
-            this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, this.Progress, 2, true, (isProgressAfterMarker) ? this.Configuration.ProgressBar.ProgressBarAfterMarkerColor : this.Configuration.ProgressBar.ProgressBarColor);
-            this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, 0, this.Configuration.ProgressBar.EdgeColor);
+            MPTickBarPluginUI.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, this.Progress, 2, true, (isProgressAfterMarker) ? this.Configuration.ProgressBar.ProgressBarAfterMarkerColor : this.Configuration.ProgressBar.ProgressBarColor);
+            MPTickBarPluginUI.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, 0, this.Configuration.ProgressBar.EdgeColor);
 
             if ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.Visible) ||
                ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.UnderUmbralIceIII) && this.PlayerState.IsUmbralIceIIIActivated))
