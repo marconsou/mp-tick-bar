@@ -32,16 +32,10 @@ namespace MPTickBar
 
             public T Last { get; private set; }
 
-            public void SaveData()
-            {
-                this.Last = this.Current;
-            }
+            public void SaveData() => this.Last = this.Current;
         }
 
-        public void Login(object sender, EventArgs e)
-        {
-            this.ResetDisableProgress();
-        }
+        public void Login(object sender, EventArgs e) => this.ResetDisableProgress();
 
         private static int GetData(IntPtr dataPtr, int offset, int size)
         {
@@ -50,31 +44,24 @@ namespace MPTickBar
             return BitConverter.ToInt32(bytes);
         }
 
-        private static int GetHP(IntPtr dataPtr)
-        {
-            return UpdateEventState.GetData(dataPtr, 0, 3);
-        }
+        private static int GetHP(IntPtr dataPtr) => UpdateEventState.GetData(dataPtr, 0, 3);
 
-        private static int GetMP(IntPtr dataPtr)
-        {
-            return UpdateEventState.GetData(dataPtr, 4, 2);
-        }
+        private static int GetMP(IntPtr dataPtr) => UpdateEventState.GetData(dataPtr, 4, 2);
 
-        private static int GetTickIncrement(IntPtr dataPtr)
-        {
-            return UpdateEventState.GetData(dataPtr, 6, 2);
-        }
+        private static int GetTickIncrement(IntPtr dataPtr) => UpdateEventState.GetData(dataPtr, 6, 2);
 
-        public void _DEBUG_LOG_DATA_(IntPtr dataPtr, uint targetActorId)
+        public void DebugLogData(IntPtr dataPtr, uint targetActorId)
         {
-            var bytes = new byte[384];
+#if DEBUG
+            var bytes = new byte[256];
             Marshal.Copy(dataPtr, bytes, 0, bytes.Length);
             Dalamud.Logging.PluginLog.Information($"{UpdateEventState.GetHP(dataPtr):000000}|{UpdateEventState.GetMP(dataPtr):00000}|{UpdateEventState.GetTickIncrement(dataPtr):00000}|{targetActorId:0000000000} ({((targetActorId == this.PlayerState.Id) ? "X" : " ")}): {BitConverter.ToString(bytes)}");
+#endif
         }
 
         public void NetworkMessage(IntPtr dataPtr, uint targetActorId)
         {
-            var isProgressStopped = (this.Progress.Current == 0) && (this.Progress.Last == 0);
+            var isProgressStopped = (this.Progress.Current == 0.0) && (this.Progress.Last == 0.0);
             var idCheck = (this.PlayerState.Id == targetActorId);
             if (!this.IsDead.Current && !this.IsInCombat.Current && isProgressStopped && idCheck && (UpdateEventState.GetHP(dataPtr) == this.PlayerState.HP) && (UpdateEventState.GetMP(dataPtr) == this.PlayerState.MPMax))
                 this.RestartProgress();
@@ -82,22 +69,20 @@ namespace MPTickBar
 
         private void ResetDisableProgress()
         {
-            this.Progress.Current = 0;
+            this.Progress.Current = 0.0;
             this.IsProgressEnabled = false;
         }
 
         private void RestartProgress()
         {
-            if (this.Progress.Current > 0.5)
-                this.Progress.Current = 0;
-
-            this.IsProgressEnabled = true;
+            if (this.MPRegenSkipTime == 0.0)
+            {
+                this.Progress.Current = 0.0;
+                this.IsProgressEnabled = true;
+            }
         }
 
-        private void AddMPRegenSkipTime()
-        {
-            this.MPRegenSkipTime += 3.5;
-        }
+        private void AddMPRegenSkipTime() => this.MPRegenSkipTime = 3.5;
 
         private bool OnMPRegenLucidDreaming()
         {
@@ -106,9 +91,9 @@ namespace MPTickBar
                 var lucidDreamingPotency = 50;
                 var mpReturned = lucidDreamingPotency * 10000 / 1000;
                 var mpRecovered = this.MP.Current - this.MP.Last;
-                var iSrecoveringMPToFull = (this.MP.Current == this.PlayerState.MPMax) && (this.MP.Last > (this.PlayerState.MPMax - mpReturned));
+                var recoveringMPToFull = (this.MP.Current == this.PlayerState.MPMax) && (this.MP.Last > (this.PlayerState.MPMax - mpReturned));
 
-                return (mpRecovered > 0) && (mpRecovered == mpReturned || iSrecoveringMPToFull);
+                return (mpRecovered > 0) && (mpRecovered == mpReturned || recoveringMPToFull);
             }
             return false;
         }
@@ -119,20 +104,19 @@ namespace MPTickBar
                 this.AddMPRegenSkipTime();
         }
 
-        private void OnReviveInCombat()
+        private void OnRevive()
         {
-            if (this.IsDead.Last && !this.IsDead.Current && this.IsInCombat.Current)
+            if (this.IsDead.Last && !this.IsDead.Current)
                 this.AddMPRegenSkipTime();
         }
 
-        private void OnMPRegen(bool onMPRegenLucidDreaming, double interval)
-        {
-            this.MPRegenSkipTime -= interval;
-            if (this.MPRegenSkipTime < 0)
-                this.MPRegenSkipTime = 0;
+        private void OnMPRegenSkipTime(double interval) => this.MPRegenSkipTime = Math.Max(this.MPRegenSkipTime - interval, 0.0);
 
+        private void OnMPRegen(bool onMPRegenLucidDreaming)
+        {
+            var mpRecovered = (this.MP.Last < this.MP.Current);
             var mpReset = (this.MP.Last == 0) && (this.MP.Current == this.PlayerState.MPMax);
-            var onMPRegen = (this.MP.Last < this.MP.Current) && !mpReset && !onMPRegenLucidDreaming && (this.MPRegenSkipTime == 0);
+            var onMPRegen = mpRecovered && !mpReset && !onMPRegenLucidDreaming;
             if (onMPRegen)
                 this.RestartProgress();
         }
@@ -162,7 +146,15 @@ namespace MPTickBar
                 var mpTickSecondsTotal = 3.0;
                 this.Progress.Current += interval;
                 if (this.Progress.Current >= mpTickSecondsTotal)
-                    this.Progress.Current -= mpTickSecondsTotal;
+                {
+                    if (this.MP.Current != this.PlayerState.MPMax)
+                        this.Progress.Current = 0.0;
+                    else
+                        this.Progress.Current -= mpTickSecondsTotal;
+
+                    if (this.MPRegenSkipTime < 0.5)
+                        this.MPRegenSkipTime = 0.5;
+                }
             }
         }
 
@@ -179,8 +171,9 @@ namespace MPTickBar
 
             var onMPRegenLucidDreaming = this.OnMPRegenLucidDreaming();
             this.OnManafontUsage();
-            this.OnReviveInCombat();
-            this.OnMPRegen(onMPRegenLucidDreaming, interval);
+            this.OnRevive();
+            this.OnMPRegenSkipTime(interval);
+            this.OnMPRegen(onMPRegenLucidDreaming);
             this.OnZoneChange();
             this.OnLeaveCombat();
             this.OnDeath();
@@ -195,7 +188,7 @@ namespace MPTickBar
             this.IsManafontOnCooldown.SaveData();
             this.Progress.SaveData();
 
-            return this.Progress.Current;
+            return this.Progress.Current / 3.0;
         }
     }
 }
