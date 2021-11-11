@@ -3,7 +3,7 @@
 
 A Final Fantasy XIV [Dalamud](https://github.com/goatcorp/Dalamud) plugin to you visually track MP regeneration ticks (Black Mage only).
 
-Type `/mptb` to open configuration menu.
+Type `/mptb` to open the configuration menu.
 
 Type `/mptbcd X` to start the countdown with `X` seconds after next tick and time offset. (e.g. `/mptbcd 15`).
 
@@ -11,7 +11,7 @@ Type `/mptbcd X` to start the countdown with `X` seconds after next tick and tim
 - Fast Fire III marker on the bar.
 - Autostarts the bar before combat starts.
 - Countdown with time offset.
-- Supports [FFXIV Material UI](https://github.com/skotlex/ffxiv-material-ui).
+- Compatible with [FFXIV Material UI](https://github.com/skotlex/ffxiv-material-ui).
 
 ## Examples
 ![Examples](https://user-images.githubusercontent.com/27457164/139941913-24b1b1a7-b080-47f5-aa97-b2dca556c2d7.png)
