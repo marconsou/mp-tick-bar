@@ -446,6 +446,11 @@ namespace MPTickBar
                         this.NumberPercentageTab();
                         ImGui.EndTabItem();
                     }
+                    if (ImGui.BeginTabItem("Countdown"))
+                    {
+                        this.CountdownTab();
+                        ImGui.EndTabItem();
+                    }
                     ImGui.PopItemWidth();
                     ImGui.EndTabBar();
                 }
@@ -558,6 +563,18 @@ namespace MPTickBar
             PluginUI.CollapsingHeader("Functional", () =>
             {
                 this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
+            });
+        }
+
+        private void CountdownTab()
+        {
+            var config = this.Configuration.Countdown;
+
+            PluginUI.CollapsingHeader("Functional", () =>
+            {
+                this.DragInt(config.StartingSeconds, x => config.StartingSeconds = x, "Starting Seconds (Default)", 1, 5, 30, "%i");
+                PluginUI.Tooltip("The default value used when /mptbcd command has invalid or no value.");
+                this.DragFloat(config.TimeOffset, x => config.TimeOffset = x, "Time Offset (s)", 0.01f, 0.0f, 3.0f, "%.2f");
             });
         }
 
