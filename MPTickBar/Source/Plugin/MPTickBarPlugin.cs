@@ -14,7 +14,9 @@ namespace MPTickBar
     {
         public string Name => "MP Tick Bar";
 
-        private static string CommandName => "/mptb";
+        private static string ConfigCommand => "/mptb";
+
+        private static string CountdownCommand => "/mptbcd";
 
         [PluginService]
         private DalamudPluginInterface PluginInterface { get; init; }
@@ -37,23 +39,37 @@ namespace MPTickBar
         [PluginService]
         private GameNetwork GameNetwork { get; init; }
 
+        [PluginService]
+        public SigScanner SigScanner { get; init; }
+
         private MPTickBarPluginUI MPTickBarPluginUI { get; }
 
         private Configuration Configuration { get; }
 
-        private UpdateEventState UpdateEventState { get; } = new();
+        private ProgressBarState ProgressBarState { get; } = new();
 
         private PlayerState PlayerState { get; } = new();
+
+        private CountdownState CountdownState { get; } = new();
+
+        private Chat Chat { get; }
 
         public MPTickBarPlugin()
         {
             this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new();
             this.Configuration.Initialize(this.PluginInterface);
             this.MPTickBarPluginUI = new(this.Configuration, this.PluginInterface.UiBuilder);
+            this.Chat = new(this.SigScanner);
 
-            this.CommandManager.AddHandler(MPTickBarPlugin.CommandName, new(this.OnCommand)
+            this.CommandManager.AddHandler(MPTickBarPlugin.ConfigCommand, new(this.OnConfigCommand)
             {
-                HelpMessage = "Opens MP Tick Bar configuration menu.",
+                HelpMessage = "Opens the configuration menu.",
+                ShowInHelp = true
+            });
+
+            this.CommandManager.AddHandler(MPTickBarPlugin.CountdownCommand, new(this.OnCountdownCommand)
+            {
+                HelpMessage = "Starts the countdown with X seconds after next tick and time offset. (e.g. /mptbcd 15)",
                 ShowInHelp = true
             });
 
@@ -62,7 +78,7 @@ namespace MPTickBar
             this.PluginInterface.UiBuilder.DisableGposeUiHide = false;
             this.PluginInterface.UiBuilder.DisableUserUiHide = false;
 
-            this.ClientState.Login += this.UpdateEventState.Login;
+            this.ClientState.Login += this.ProgressBarState.Login;
             this.PluginInterface.UiBuilder.Draw += this.Draw;
             this.PluginInterface.UiBuilder.OpenConfigUi += this.OpenConfigUi;
             this.Framework.Update += this.Update;
@@ -72,12 +88,13 @@ namespace MPTickBar
         public void Dispose()
         {
             this.MPTickBarPluginUI.Dispose();
-            this.ClientState.Login -= this.UpdateEventState.Login;
+            this.ClientState.Login -= this.ProgressBarState.Login;
             this.PluginInterface.UiBuilder.Draw -= this.Draw;
             this.PluginInterface.UiBuilder.OpenConfigUi -= this.OpenConfigUi;
             this.Framework.Update -= this.Update;
             this.GameNetwork.NetworkMessage -= this.NetworkMessage;
-            this.CommandManager.RemoveHandler(MPTickBarPlugin.CommandName);
+            this.CommandManager.RemoveHandler(MPTickBarPlugin.ConfigCommand);
+            this.CommandManager.RemoveHandler(MPTickBarPlugin.CountdownCommand);
             this.PluginInterface.Dispose();
         }
 
@@ -86,12 +103,14 @@ namespace MPTickBar
             if (this.PlayerState != null)
             {
                 this.PlayerState.ServicesUpdate(this.ClientState, this.JobGauges, this.Condition);
-                this.UpdateEventState.PlayerState = this.PlayerState;
+                this.ProgressBarState.PlayerState = this.PlayerState;
                 this.MPTickBarPluginUI.PlayerState = this.PlayerState;
             }
         }
 
-        private void OnCommand(string command, string args) => this.OpenConfigUi();
+        private void OnConfigCommand(string command, string args) => this.OpenConfigUi();
+
+        private void OnCountdownCommand(string command, string args) => this.CountdownState.Start(args, this.Configuration.Countdown.StartingSeconds, this.Configuration.Countdown.TimeOffset);
 
         private void Draw() => this.MPTickBarPluginUI.Draw();
 
@@ -101,8 +120,9 @@ namespace MPTickBar
         {
             this.PlayerStateUpdate();
 
-            var progress = this.UpdateEventState.Update();
+            var progress = this.ProgressBarState.Update();
             this.MPTickBarPluginUI.Update(progress);
+            this.CountdownState.Update(this.Chat, progress, this.Configuration.Countdown.TimeOffset);
         }
 
         private void NetworkMessage(IntPtr dataPtr, ushort opCode, uint sourceActorId, uint targetActorId, NetworkMessageDirection direction)
@@ -110,7 +130,7 @@ namespace MPTickBar
             if (this.Configuration.General.IsAutostartEnabled && (opCode == 423) && (direction == NetworkMessageDirection.ZoneDown) && (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage)
             {
                 this.PlayerStateUpdate();
-                this.UpdateEventState.NetworkMessage(dataPtr, targetActorId);
+                this.ProgressBarState.NetworkMessage(dataPtr, targetActorId);
             }
         }
     }
