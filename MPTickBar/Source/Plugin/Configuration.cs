@@ -8,7 +8,7 @@ namespace MPTickBar
     [Serializable]
     public class Configuration : IPluginConfiguration
     {
-        public int Version { get; set; } = 5;
+        public int Version { get; set; } = 6;
 
         public GeneralTab General { get; set; }
 
@@ -19,6 +19,8 @@ namespace MPTickBar
         public FireIIICastIndicatorTab FireIIICastIndicator { get; set; }
 
         public NumberPercentageTab NumberPercentage { get; set; }
+
+        public CountdownTab Countdown { get; set; }
 
         public class GeneralTab
         {
@@ -101,6 +103,13 @@ namespace MPTickBar
             public NumberPercentageVisibility Visibility { get; set; } = NumberPercentageVisibility.Hidden;
         }
 
+        public class CountdownTab
+        {
+            public int StartingSeconds { get; set; } = 12;
+
+            public float TimeOffset { get; set; } = 0.0f;
+        }
+
         [NonSerialized]
         private DalamudPluginInterface pluginInterface;
 
@@ -117,6 +126,7 @@ namespace MPTickBar
             this.FastFireIIIMarker = new();
             this.FireIIICastIndicator = new();
             this.NumberPercentage = new();
+            this.Countdown = new();
         }
     }
 }
