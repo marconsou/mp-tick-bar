@@ -2,10 +2,10 @@
   "Author": "Marconsou",
   "Name": "MP Tick Bar",
   "InternalName": "MPTickBar",
-  "AssemblyVersion": "1.3.0.0",
+  "AssemblyVersion": "1.3.1.0",
   "DalamudApiLevel": 4,
   "Punchline": "Visually tracks MP regeneration ticks (Black Mage only).",
-  "Description": "-Fast Fire III marker on the bar.\n-Autostarts the bar before combat starts.\n-Supports FFXIV Material UI.",
+  "Description": "-Fast Fire III marker on the bar.\n-Autostarts the bar before combat starts.\n-Countdown with time offset.\n-Compatible with FFXIV Material UI.",
   "Tags": [ "mp", "tick", "bar", "blm", "black", "mage" ],
   "RepoUrl": "https://github.com/marconsou/mp-tick-bar"
 }
