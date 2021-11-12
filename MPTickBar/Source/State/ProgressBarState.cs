@@ -4,29 +4,29 @@ using System.Runtime.InteropServices;
 
 namespace MPTickBar
 {
-    public class UpdateEventState
+    public class ProgressBarState
     {
         public PlayerState PlayerState { get; set; }
 
-        private UpdateEventData<double> Time { get; set; } = new();
+        private Data<double> Time { get; set; } = new();
 
-        private UpdateEventData<uint> MP { get; set; } = new();
+        private Data<uint> MP { get; set; } = new();
 
-        private UpdateEventData<ushort> Territory { get; set; } = new();
+        private Data<ushort> Territory { get; set; } = new();
 
-        private UpdateEventData<bool> IsInCombat { get; set; } = new();
+        private Data<bool> IsInCombat { get; set; } = new();
 
-        private UpdateEventData<bool> IsDead { get; set; } = new();
+        private Data<bool> IsDead { get; set; } = new();
 
-        private UpdateEventData<bool> IsManafontOnCooldown { get; set; } = new();
+        private Data<bool> IsManafontOnCooldown { get; set; } = new();
 
-        private UpdateEventData<double> Progress { get; set; } = new();
+        private Data<double> Progress { get; set; } = new();
 
         private double MPRegenSkipTime { get; set; }
 
         private bool IsProgressEnabled { get; set; }
 
-        private class UpdateEventData<T> where T : struct
+        private class Data<T> where T : struct
         {
             public T Current { get; set; }
 
@@ -44,18 +44,18 @@ namespace MPTickBar
             return BitConverter.ToInt32(bytes);
         }
 
-        private static int GetHP(IntPtr dataPtr) => UpdateEventState.GetData(dataPtr, 0, 3);
+        private static int GetHP(IntPtr dataPtr) => ProgressBarState.GetData(dataPtr, 0, 3);
 
-        private static int GetMP(IntPtr dataPtr) => UpdateEventState.GetData(dataPtr, 4, 2);
+        private static int GetMP(IntPtr dataPtr) => ProgressBarState.GetData(dataPtr, 4, 2);
 
-        private static int GetTickIncrement(IntPtr dataPtr) => UpdateEventState.GetData(dataPtr, 6, 2);
+        private static int GetTickIncrement(IntPtr dataPtr) => ProgressBarState.GetData(dataPtr, 6, 2);
 
         public void DebugLogData(IntPtr dataPtr, uint targetActorId)
         {
 #if DEBUG
             var bytes = new byte[256];
             Marshal.Copy(dataPtr, bytes, 0, bytes.Length);
-            Dalamud.Logging.PluginLog.Information($"{UpdateEventState.GetHP(dataPtr):000000}|{UpdateEventState.GetMP(dataPtr):00000}|{UpdateEventState.GetTickIncrement(dataPtr):00000}|{targetActorId:0000000000} ({((targetActorId == this.PlayerState.Id) ? "X" : " ")}): {BitConverter.ToString(bytes)}");
+            Dalamud.Logging.PluginLog.Information($"{ProgressBarState.GetHP(dataPtr):000000}|{ProgressBarState.GetMP(dataPtr):00000}|{ProgressBarState.GetTickIncrement(dataPtr):00000}|{targetActorId:0000000000} ({((targetActorId == this.PlayerState.Id) ? "X" : " ")}): {BitConverter.ToString(bytes)}");
 #endif
         }
 
@@ -63,7 +63,7 @@ namespace MPTickBar
         {
             var isProgressStopped = (this.Progress.Current == 0.0) && (this.Progress.Last == 0.0);
             var idCheck = (this.PlayerState.Id == targetActorId);
-            if (!this.IsDead.Current && !this.IsInCombat.Current && isProgressStopped && idCheck && (UpdateEventState.GetHP(dataPtr) == this.PlayerState.HP) && (UpdateEventState.GetMP(dataPtr) == this.PlayerState.MPMax))
+            if (!this.IsDead.Current && !this.IsInCombat.Current && isProgressStopped && idCheck && (ProgressBarState.GetHP(dataPtr) == this.PlayerState.HP) && (ProgressBarState.GetMP(dataPtr) == this.PlayerState.MPMax))
                 this.RestartProgress();
         }
 
