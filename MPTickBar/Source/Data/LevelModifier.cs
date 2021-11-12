@@ -48,14 +48,8 @@ namespace MPTickBar
             }
         }
 
-        public static int GetLevelModifierSub(int level)
-        {
-            return (level > 0) ? LevelModifier.LevelModifierData[level - 1].Sub : 0;
-        }
+        public static int GetLevelModifierSub(int level) => (level > 0) ? LevelModifier.LevelModifierData[level - 1].Sub : 0;
 
-        public static int GetLevelModifierDiv(int level)
-        {
-            return (level > 0) ? LevelModifier.LevelModifierData[level - 1].Div : 0;
-        }
+        public static int GetLevelModifierDiv(int level) => (level > 0) ? LevelModifier.LevelModifierData[level - 1].Div : 0;
     }
 }
