@@ -14,4 +14,4 @@ Type `/mptbcd X` to start the countdown with `X` seconds after next tick and tim
 - Compatible with [FFXIV Material UI](https://github.com/skotlex/ffxiv-material-ui).
 
 ## Examples
-![Examples](https://user-images.githubusercontent.com/27457164/139941913-24b1b1a7-b080-47f5-aa97-b2dca556c2d7.png)
+![Examples](https://user-images.githubusercontent.com/27457164/142336488-d9ccea43-94c6-411c-aeed-a74795dbce42.png)
