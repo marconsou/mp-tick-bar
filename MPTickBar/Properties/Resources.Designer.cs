@@ -133,6 +133,66 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] JobStackADefault {
+            get {
+                object obj = ResourceManager.GetObject("JobStackADefault", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] JobStackAMaterialUI {
+            get {
+                object obj = ResourceManager.GetObject("JobStackAMaterialUI", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] JobStackAMaterialUISilver {
+            get {
+                object obj = ResourceManager.GetObject("JobStackAMaterialUISilver", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] JobStackBDefault {
+            get {
+                object obj = ResourceManager.GetObject("JobStackBDefault", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] JobStackBMaterialUI {
+            get {
+                object obj = ResourceManager.GetObject("JobStackBMaterialUI", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] JobStackBMaterialUISilver {
+            get {
+                object obj = ResourceManager.GetObject("JobStackBMaterialUISilver", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] LevelModifier {
             get {
                 object obj = ResourceManager.GetObject("LevelModifier", resourceCulture);
@@ -143,29 +203,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] MarkerDefault {
-            get {
-                object obj = ResourceManager.GetObject("MarkerDefault", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] MarkerLine {
             get {
                 object obj = ResourceManager.GetObject("MarkerLine", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] MarkerMaterialUI {
-            get {
-                object obj = ResourceManager.GetObject("MarkerMaterialUI", resourceCulture);
                 return ((byte[])(obj));
             }
         }
