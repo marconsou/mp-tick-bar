@@ -7,6 +7,8 @@ namespace MPTickBar
         Default,
         [Description("Material UI")]
         MaterialUI,
+        [Description("Material UI Silver")]
+        MaterialUISilver,
         Line
     }
 }
