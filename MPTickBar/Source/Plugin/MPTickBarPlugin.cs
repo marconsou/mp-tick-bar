@@ -69,7 +69,7 @@ namespace MPTickBar
 
             this.CommandManager.AddHandler(MPTickBarPlugin.CountdownCommand, new(this.OnCountdownCommand)
             {
-                HelpMessage = "Starts the countdown with X seconds after next tick and time offset. (e.g. /mptbcd 15)",
+                HelpMessage = "Starts the countdown with X seconds after next tick and time offset. (e.g. /mptbcd 12)",
                 ShowInHelp = true
             });
 
