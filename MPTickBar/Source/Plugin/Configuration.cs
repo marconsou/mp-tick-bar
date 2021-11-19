@@ -8,7 +8,7 @@ namespace MPTickBar
     [Serializable]
     public class Configuration : IPluginConfiguration
     {
-        public int Version { get; set; } = 6;
+        public int Version { get; set; } = 7;
 
         public GeneralTab General { get; set; }
 
@@ -17,6 +17,8 @@ namespace MPTickBar
         public FastFireIIIMarkerTab FastFireIIIMarker { get; set; }
 
         public FireIIICastIndicatorTab FireIIICastIndicator { get; set; }
+
+        public MPRegenStackTab MPRegenStack { get; set; }
 
         public NumberPercentageTab NumberPercentage { get; set; }
 
@@ -47,7 +49,7 @@ namespace MPTickBar
 
             public Vector4 ProgressBarColor { get; set; } = new(0.0f, 1.0f, 1.0f, 1.0f);
 
-            public Vector4 ProgressBarAfterMarkerColor { get; set; } = new(0.0f, 1.0f, 1.0f, 1.0f);
+            public Vector4 ProgressBarAfterMarkerColor { get; set; } = new(0.0f, 0.65f, 1.0f, 1.0f);
 
             public Vector4 BackgroundColor { get; set; } = Vector4.One;
 
@@ -87,7 +89,28 @@ namespace MPTickBar
 
             public Vector4 IndicatorColor { get; set; } = new(1.0f, 0.0f, 0.0f, 1.0f);
 
-            public FireIIICastIndicatorVisibility Visibility { get; set; } = FireIIICastIndicatorVisibility.Visible;
+            public FireIIICastIndicatorVisibility Visibility { get; set; } = FireIIICastIndicatorVisibility.Hidden;
+        }
+
+        public class MPRegenStackTab
+        {
+            public int OffsetX { get; set; } = 0;
+
+            public int OffsetY { get; set; } = 0;
+
+            public float Scale { get; set; } = 1.0f;
+
+            public Vector4 UmbralIceStackColor { get; set; } = new(0.0f, 1.0f, 1.0f, 1.0f);
+
+            public Vector4 UmbralIceStackBackgroundColor { get; set; } = Vector4.One;
+
+            public Vector4 LucidDreamingStackColor { get; set; } = new(0.86f, 0.435f, 1.0f, 1.0f);
+
+            public Vector4 LucidDreamingStackBackgroundColor { get; set; } = Vector4.One;
+
+            public MPRegenStackUI UI { get; set; } = MPRegenStackUI.Default;
+
+            public MPRegenStackVisibility Visibility { get; set; } = MPRegenStackVisibility.Hidden;
         }
 
         public class NumberPercentageTab
@@ -125,6 +148,7 @@ namespace MPTickBar
             this.ProgressBar = new();
             this.FastFireIIIMarker = new();
             this.FireIIICastIndicator = new();
+            this.MPRegenStack = new();
             this.NumberPercentage = new();
             this.Countdown = new();
         }
