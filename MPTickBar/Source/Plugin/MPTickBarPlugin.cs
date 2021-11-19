@@ -114,7 +114,7 @@ namespace MPTickBar
 
         private void Draw() => this.MPTickBarPluginUI.Draw();
 
-        private void OpenConfigUi() => this.MPTickBarPluginUI.IsConfigurationWindowVisible = !this.MPTickBarPluginUI.IsConfigurationWindowVisible;
+        private void OpenConfigUi() => this.MPTickBarPluginUI.OpenConfigUi();
 
         private void Update(Framework framework)
         {
