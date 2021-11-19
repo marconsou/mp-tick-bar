@@ -28,6 +28,8 @@ namespace MPTickBar
 
         public bool IsCircleOfPowerActivated => this.IsEffectActivated(738);
 
+        public bool IsUmbralIceActivated => this.IsPlayingAsBlackMage && (this.JobGauges != null) && (this.JobGauges.Get<BLMGauge>().UmbralIceStacks > 0);
+
         public bool IsUmbralIceIIIActivated => this.IsPlayingAsBlackMage && (this.JobGauges != null) && (this.JobGauges.Get<BLMGauge>().UmbralIceStacks == 3);
 
         public bool IsInCombat => this.IsPlayingAsBlackMage && (this.Condition != null) && this.Condition[ConditionFlag.InCombat];
@@ -43,6 +45,12 @@ namespace MPTickBar
         public uint MPMax => this.IsPlayingAsBlackMage ? this.Player.MaxMp : 0;
 
         public uint Id => this.IsPlayingAsBlackMage ? this.Player.ObjectId : uint.MaxValue;
+
+        public byte UmbralIceRegenStack { get; private set; }
+
+        public bool LucidDreamingRegenStack { get; private set; }
+
+        public static uint LucidDreamingMPRegen => 500;
 
         public void ServicesUpdate(ClientState clientState, JobGauges jobGauges, Condition condition)
         {
@@ -73,6 +81,21 @@ namespace MPTickBar
                 var div = LevelModifier.GetLevelModifierDiv(level);
                 var spellSpeed = UIState.pInstance->PlayerState.Attributes[46];
                 return (float)Math.Floor(Math.Floor(Math.Ceiling(Math.Floor(100.0 - (this.IsCircleOfPowerActivated ? 15 : 0)) * 1) * Math.Floor((2000 - Math.Floor(130.0 * (spellSpeed - sub) / div + 1000)) * gcd35 / 1000) / 1000) * astralUmbral / 100) / 100;
+            }
+        }
+
+        public void MPRegenStackUpdate(bool onMPRegenLucidDreaming, uint mpCurrent, uint mpLast)
+        {
+            if (mpLast > mpCurrent)
+            {
+                this.UmbralIceRegenStack = 0;
+                this.LucidDreamingRegenStack = false;
+            }
+            else
+            {
+                this.UmbralIceRegenStack = (byte)((mpCurrent + ((mpCurrent / 6200) * 200)) / 3200);
+                if (onMPRegenLucidDreaming)
+                    this.LucidDreamingRegenStack = true;
             }
         }
     }
