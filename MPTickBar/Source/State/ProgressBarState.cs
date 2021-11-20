@@ -84,16 +84,12 @@ namespace MPTickBar
 
         private void AddMPRegenSkipTime() => this.MPRegenSkipTime = 3.5;
 
-        private bool OnMPRegenLucidDreaming()
+        private bool OnMPRegenLucidDreaming(int mpRecovered)
         {
             if (this.PlayerState.IsLucidDreamingActivated)
             {
-                var lucidDreamingPotency = 50;
-                var mpReturned = lucidDreamingPotency * 10000 / 1000;
-                var mpRecovered = this.MP.Current - this.MP.Last;
-                var recoveringMPToFull = (this.MP.Current == this.PlayerState.MPMax) && (this.MP.Last > (this.PlayerState.MPMax - mpReturned));
-
-                return (mpRecovered > 0) && (mpRecovered == mpReturned || recoveringMPToFull);
+                var recoveringMPToFull = (this.MP.Current == this.PlayerState.MPMax) && (this.MP.Last > (this.PlayerState.MPMax - PlayerState.LucidDreamingMPRegen)) && (mpRecovered > 0);
+                return (mpRecovered == PlayerState.LucidDreamingMPRegen || recoveringMPToFull);
             }
             return false;
         }
@@ -112,12 +108,9 @@ namespace MPTickBar
 
         private void OnMPRegenSkipTime(double interval) => this.MPRegenSkipTime = Math.Max(this.MPRegenSkipTime - interval, 0.0);
 
-        private void OnMPRegen(bool onMPRegenLucidDreaming)
+        private void OnMPRegen(bool onMPRegenLucidDreaming, int mpRecovered)
         {
-            var mpRecovered = (this.MP.Last < this.MP.Current);
-            var mpReset = (this.MP.Last == 0) && (this.MP.Current == this.PlayerState.MPMax);
-            var onMPRegen = mpRecovered && !mpReset && !onMPRegenLucidDreaming;
-            if (onMPRegen)
+            if ((mpRecovered > 0) && (mpRecovered <= 6200) && !onMPRegenLucidDreaming)
                 this.RestartProgress();
         }
 
@@ -168,16 +161,17 @@ namespace MPTickBar
             this.IsManafontOnCooldown.Current = this.PlayerState.IsManafontOnCooldown();
 
             var interval = (this.Time.Current - this.Time.Last);
-
-            var onMPRegenLucidDreaming = this.OnMPRegenLucidDreaming();
+            var mpRecovered = (int)(this.MP.Current - this.MP.Last);
+            var onMPRegenLucidDreaming = this.OnMPRegenLucidDreaming(mpRecovered);
             this.OnManafontUsage();
             this.OnRevive();
             this.OnMPRegenSkipTime(interval);
-            this.OnMPRegen(onMPRegenLucidDreaming);
+            this.OnMPRegen(onMPRegenLucidDreaming, mpRecovered);
             this.OnZoneChange();
             this.OnLeaveCombat();
             this.OnDeath();
 
+            this.PlayerState.MPRegenStackUpdate(onMPRegenLucidDreaming, this.MP.Current, this.MP.Last);
             this.ProgressUpdate(interval);
 
             this.Time.SaveData();
