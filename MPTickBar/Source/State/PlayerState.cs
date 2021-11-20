@@ -87,10 +87,7 @@ namespace MPTickBar
         public void MPRegenStackUpdate(bool onMPRegenLucidDreaming, uint mpCurrent, uint mpLast)
         {
             if (mpLast > mpCurrent)
-            {
-                this.UmbralIceRegenStack = 0;
                 this.LucidDreamingRegenStack = false;
-            }
             else
             {
                 this.UmbralIceRegenStack = (byte)((mpCurrent + ((mpCurrent / 6200) * 200)) / 3200);
