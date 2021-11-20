@@ -34,8 +34,6 @@ namespace MPTickBar
 
             public float Scale { get; set; } = 1.0f;
 
-            public bool IsAutostartEnabled { get; set; } = true;
-
             public MPTickBarVisibility Visibility { get; set; } = MPTickBarVisibility.Visible;
         }
 
@@ -60,6 +58,8 @@ namespace MPTickBar
             public Vector4 RegressBarColor { get; set; } = Vector4.One;
 
             public ProgressBarUI UI { get; set; } = ProgressBarUI.Default;
+
+            public bool IsAutostartEnabled { get; set; } = true;
         }
 
         public class FastFireIIIMarkerTab

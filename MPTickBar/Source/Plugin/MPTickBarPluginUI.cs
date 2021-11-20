@@ -546,6 +546,11 @@ namespace MPTickBar
         private void GeneralTab()
         {
             var config = this.Configuration.General;
+            PluginUI.CollapsingHeader("Information", () =>
+            {
+                ImGui.Text("All options in this tab will apply to all UI elements at once." +
+                    "\nUse the [Offset] option if the progress bar is clipping.");
+            });
             PluginUI.CollapsingHeader("Location", () =>
             {
                 this.CheckBox(config.IsLocked, x => config.IsLocked = x, "Locked");
@@ -557,8 +562,6 @@ namespace MPTickBar
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
-                this.CheckBox(config.IsAutostartEnabled, x => config.IsAutostartEnabled = x, "Autostart");
-                PluginUI.Tooltip("Enable the progress bar to start automatically when changing zones or before combat starts (at full MP).\n\nAfter a while, the game stops sending the required data to trigger this functionality. Once you die, it'll work again.");
                 this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
             });
         }
@@ -566,6 +569,13 @@ namespace MPTickBar
         private void ProgressBarTab()
         {
             var config = this.Configuration.ProgressBar;
+            PluginUI.CollapsingHeader("Information", () =>
+            {
+                ImGui.Text("The progress bar will start working based on:" +
+                    "\n-[Autostart] option enabled, under certain conditions." +
+                    "\n-Umbral Ice MP regen." +
+                    "\n-Natural MP regen.");
+            });
             PluginUI.CollapsingHeader("Dimension", () =>
             {
                 this.DragFloat(config.ScaleHorizontal, config.ScaleVertical, x => config.ScaleHorizontal = x, x => config.ScaleVertical = x, "Scale", 0.01f, 0.1f, 5.0f, "%.2f");
@@ -586,6 +596,12 @@ namespace MPTickBar
                 this.ColorEdit4(config.RegressBarColor, x => config.RegressBarColor = x, "Regress Bar", spacing);
                 this.Combo(config.UI, x => config.UI = x, "UI");
             });
+            PluginUI.CollapsingHeader("Functional", () =>
+            {
+                this.CheckBox(config.IsAutostartEnabled, x => config.IsAutostartEnabled = x, "Autostart");
+                PluginUI.Tooltip("Enable the progress bar to start automatically when changing zones or before combat starts (at full MP)." +
+                    "\n\nAfter a while, the game stops sending the required data to trigger this functionality. Once you die, it'll work again.");
+            });
         }
 
         private void FastFireIIIMarkerTab()
@@ -594,10 +610,10 @@ namespace MPTickBar
             PluginUI.CollapsingHeader("Information", () =>
             {
                 ImGui.Text("The marker indicates when you can cast a fast Fire III safely without losing the next regen tick." +
-                    "\nAdjust the [Time Offset] if needed." +
-                    "\nThe marker adjusts automatically based on:" +
-                    "\n-Current Spell Speed." +
-                    "\n-Standing within the Ley Lines.");
+                    "\nAdjust the [Time Offset] option if needed." +
+                    "\nThe marker will adjust automatically based on:" +
+                    "\n-Spell Speed." +
+                    "\n-Ley Lines.");
             });
             PluginUI.CollapsingHeader("Dimension", () =>
             {
@@ -646,11 +662,11 @@ namespace MPTickBar
             var config = this.Configuration.MPRegenStack;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                ImGui.Text("This UI element contains 4 stacks:" +
+                ImGui.Text("The MP Regen Stack contains 4 stacks:" +
                     "\n-The first three stacks represent the state of the current MP." +
                     "\n  (e.g Almost empty MP = 0 stack. Almost full MP = 3 stacks)." +
                     "\n-The last one represents the Lucid Dreaming regen." +
-                    "\n-Umbral Ice I/II regen grants 1 stack." +
+                    "\n-Umbral Ice I regen grants 1 stack." +
                     "\n-Umbral Ice III regen grants 2 stacks.");
             });
             PluginUI.CollapsingHeader("Location", () =>
