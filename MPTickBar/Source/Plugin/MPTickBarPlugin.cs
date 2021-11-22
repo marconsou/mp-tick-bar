@@ -16,7 +16,7 @@ namespace MPTickBar
 
         private static string ConfigCommand => "/mptb";
 
-        private static string CountdownCommand => "/mptbcd";
+        public static string CountdownCommand => "/mptbcd";
 
         [PluginService]
         private DalamudPluginInterface PluginInterface { get; init; }
@@ -69,7 +69,7 @@ namespace MPTickBar
 
             this.CommandManager.AddHandler(MPTickBarPlugin.CountdownCommand, new(this.OnCountdownCommand)
             {
-                HelpMessage = "Starts the countdown with X seconds after next tick and time offset. (e.g. /mptbcd 12)",
+                HelpMessage = $"Starts the countdown with X seconds after next tick and time offset. (e.g. {MPTickBarPlugin.CountdownCommand} 12)",
                 ShowInHelp = true
             });
 
