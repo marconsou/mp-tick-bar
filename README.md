@@ -5,7 +5,7 @@ A Final Fantasy XIV [Dalamud](https://github.com/goatcorp/Dalamud) plugin to you
 
 Type `/mptb` to open the configuration menu.
 
-Type `/mptbcd X` to start the countdown with `X` seconds after next tick and time offset. (e.g. `/mptbcd 12`).
+Type `/mptbcd X` to start the countdown with `X` seconds after next tick and time offset. (e.g. `/mptbcd 12`)
 
 ## Features
 - Fast Fire III marker on the bar.
