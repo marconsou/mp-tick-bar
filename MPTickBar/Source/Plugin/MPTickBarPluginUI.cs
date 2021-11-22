@@ -664,7 +664,7 @@ namespace MPTickBar
             {
                 ImGui.Text("The MP Regen Stack contains 4 stacks:" +
                     "\n-The first three stacks represent the state of the current MP." +
-                    "\n  (e.g Almost empty MP = 0 stack. Almost full MP = 3 stacks)." +
+                    "\n  (e.g Almost empty MP = 0 stack. Almost full MP = 3 stacks)" +
                     "\n-The last one represents the Lucid Dreaming regen." +
                     "\n-Umbral Ice I regen grants 1 stack." +
                     "\n-Umbral Ice III regen grants 2 stacks.");
@@ -726,18 +726,18 @@ namespace MPTickBar
                 var spacing = 8.0f + ImGui.CalcTextSize(text).X;
                 ImGui.Text(text);
 
-                text = "/mptbcd X";
+                text = $"{MPTickBarPlugin.CountdownCommand} X";
                 ImGui.SameLine(spacing);
                 ImGui.TextColored(new Vector4(0.0f, 1.0f, 0.0f, 1.0f), text);
 
                 spacing += ImGui.CalcTextSize(text).X;
                 ImGui.SameLine(spacing);
-                ImGui.Text(" to start the countdown with X seconds after next tick and time offset. (e.g. /mptbcd 12).");
+                ImGui.Text($" to start the countdown with X seconds after next tick and time offset. (e.g. {MPTickBarPlugin.CountdownCommand} 12)");
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
                 this.DragInt(config.StartingSeconds, x => config.StartingSeconds = x, "Starting Seconds (Default)", 1, 5, 30, "%i");
-                PluginUI.Tooltip("The default value used when /mptbcd command has invalid or no value.");
+                PluginUI.Tooltip($"The default value used when {MPTickBarPlugin.CountdownCommand} command has invalid or no value.");
                 this.DragFloat(config.TimeOffset, x => config.TimeOffset = x, "Time Offset (s)", 0.01f, 0.0f, 3.0f, "%.2f");
             });
         }
