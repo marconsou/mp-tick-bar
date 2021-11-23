@@ -479,12 +479,10 @@ namespace MPTickBar
                 :
                 ImGuiWindowFlags.NoTitleBar;
 
+            ImGui.SetNextWindowPos(new(512.0f, 384.0f), ImGuiCond.FirstUseEver);
+            ImGui.SetNextWindowSize(new(240.0f, 60.0f), ImGuiCond.FirstUseEver);
             if (ImGui.Begin("MP Tick Bar", ref isMPTickBarVisible, windowFlags))
-            {
-                if (ImGui.BeginChild("MP Tick Bar (Child)", Vector2.Zero, true, windowFlags))
-                    this.DrawMPTickBar();
-                ImGui.EndChild();
-            }
+                this.DrawMPTickBar();
             ImGui.End();
         }
 
