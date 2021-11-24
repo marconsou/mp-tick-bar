@@ -130,7 +130,7 @@ namespace MPTickBar
             if (this.Configuration.ProgressBar.IsAutostartEnabled && (opCode == 423) && (direction == NetworkMessageDirection.ZoneDown) && (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage)
             {
                 this.PlayerStateUpdate();
-                this.ProgressBarState.NetworkMessage(dataPtr, targetActorId);
+                this.ProgressBarState.NetworkMessage(targetActorId);
             }
         }
     }
