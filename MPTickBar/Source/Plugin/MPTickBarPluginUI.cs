@@ -323,6 +323,12 @@ namespace MPTickBar
             var y = offsetY + this.Configuration.Number.OffsetY + (gaugeHeight / 2.0f) + adjustY;
             var totalNumberWidth = scaledWidth * numberText.Length;
 
+            if ((this.Configuration.Number.Type == NumberType.RemainingTime) && (numberText.Length > 1))
+            {
+                var pos = ImGui.GetWindowPos() + new Vector2(x, y + (scaledHeight * 0.75f / 2.0f));
+                ImGui.GetWindowDrawList().AddCircleFilled(new Vector2(pos.X, pos.Y), 1.1f * this.Configuration.Number.Scale, ImGui.ColorConvertFloat4ToU32(this.Configuration.Number.NumberColor));
+            }
+
             foreach (var digitText in numberText)
             {
                 var digit = char.GetNumericValue(digitText);
@@ -483,10 +489,14 @@ namespace MPTickBar
                 :
                 ImGuiWindowFlags.NoTitleBar;
 
-            ImGui.SetNextWindowPos(new(512.0f, 384.0f), ImGuiCond.FirstUseEver);
-            ImGui.SetNextWindowSize(new(240.0f, 60.0f), ImGuiCond.FirstUseEver);
+            ImGui.SetNextWindowPos(new(700.0f, 450.0f), ImGuiCond.FirstUseEver);
+            ImGui.SetNextWindowSize(new(250.0f, 70.0f), ImGuiCond.FirstUseEver);
             if (ImGui.Begin("MP Tick Bar", ref isMPTickBarVisible, windowFlags))
-                this.DrawMPTickBar();
+            {
+                if (ImGui.BeginChild("MP Tick Bar (Child)", Vector2.Zero, true, windowFlags))
+                    this.DrawMPTickBar();
+                ImGui.EndChild();
+            }
             ImGui.End();
         }
 
@@ -679,7 +689,7 @@ namespace MPTickBar
                 this.ColorEdit4(config.UmbralIceStackColor, x => config.UmbralIceStackColor = x, "Umbral Ice Stack");
                 this.ColorEdit4(config.UmbralIceStackBackgroundColor, x => config.UmbralIceStackBackgroundColor = x, "Background", spacing);
                 this.ColorEdit4(config.LucidDreamingStackColor, x => config.LucidDreamingStackColor = x, "Lucid Dreaming Stack");
-                this.ColorEdit4(config.LucidDreamingStackBackgroundColor, x => config.LucidDreamingStackBackgroundColor = x, "Background", spacing);
+                this.ColorEdit4(config.LucidDreamingStackBackgroundColor, x => config.LucidDreamingStackBackgroundColor = x, "Background ", spacing);
                 this.Combo(config.UI, x => config.UI = x, "UI");
             });
             PluginUI.CollapsingHeader("Functional", () =>
