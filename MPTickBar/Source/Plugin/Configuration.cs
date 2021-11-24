@@ -8,7 +8,7 @@ namespace MPTickBar
     [Serializable]
     public class Configuration : IPluginConfiguration
     {
-        public int Version { get; set; } = 7;
+        public int Version { get; set; } = 8;
 
         public GeneralTab General { get; set; }
 
@@ -20,7 +20,7 @@ namespace MPTickBar
 
         public MPRegenStackTab MPRegenStack { get; set; }
 
-        public NumberPercentageTab NumberPercentage { get; set; }
+        public NumberTab Number { get; set; }
 
         public CountdownTab Countdown { get; set; }
 
@@ -58,8 +58,6 @@ namespace MPTickBar
             public Vector4 RegressBarColor { get; set; } = Vector4.One;
 
             public ProgressBarUI UI { get; set; } = ProgressBarUI.Default;
-
-            public bool IsAutostartEnabled { get; set; } = true;
         }
 
         public class FastFireIIIMarkerTab
@@ -113,7 +111,7 @@ namespace MPTickBar
             public MPRegenStackVisibility Visibility { get; set; } = MPRegenStackVisibility.Hidden;
         }
 
-        public class NumberPercentageTab
+        public class NumberTab
         {
             public int OffsetX { get; set; } = 0;
 
@@ -121,9 +119,11 @@ namespace MPTickBar
 
             public float Scale { get; set; } = 1.0f;
 
-            public Vector4 NumberPercentageColor { get; set; } = new(1.0f, 0.98f, 0.94f, 1.0f);
+            public Vector4 NumberColor { get; set; } = new(1.0f, 0.98f, 0.94f, 1.0f);
 
-            public NumberPercentageVisibility Visibility { get; set; } = NumberPercentageVisibility.Hidden;
+            public NumberType Type { get; set; } = NumberType.RemainingTime;
+
+            public NumberVisibility Visibility { get; set; } = NumberVisibility.Hidden;
         }
 
         public class CountdownTab
@@ -149,7 +149,7 @@ namespace MPTickBar
             this.FastFireIIIMarker = new();
             this.FireIIICastIndicator = new();
             this.MPRegenStack = new();
-            this.NumberPercentage = new();
+            this.Number = new();
             this.Countdown = new();
         }
     }

@@ -309,23 +309,27 @@ namespace MPTickBar
             var digitTotal = 10.0f;
             var width = (this.Numbers.Width / digitTotal);
             var height = this.Numbers.Height;
-            var scaledWidth = width * this.Configuration.NumberPercentage.Scale;
-            var scaledHeight = height * this.Configuration.NumberPercentage.Scale;
+            var scaledWidth = width * this.Configuration.Number.Scale;
+            var scaledHeight = height * this.Configuration.Number.Scale;
             var textureY = 0.0f;
             var textureH = 1.0f;
-            int percentage = (int)(this.Progress * 100.0);
-            var percentageText = percentage.ToString();
-            var x = offsetX + this.Configuration.NumberPercentage.OffsetX + (gaugeWidth / 2.0f);
-            var y = offsetY + this.Configuration.NumberPercentage.OffsetY + (gaugeHeight / 2.0f) + adjustY;
-            var totalNumberWidth = scaledWidth * percentageText.Length;
+            var number = (this.Configuration.Number.Type == NumberType.RemainingTime) ? (int)((3.0 - (3.0 * this.Progress)) * 10.0) :
+                         (this.Configuration.Number.Type == NumberType.Percentage) ? (int)(this.Progress * 100.0) : 0;
+            var numberText = (this.Configuration.Number.Type == NumberType.RemainingTime) ? number.ToString("00") : number.ToString();
+            if (numberText.All(x => x == '0'))
+                numberText = "0";
 
-            foreach (var digitText in percentageText)
+            var x = offsetX + this.Configuration.Number.OffsetX + (gaugeWidth / 2.0f);
+            var y = offsetY + this.Configuration.Number.OffsetY + (gaugeHeight / 2.0f) + adjustY;
+            var totalNumberWidth = scaledWidth * numberText.Length;
+
+            foreach (var digitText in numberText)
             {
                 var digit = char.GetNumericValue(digitText);
                 var textureX = (width * digit) / this.Numbers.Width;
                 var textureW = textureX + (width / this.Numbers.Width);
                 ImGui.SetCursorPos(new(x - (totalNumberWidth / 2.0f), y - (scaledHeight / 2.0f)));
-                ImGui.Image(this.Numbers.ImGuiHandle, new(scaledWidth, scaledHeight), new((float)textureX, textureY), new((float)textureW, textureH), this.Configuration.NumberPercentage.NumberPercentageColor);
+                ImGui.Image(this.Numbers.ImGuiHandle, new(scaledWidth, scaledHeight), new((float)textureX, textureY), new((float)textureW, textureH), this.Configuration.Number.NumberColor);
                 x += scaledWidth;
             }
         }
@@ -442,8 +446,8 @@ namespace MPTickBar
                 this.RenderMPRegenStackUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, false);
             }
 
-            if ((this.Configuration.NumberPercentage.Visibility == NumberPercentageVisibility.Visible) ||
-               ((this.Configuration.NumberPercentage.Visibility == NumberPercentageVisibility.UnderUmbralIceIII) && this.PlayerState.IsUmbralIceIIIActivated))
+            if ((this.Configuration.Number.Visibility == NumberVisibility.Visible) ||
+               ((this.Configuration.Number.Visibility == NumberVisibility.WhileInProgress) && (this.Progress != 0.0)))
                 this.RenderNumbers(offsetX, offsetY, gaugeWidth, gaugeHeight);
 
             this.VertexDataUpdate(offsetX, offsetY, gaugeWidth, gaugeHeight);
@@ -523,9 +527,9 @@ namespace MPTickBar
                         this.MPRegenTab();
                         ImGui.EndTabItem();
                     }
-                    if (ImGui.BeginTabItem("Number (%)"))
+                    if (ImGui.BeginTabItem("Number"))
                     {
-                        this.NumberPercentageTab();
+                        this.NumberTab();
                         ImGui.EndTabItem();
                     }
                     if (ImGui.BeginTabItem("Countdown"))
@@ -570,9 +574,9 @@ namespace MPTickBar
             PluginUI.CollapsingHeader("Information", () =>
             {
                 ImGui.Text("The progress bar will start working based on:" +
-                    "\n-[Autostart] option enabled, under certain conditions." +
                     "\n-Umbral Ice MP regen." +
-                    "\n-Natural MP regen.");
+                    "\n-Natural MP regen." +
+                    "\n-At the beginning of the instanced duty or zone, under certain conditions.");
             });
             PluginUI.CollapsingHeader("Dimension", () =>
             {
@@ -593,12 +597,6 @@ namespace MPTickBar
                 PluginUI.Tooltip("Show the bar effect animation when it goes from full to an empty state.");
                 this.ColorEdit4(config.RegressBarColor, x => config.RegressBarColor = x, "Regress Bar", spacing);
                 this.Combo(config.UI, x => config.UI = x, "UI");
-            });
-            PluginUI.CollapsingHeader("Functional", () =>
-            {
-                this.CheckBox(config.IsAutostartEnabled, x => config.IsAutostartEnabled = x, "Autostart");
-                PluginUI.Tooltip("Enable the progress bar to start automatically when changing zones or before combat starts (at full MP)." +
-                    "\n\nAfter a while, the game stops sending the required data to trigger this functionality. Once you die, it'll work again.");
             });
         }
 
@@ -662,7 +660,7 @@ namespace MPTickBar
             {
                 ImGui.Text("The MP Regen Stack contains 4 stacks:" +
                     "\n-The first three stacks represent the state of the current MP." +
-                    "\n  (e.g Almost empty MP = 0 stack. Almost full MP = 3 stacks)" +
+                    "\n (e.g Almost empty MP = 0 stack. Almost full MP = 3 stacks)" +
                     "\n-The last one represents the Lucid Dreaming regen." +
                     "\n-Umbral Ice I regen grants 1 stack." +
                     "\n-Umbral Ice III regen grants 2 stacks.");
@@ -690,12 +688,12 @@ namespace MPTickBar
             });
         }
 
-        private void NumberPercentageTab()
+        private void NumberTab()
         {
-            var config = this.Configuration.NumberPercentage;
+            var config = this.Configuration.Number;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                ImGui.Text("The number represents the percentage of the progress.");
+                ImGui.Text("The number represents the remaining time or percentage of the progress.");
             });
             PluginUI.CollapsingHeader("Location", () =>
             {
@@ -707,10 +705,11 @@ namespace MPTickBar
             });
             PluginUI.CollapsingHeader("Visual", () =>
             {
-                this.ColorEdit4(config.NumberPercentageColor, x => config.NumberPercentageColor = x, "Number (%)");
+                this.ColorEdit4(config.NumberColor, x => config.NumberColor = x, "Number");
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
+                this.Combo(config.Type, x => config.Type = x, "Type");
                 this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
             });
         }
