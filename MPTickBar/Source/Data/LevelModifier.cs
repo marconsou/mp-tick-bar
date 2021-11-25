@@ -20,7 +20,7 @@ namespace MPTickBar
             using var memoryStream = new MemoryStream(Resources.LevelModifier);
             using var streamReader = new StreamReader(memoryStream);
             string line;
-            var level = 1;
+            byte level = 1;
             while ((line = streamReader.ReadLine()) != null)
             {
                 line = line.Trim();
@@ -33,7 +33,7 @@ namespace MPTickBar
                     sub = data;
                     div = data;
                 }
-                else
+                else if (level <= Global.LevelMax)
                 {
                     var data = line.Split('|');
 
@@ -42,6 +42,12 @@ namespace MPTickBar
 
                     sub = int.Parse(data[0]);
                     div = int.Parse(data[1]);
+                }
+                else
+                {
+                    var index = Global.LevelMax - 1;
+                    sub = LevelModifier.LevelModifierData[index].Sub;
+                    div = LevelModifier.LevelModifierData[index].Div;
                 }
                 LevelModifier.LevelModifierData.Add(new() { Sub = sub, Div = div });
                 level++;
