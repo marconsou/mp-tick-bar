@@ -15,7 +15,7 @@ namespace MPTickBar
 
         public void NetworkMessage(uint targetActorId)
         {
-            if (this.PlayerState.CheckPlayerId(targetActorId))
+            if (this.PlayerState.CheckPlayerState(targetActorId))
                 this.RestartProgress();
         }
 
