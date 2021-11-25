@@ -67,9 +67,10 @@ namespace MPTickBar
 
         public void StateUpdate()
         {
-            this.MP.Update(this.IsPlayingAsBlackMage ? this.Player.CurrentMp : uint.MinValue);
-            this.Territory.Update(this.IsPlayingAsBlackMage ? this.ClientState.TerritoryType : ushort.MinValue);
-            this.IsDead.Update(this.IsPlayingAsBlackMage && (this.Player.CurrentHp == 0));
+            var isPlayingAsBlackMage = this.IsPlayingAsBlackMage;
+            this.MP.Update(isPlayingAsBlackMage ? this.Player.CurrentMp : uint.MinValue);
+            this.Territory.Update(isPlayingAsBlackMage ? this.ClientState.TerritoryType : ushort.MinValue);
+            this.IsDead.Update(isPlayingAsBlackMage && (this.Player.CurrentHp == 0));
         }
 
         public void SaveData()
