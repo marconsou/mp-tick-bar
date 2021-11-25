@@ -29,17 +29,19 @@ namespace MPTickBar
 
         public bool LucidDreamingRegenStack { get; private set; }
 
-        public bool IsPlayingAsBlackMage => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn && (this.Player.ClassJob?.Id == 25);
+        public bool IsPlayingAsBlackMage => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn && (this.Player.ClassJob?.Id == Global.BlackMageId);
 
         public bool IsInCombat => this.IsPlayingAsBlackMage && (this.Condition != null) && this.Condition[ConditionFlag.InCombat];
 
-        public bool IsUmbralIceActivated => this.IsPlayingAsBlackMage && (this.JobGauges != null) && (this.JobGauges.Get<BLMGauge>().UmbralIceStacks > 0);
+        public bool IsUmbralIceActivated => (this.UmbralIceStacks > 0);
 
-        public bool IsUmbralIceIIIActivated => this.IsPlayingAsBlackMage && (this.JobGauges != null) && (this.JobGauges.Get<BLMGauge>().UmbralIceStacks == 3);
+        public bool IsUmbralIceIIIActivated => (this.UmbralIceStacks == 3);
 
-        private bool IsLucidDreamingActivated => this.IsEffectActivated(1204);
+        private bool IsLucidDreamingActivated => this.IsEffectActivated(Global.LucidDreamingId);
 
-        private bool IsCircleOfPowerActivated => this.IsEffectActivated(738);
+        private bool IsCircleOfPowerActivated => this.IsEffectActivated(Global.CircleOfPowerId);
+
+        private byte UmbralIceStacks => (this.IsPlayingAsBlackMage && (this.JobGauges != null)) ? this.JobGauges.Get<BLMGauge>().UmbralIceStacks : (byte)0;
 
         private bool IsEffectActivated(uint statusId) => this.IsPlayingAsBlackMage && this.Player.StatusList.Any(x => x.StatusId == statusId);
 
@@ -117,7 +119,7 @@ namespace MPTickBar
                 var astralUmbral = 50;
                 var sub = LevelModifier.GetLevelModifierSub(level);
                 var div = LevelModifier.GetLevelModifierDiv(level);
-                var spellSpeed = UIState.pInstance->PlayerState.Attributes[46];
+                var spellSpeed = UIState.pInstance->PlayerState.Attributes[Global.SpellSpeedIndex];
                 return (float)Math.Floor(Math.Floor(Math.Ceiling(Math.Floor(100.0 - (this.IsCircleOfPowerActivated ? 15 : 0)) * 1) * Math.Floor((2000 - Math.Floor(130.0 * (spellSpeed - sub) / div + 1000)) * gcd35 / 1000) / 1000) * astralUmbral / 100) / 100;
             }
         }
