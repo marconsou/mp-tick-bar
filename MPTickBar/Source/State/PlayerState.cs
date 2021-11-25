@@ -45,7 +45,7 @@ namespace MPTickBar
 
         private bool IsEffectActivated(uint statusId) => this.IsPlayingAsBlackMage && this.Player.StatusList.Any(x => x.StatusId == statusId);
 
-        public bool CheckPlayerId(uint targetActorId) => !this.IsDead.Current && (this.Player.ObjectId == targetActorId);
+        public bool CheckPlayerState(uint targetActorId) => !this.IsDead.Current && this.Player.IsValid() && (this.Player.ObjectId == targetActorId);
 
         private class Data<T> where T : struct
         {
