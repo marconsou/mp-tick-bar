@@ -313,8 +313,8 @@ namespace MPTickBar
             var scaledHeight = height * this.Configuration.Number.Scale;
             var textureY = 0.0f;
             var textureH = 1.0f;
-            var number = (this.Configuration.Number.Type == NumberType.RemainingTime) ? (int)((3.0 - (3.0 * this.Progress)) * 10.0) :
-                         (this.Configuration.Number.Type == NumberType.Percentage) ? (int)(this.Progress * 100.0) : 0;
+            var number = (this.Configuration.Number.Type == NumberType.RemainingTime) ? (int)Math.Abs(((!this.Configuration.Number.Reverse ? 0.0 : 3.0) - (this.Progress * 3.0)) * 10.0) :
+                         (this.Configuration.Number.Type == NumberType.Percentage) ? (int)Math.Abs((!this.Configuration.Number.Reverse ? 0.0 : 100.0) - (this.Progress * 100.0)) : 0;
             var numberText = (this.Configuration.Number.Type == NumberType.RemainingTime) ? number.ToString("00") : number.ToString();
             if (numberText.All(x => x == '0'))
                 numberText = "0";
@@ -461,7 +461,7 @@ namespace MPTickBar
 
         private void DrawMPTickBarWindow()
         {
-            var isMPTickBarVisible = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage &&
+            var isMPTickBarVisible = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage && !this.PlayerState.IsBetweenAreas &&
                (!this.Configuration.General.IsLocked ||
                (this.Configuration.General.Visibility == MPTickBarVisibility.Visible) ||
                (this.Configuration.General.Visibility == MPTickBarVisibility.InCombat && this.PlayerState.IsInCombat));
@@ -719,7 +719,9 @@ namespace MPTickBar
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
+                var spacing = ImGui.GetStyle().ItemSpacing.X * ImGuiHelpers.GlobalScale;
                 this.Combo(config.Type, x => config.Type = x, "Type");
+                this.CheckBox(config.Reverse, x => config.Reverse = x, "Reverse", spacing);
                 this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
             });
         }
