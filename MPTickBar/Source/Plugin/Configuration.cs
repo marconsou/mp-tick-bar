@@ -8,7 +8,7 @@ namespace MPTickBar
     [Serializable]
     public class Configuration : IPluginConfiguration
     {
-        public int Version { get; set; } = 8;
+        public int Version { get; set; } = 9;
 
         public GeneralTab General { get; set; }
 
@@ -122,6 +122,8 @@ namespace MPTickBar
             public Vector4 NumberColor { get; set; } = new(1.0f, 0.98f, 0.94f, 1.0f);
 
             public NumberType Type { get; set; } = NumberType.RemainingTime;
+
+            public bool Reverse { get; set; } = false;
 
             public NumberVisibility Visibility { get; set; } = NumberVisibility.Hidden;
         }

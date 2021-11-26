@@ -31,17 +31,21 @@ namespace MPTickBar
 
         public bool IsPlayingAsBlackMage => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn && (this.Player.ClassJob?.Id == Global.BlackMageId);
 
-        public bool IsInCombat => this.IsPlayingAsBlackMage && (this.Condition != null) && this.Condition[ConditionFlag.InCombat];
+        public bool IsInCombat => this.CheckCondition(ConditionFlag.InCombat);
+
+        public bool IsBetweenAreas => this.CheckCondition(ConditionFlag.BetweenAreas) || this.CheckCondition(ConditionFlag.BetweenAreas51);
+
+        private bool CheckCondition(ConditionFlag conditionFlag) => this.IsPlayingAsBlackMage && (this.Condition != null) && this.Condition[conditionFlag];
 
         public bool IsUmbralIceActivated => (this.UmbralIceStacks > 0);
 
         public bool IsUmbralIceIIIActivated => (this.UmbralIceStacks == 3);
 
+        private byte UmbralIceStacks => (this.IsPlayingAsBlackMage && (this.JobGauges != null)) ? this.JobGauges.Get<BLMGauge>().UmbralIceStacks : (byte)0;
+
         private bool IsLucidDreamingActivated => this.IsEffectActivated(Global.LucidDreamingId);
 
         private bool IsCircleOfPowerActivated => this.IsEffectActivated(Global.CircleOfPowerId);
-
-        private byte UmbralIceStacks => (this.IsPlayingAsBlackMage && (this.JobGauges != null)) ? this.JobGauges.Get<BLMGauge>().UmbralIceStacks : (byte)0;
 
         private bool IsEffectActivated(uint statusId) => this.IsPlayingAsBlackMage && this.Player.StatusList.Any(x => x.StatusId == statusId);
 
