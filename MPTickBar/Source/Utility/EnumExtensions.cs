@@ -14,9 +14,7 @@ namespace MPTickBar
             {
                 var _Attribs = memberInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
                 if ((_Attribs != null && _Attribs.Length > 0))
-                {
                     return ((DescriptionAttribute)_Attribs.ElementAt(0)).Description;
-                }
             }
             return value.ToString();
         }

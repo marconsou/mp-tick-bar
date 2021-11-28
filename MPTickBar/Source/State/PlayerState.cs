@@ -19,11 +19,11 @@ namespace MPTickBar
 
         private PlayerCharacter Player => this.ClientState?.LocalPlayer;
 
-        private Data<uint> MP { get; set; } = new();
+        private Data<uint> MP { get; } = new();
 
-        private Data<ushort> Territory { get; set; } = new();
+        private Data<ushort> Territory { get; } = new();
 
-        private Data<bool> IsDead { get; set; } = new();
+        private Data<bool> IsDead { get; } = new();
 
         public byte UmbralIceRegenStack { get; private set; }
 
@@ -49,7 +49,7 @@ namespace MPTickBar
 
         private bool IsEffectActivated(uint statusId) => this.IsPlayingAsBlackMage && this.Player.StatusList.Any(x => x.StatusId == statusId);
 
-        public bool CheckPlayerState(uint targetActorId) => !this.IsDead.Current && this.Player.IsValid() && (this.Player.ObjectId == targetActorId);
+        public bool CheckPlayerState(uint targetActorId) => this.IsPlayingAsBlackMage && this.Player.IsValid() && !this.IsDead.Current && (this.Player.ObjectId == targetActorId);
 
         private class Data<T> where T : struct
         {
@@ -86,6 +86,9 @@ namespace MPTickBar
 
         public void MPRegenStackUpdate()
         {
+            if (!this.IsPlayingAsBlackMage)
+                return;
+
             var onlucidDreamingMPRegen = false;
             if (this.IsLucidDreamingActivated)
             {
