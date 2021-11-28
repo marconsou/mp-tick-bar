@@ -16,7 +16,7 @@ namespace MPTickBar
 
         private static string ConfigCommand => "/mptb";
 
-        public static string CountdownCommand => "/mptbcd";
+        public static string CountdownCommand => $"{MPTickBarPlugin.ConfigCommand}cd";
 
         [PluginService]
         private DalamudPluginInterface PluginInterface { get; init; }
@@ -40,7 +40,7 @@ namespace MPTickBar
         private GameNetwork GameNetwork { get; init; }
 
         [PluginService]
-        public SigScanner SigScanner { get; init; }
+        private SigScanner SigScanner { get; init; }
 
         private MPTickBarPluginUI MPTickBarPluginUI { get; }
 

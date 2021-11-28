@@ -67,7 +67,7 @@ namespace MPTickBar
             this.DragInt(valueRight, setterRight, label, speed, min, max, format, ImGui.GetStyle().ItemSpacing.X * ImGuiHelpers.GlobalScale);
         }
 
-        protected void Combo<T>(T value, Action<T> setter, string label)
+        protected void Combo<T>(T value, Action<T> setter, string label, float spacing = 0.0f)
         {
             var method = typeof(EnumExtensions).GetMethod("GetDescription", BindingFlags.Public | BindingFlags.Static, null, new[] { value.GetType() }, null);
             var options = new List<string>();
@@ -79,6 +79,7 @@ namespace MPTickBar
             }
 
             var changedValue = (int)(object)value;
+            PluginUI.SameLine(spacing);
             if (ImGui.Combo(label, ref changedValue, options.ToArray(), options.Count))
                 this.SaveConfiguration((T)(object)changedValue, setter);
         }

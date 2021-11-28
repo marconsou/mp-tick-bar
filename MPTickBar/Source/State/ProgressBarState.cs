@@ -29,10 +29,8 @@ namespace MPTickBar
         {
             this.PlayerState.StateUpdate();
             this.PlayerState.MPRegenStackUpdate();
-
             if (!this.PlayerState.IsValidState())
                 this.ResetProgress();
-
             this.ProgressUpdate();
             this.PlayerState.SaveData();
             return this.ProgressTime / 3.0;
