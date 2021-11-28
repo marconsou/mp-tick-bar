@@ -208,7 +208,7 @@ namespace MPTickBar
             return new() { Bar = bar, Marker = marker, UmbralIceRegenStack = umbralIceRegenStack, LucidDreamingRegenStack = lucidDreamingRegenStack };
         }
 
-        private static void RenderBackgroundUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeWidth, float gaugeHeight, float textureToElementScale, int uiNumber, Vector4 color)
+        private void RenderBackgroundUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeWidth, float gaugeHeight, float textureToElementScale, bool isBackground)
         {
             var x = offsetX;
             var y = offsetY;
@@ -216,31 +216,32 @@ namespace MPTickBar
             var height = gaugeHeight;
             var textureElementHeight = gaugeHeight / textureToElementScale;
             var textureX = 0.0f;
-            var textureY = (textureElementHeight * uiNumber) / mpTickBarUI.Bar.Height;
+            var textureY = (textureElementHeight * (!isBackground ? 0 : 5)) / mpTickBarUI.Bar.Height;
             var textureW = 1.0f;
             var textureH = textureY + (textureElementHeight / mpTickBarUI.Bar.Height);
             ImGui.SetCursorPos(new(x, y));
-            ImGui.Image(mpTickBarUI.Bar.ImGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), color);
+            ImGui.Image(mpTickBarUI.Bar.ImGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), isBackground ? this.Configuration.ProgressBar.BackgroundColor : this.Configuration.ProgressBar.EdgeColor);
         }
 
-        private static void RenderBarUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeWidth, float gaugeHeight, float textureToElementScale, double progress, int uiNumber, bool isProgress, Vector4 color)
+        private void RenderBarUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeWidth, float gaugeHeight, float textureToElementScale, double progress, bool isProgress, bool isProgressAfterMarker)
         {
             var barTextureOffsetX = 12.0f * textureToElementScale;
-            var width = (float)((gaugeWidth - (barTextureOffsetX * 2.0f)) * progress);
-            var height = gaugeHeight;
             var x = offsetX + barTextureOffsetX;
             var y = offsetY;
+            var width = (float)((gaugeWidth - (barTextureOffsetX * 2.0f)) * progress);
+            var height = gaugeHeight;
             var textureElementX = barTextureOffsetX / textureToElementScale;
             var textureElementHeight = gaugeHeight / textureToElementScale;
             var textureX = textureElementX / mpTickBarUI.Bar.Width;
-            var textureY = (textureElementHeight * uiNumber) / mpTickBarUI.Bar.Height;
+            var textureY = (textureElementHeight * (isProgress ? 2 : 4)) / mpTickBarUI.Bar.Height;
             var textureW = textureX + (float)((1.0f - (textureX * 2.0f)) * (isProgress ? progress : 1.0f));
             var textureH = textureY + (textureElementHeight / mpTickBarUI.Bar.Height);
+            var color = !isProgress ? this.Configuration.ProgressBar.RegressBarColor : (isProgressAfterMarker) ? this.Configuration.ProgressBar.ProgressBarAfterMarkerColor : this.Configuration.ProgressBar.ProgressBarColor;
             ImGui.SetCursorPos(new(x, y));
             ImGui.Image(mpTickBarUI.Bar.ImGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), color);
         }
 
-        private void RenderMarkerUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float dimension, float fastFireIIIMarkerOffset, bool isBackground, Vector4 color)
+        private void RenderMarkerUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float dimension, float fastFireIIIMarkerOffset, bool isBackground)
         {
             var adjustX = -4.0f;
             var x = offsetX + adjustX + fastFireIIIMarkerOffset;
@@ -252,10 +253,25 @@ namespace MPTickBar
             var textureW = textureX + 0.5f;
             var textureH = 1.0f;
             ImGui.SetCursorPos(new(x - ((width - dimension) / 2.0f), y - ((height - dimension) / 2.0f)));
-            ImGui.Image(mpTickBarUI.Marker.ImGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), color);
+            ImGui.Image(mpTickBarUI.Marker.ImGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), isBackground ? this.Configuration.FastFireIIIMarker.BackgroundColor : this.Configuration.FastFireIIIMarker.MarkerColor);
         }
 
-        private void RenderMPRegenStackUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeWidth, float dimension, bool isBackground)
+        private void RenderIndicatorUIElement(float offsetX, float offsetY, float gaugeWidth, float gaugeHeight)
+        {
+            var adjustX = 20.0f;
+            var x = offsetX + this.Configuration.FireIIICastIndicator.OffsetX + gaugeWidth + adjustX;
+            var y = offsetY + this.Configuration.FireIIICastIndicator.OffsetY + (gaugeHeight / 2.0f);
+            var width = this.FireIIICastIndicator.Width * this.Configuration.FireIIICastIndicator.Scale;
+            var height = this.FireIIICastIndicator.Height * this.Configuration.FireIIICastIndicator.Scale;
+            var textureX = 0.0f;
+            var textureY = 0.0f;
+            var textureW = 1.0f;
+            var textureH = 1.0f;
+            ImGui.SetCursorPos(new(x - (width / 2.0f), y - (height / 2.0f)));
+            ImGui.Image(this.FireIIICastIndicator.ImGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), this.Configuration.FireIIICastIndicator.IndicatorColor);
+        }
+
+        private void RenderStacksUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeWidth, float dimension, bool isBackground)
         {
             var x = offsetX + this.Configuration.MPRegenStack.OffsetX + (gaugeWidth / 4.0f);
             var y = offsetY + this.Configuration.MPRegenStack.OffsetY - 7.0f;
@@ -288,22 +304,7 @@ namespace MPTickBar
                 RenderImage(mpTickBarUI.LucidDreamingRegenStack.ImGuiHandle, isBackground ? this.Configuration.MPRegenStack.LucidDreamingStackBackgroundColor : this.Configuration.MPRegenStack.LucidDreamingStackColor);
         }
 
-        private void RenderFireIIICastIndicator(float offsetX, float offsetY, float gaugeWidth, float gaugeHeight)
-        {
-            var adjustX = 20.0f;
-            var width = this.FireIIICastIndicator.Width * this.Configuration.FireIIICastIndicator.Scale;
-            var height = this.FireIIICastIndicator.Height * this.Configuration.FireIIICastIndicator.Scale;
-            var x = offsetX + this.Configuration.FireIIICastIndicator.OffsetX + gaugeWidth + adjustX;
-            var y = offsetY + this.Configuration.FireIIICastIndicator.OffsetY + (gaugeHeight / 2.0f);
-            var textureX = 0.0f;
-            var textureY = 0.0f;
-            var textureW = 1.0f;
-            var textureH = 1.0f;
-            ImGui.SetCursorPos(new(x - (width / 2.0f), y - (height / 2.0f)));
-            ImGui.Image(this.FireIIICastIndicator.ImGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), this.Configuration.FireIIICastIndicator.IndicatorColor);
-        }
-
-        private void RenderNumbers(float offsetX, float offsetY, float gaugeWidth, float gaugeHeight)
+        private void RenderNumbersUIElement(float offsetX, float offsetY, float gaugeWidth, float gaugeHeight)
         {
             var adjustY = 10.0f;
             var digitTotal = 10.0f;
@@ -420,53 +421,53 @@ namespace MPTickBar
             var offsetX = this.Configuration.General.OffsetX + 20.0f;
             var offsetY = this.Configuration.General.OffsetY + 20.0f;
 
-            MPTickBarPluginUI.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, 5, this.Configuration.ProgressBar.BackgroundColor);
+            this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, true);
 
             if (this.Configuration.ProgressBar.IsRegressEffectEnabled && this.RegressEffect.IsRegressing)
-                MPTickBarPluginUI.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, this.RegressEffect.Regress, 4, false, this.Configuration.ProgressBar.RegressBarColor);
+                this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, this.RegressEffect.Regress, false, false);
 
             var progressWidth = 296.0f * textureToElementScale;
             var fastFireIIIMarkerOffset = Math.Clamp((3.0f - this.PlayerState.GetFastFireIIICastTime() + this.Configuration.FastFireIIIMarker.TimeOffset) * (progressWidth / 3.0f), 0.0f, progressWidth);
             var isProgressAfterMarker = this.Progress > (fastFireIIIMarkerOffset / progressWidth);
 
-            MPTickBarPluginUI.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, this.Progress, 2, true, (isProgressAfterMarker) ? this.Configuration.ProgressBar.ProgressBarAfterMarkerColor : this.Configuration.ProgressBar.ProgressBarColor);
-            MPTickBarPluginUI.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, 0, this.Configuration.ProgressBar.EdgeColor);
+            this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, this.Progress, true, isProgressAfterMarker);
+            this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, false);
 
             if ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.Visible) ||
                ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.UnderUmbralIceIII) && this.PlayerState.IsUmbralIceIIIActivated))
             {
-                this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, true, this.Configuration.FastFireIIIMarker.BackgroundColor);
-                this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, false, this.Configuration.FastFireIIIMarker.MarkerColor);
+                this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, true);
+                this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, false);
             }
 
             this.AddVertexDataUpToThisPoint();
 
             if (((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.Visible) ||
                 ((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.UnderUmbralIceIII) && this.PlayerState.IsUmbralIceIIIActivated)) && isProgressAfterMarker)
-                this.RenderFireIIICastIndicator(offsetX, offsetY, gaugeWidth, gaugeHeight);
+                this.RenderIndicatorUIElement(offsetX, offsetY, gaugeWidth, gaugeHeight);
 
             if ((this.Configuration.MPRegenStack.Visibility == MPRegenStackVisibility.Visible) ||
                ((this.Configuration.MPRegenStack.Visibility == MPRegenStackVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated))
             {
-                this.RenderMPRegenStackUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, true);
-                this.RenderMPRegenStackUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, false);
+                this.RenderStacksUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, true);
+                this.RenderStacksUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, false);
             }
 
             if ((this.Configuration.Number.Visibility == NumberVisibility.Visible) ||
                ((this.Configuration.Number.Visibility == NumberVisibility.WhileInProgress) && (this.Progress != 0.0)))
-                this.RenderNumbers(offsetX, offsetY, gaugeWidth, gaugeHeight);
+                this.RenderNumbersUIElement(offsetX, offsetY, gaugeWidth, gaugeHeight);
 
             this.VertexDataUpdate(offsetX, offsetY, gaugeWidth, gaugeHeight);
         }
 
         private void DrawMPTickBarWindow()
         {
-            var isMPTickBarVisible = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage && !this.PlayerState.IsBetweenAreas &&
+            var isMPTickBarWindowVisible = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage && !this.PlayerState.IsBetweenAreas &&
                (!this.Configuration.General.IsLocked ||
                (this.Configuration.General.Visibility == MPTickBarVisibility.Visible) ||
                (this.Configuration.General.Visibility == MPTickBarVisibility.InCombat && this.PlayerState.IsInCombat));
 
-            if (!isMPTickBarVisible)
+            if (!isMPTickBarWindowVisible)
                 return;
 
             var windowFlags = this.Configuration.General.IsLocked ?
@@ -491,7 +492,7 @@ namespace MPTickBar
 
             ImGui.SetNextWindowPos(new(700.0f, 450.0f), ImGuiCond.FirstUseEver);
             ImGui.SetNextWindowSize(new(250.0f, 70.0f), ImGuiCond.FirstUseEver);
-            if (ImGui.Begin("MP Tick Bar", ref isMPTickBarVisible, windowFlags))
+            if (ImGui.Begin("MP Tick Bar", ref isMPTickBarWindowVisible, windowFlags))
             {
                 if (ImGui.BeginChild("MP Tick Bar (Child)", Vector2.Zero, true, windowFlags))
                     this.DrawMPTickBar();
@@ -561,7 +562,7 @@ namespace MPTickBar
             PluginUI.CollapsingHeader("Information", () =>
             {
                 ImGui.Text("All options in this tab will apply to all UI elements at once." +
-                    "\nUse the [Offset] option if the progress bar is clipping.");
+                    "\nUse the [Offset] option if an UI element is clipping.");
             });
             PluginUI.CollapsingHeader("Location", () =>
             {
@@ -586,7 +587,8 @@ namespace MPTickBar
                 ImGui.Text("The progress bar will start working based on:" +
                     "\n-Umbral Ice MP regen." +
                     "\n-Natural MP regen." +
-                    "\n-At the beginning of the instanced duty or zone, under certain conditions.");
+                    "\n-At the beginning of the instanced duty or zone, under certain conditions." +
+                    "\n-Changing your HP: re-quipping gear, using food, taking damage, etc.");
             });
             PluginUI.CollapsingHeader("Dimension", () =>
             {
@@ -731,17 +733,8 @@ namespace MPTickBar
             var config = this.Configuration.Countdown;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                var text = "Type ";
-                var spacing = 8.0f + ImGui.CalcTextSize(text).X;
-                ImGui.Text(text);
-
-                text = $"{MPTickBarPlugin.CountdownCommand} X";
-                ImGui.SameLine(spacing);
-                ImGui.TextColored(new Vector4(0.0f, 1.0f, 0.0f, 1.0f), text);
-
-                spacing += ImGui.CalcTextSize(text).X;
-                ImGui.SameLine(spacing);
-                ImGui.Text($" to start the countdown with X seconds after next tick and time offset. (e.g. {MPTickBarPlugin.CountdownCommand} 12)");
+                ImGui.Text($"Type {MPTickBarPlugin.CountdownCommand} X to start the countdown with X seconds after next tick and time offset. (e.g. {MPTickBarPlugin.CountdownCommand} 12)" +
+                    "\nAdjust the [Time Offset] option based on your opener/encounter requirements.");
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
