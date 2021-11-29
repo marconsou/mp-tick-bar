@@ -35,7 +35,7 @@ namespace MPTickBar
 
         public bool IsBetweenAreas => this.CheckCondition(new[] { ConditionFlag.BetweenAreas, ConditionFlag.BetweenAreas51 });
 
-        public bool IsOccupied => this.CheckCondition(new ConditionFlag[] { ConditionFlag.OccupiedInCutSceneEvent, ConditionFlag.Occupied33, ConditionFlag.Occupied38, });
+        public bool IsOccupied => this.CheckCondition(new[] { ConditionFlag.OccupiedInCutSceneEvent, ConditionFlag.Occupied33, ConditionFlag.Occupied38 });
 
         private bool CheckCondition(ConditionFlag[] conditionFlags) => this.IsPlayingAsBlackMage && (this.Condition != null) && conditionFlags.Any(x => this.Condition[x]);
 
