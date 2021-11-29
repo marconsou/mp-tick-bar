@@ -330,9 +330,9 @@ namespace MPTickBar
                 ImGui.GetWindowDrawList().AddCircleFilled(new Vector2(pos.X, pos.Y), 1.1f * this.Configuration.Number.Scale, ImGui.ColorConvertFloat4ToU32(this.Configuration.Number.NumberColor));
             }
 
-            foreach (var digitText in numberText)
+            foreach (var item in numberText)
             {
-                var digit = char.GetNumericValue(digitText);
+                var digit = char.GetNumericValue(item);
                 var textureX = (width * digit) / this.Numbers.Width;
                 var textureW = textureX + (width / this.Numbers.Width);
                 ImGui.SetCursorPos(new(x - (totalNumberWidth / 2.0f), y - (scaledHeight / 2.0f)));
@@ -462,7 +462,7 @@ namespace MPTickBar
 
         private void DrawMPTickBarWindow()
         {
-            var isMPTickBarWindowVisible = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage && !this.PlayerState.IsBetweenAreas &&
+            var isMPTickBarWindowVisible = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage && !this.PlayerState.IsBetweenAreas && !this.PlayerState.IsOccupied &&
                (!this.Configuration.General.IsLocked ||
                (this.Configuration.General.Visibility == MPTickBarVisibility.Visible) ||
                (this.Configuration.General.Visibility == MPTickBarVisibility.InCombat && this.PlayerState.IsInCombat));
