@@ -31,11 +31,13 @@ namespace MPTickBar
 
         public bool IsPlayingAsBlackMage => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn && (this.Player.ClassJob?.Id == Global.BlackMageId);
 
-        public bool IsInCombat => this.CheckCondition(ConditionFlag.InCombat);
+        public bool IsInCombat => this.CheckCondition(new[] { ConditionFlag.InCombat });
 
-        public bool IsBetweenAreas => this.CheckCondition(ConditionFlag.BetweenAreas) || this.CheckCondition(ConditionFlag.BetweenAreas51);
+        public bool IsBetweenAreas => this.CheckCondition(new[] { ConditionFlag.BetweenAreas, ConditionFlag.BetweenAreas51 });
 
-        private bool CheckCondition(ConditionFlag conditionFlag) => this.IsPlayingAsBlackMage && (this.Condition != null) && this.Condition[conditionFlag];
+        public bool IsOccupied => this.CheckCondition(new[] { ConditionFlag.Occupied, ConditionFlag.OccupiedInEvent, ConditionFlag.OccupiedInQuestEvent, ConditionFlag.OccupiedInCutSceneEvent, ConditionFlag.Occupied30, ConditionFlag.Occupied33, ConditionFlag.Occupied38, ConditionFlag.Occupied39 });
+
+        private bool CheckCondition(ConditionFlag[] conditionFlags) => this.IsPlayingAsBlackMage && (this.Condition != null) && conditionFlags.Any(x => this.Condition[x]);
 
         public bool IsUmbralIceActivated => (this.UmbralIceStacks > 0);
 
