@@ -429,6 +429,8 @@ namespace MPTickBar
             var progressWidth = 296.0f * textureToElementScale;
             var fastFireIIIMarkerOffset = Math.Clamp((3.0f - this.PlayerState.GetFastFireIIICastTime() + this.Configuration.FastFireIIIMarker.TimeOffset) * (progressWidth / 3.0f), 0.0f, progressWidth);
             var isProgressAfterMarker = this.Progress > (fastFireIIIMarkerOffset / progressWidth);
+            if (Global.SpellSpeedDisabled)
+                isProgressAfterMarker = false;
 
             this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, this.Progress, true, isProgressAfterMarker);
             this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, false);
@@ -436,15 +438,21 @@ namespace MPTickBar
             if ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.Visible) ||
                ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.UnderUmbralIceIII) && this.PlayerState.IsUmbralIceIIIActivated))
             {
-                this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, true);
-                this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, false);
+                if (!Global.SpellSpeedDisabled)
+                {
+                    this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, true);
+                    this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, false);
+                }
             }
 
             this.AddVertexDataUpToThisPoint();
 
             if (((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.Visible) ||
                 ((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.UnderUmbralIceIII) && this.PlayerState.IsUmbralIceIIIActivated)) && isProgressAfterMarker)
-                this.RenderIndicatorUIElement(offsetX, offsetY, gaugeWidth, gaugeHeight);
+            {
+                if (!Global.SpellSpeedDisabled)
+                    this.RenderIndicatorUIElement(offsetX, offsetY, gaugeWidth, gaugeHeight);
+            }
 
             if ((this.Configuration.MPRegenStack.Visibility == MPRegenStackVisibility.Visible) ||
                ((this.Configuration.MPRegenStack.Visibility == MPRegenStackVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated))
@@ -752,9 +760,14 @@ namespace MPTickBar
                 this.Configuration.Reset();
                 this.Configuration.Save();
             }
+            if (Global.SpellSpeedDisabled)
+            {
+                ImGui.SameLine();
+                ImGui.TextColored(new(1.0f, 0.0f, 0.0f, 1.0f), "Spell Speed based features have been disabled!");
+            }
 
             var iconDimension = 23.0f * ImGuiHelpers.GlobalScale;
-            var fastFireIIICastTime = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage ? (((int)(this.PlayerState.GetFastFireIIICastTime() * 100)) / 100.0f).ToString("0.00s") : "N/A";
+            var fastFireIIICastTime = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage && !Global.SpellSpeedDisabled ? (((int)(this.PlayerState.GetFastFireIIICastTime() * 100)) / 100.0f).ToString("0.00s") : "N/A";
             var textWidth = ImGui.CalcTextSize(fastFireIIICastTime).X;
             ImGui.SameLine(ImGui.GetWindowWidth() - textWidth - iconDimension - 32.0f);
             ImGui.TextColored(new(0.0f, 1.0f, 0.0f, 1.0f), fastFireIIICastTime);

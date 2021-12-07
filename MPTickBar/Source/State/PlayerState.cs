@@ -94,7 +94,7 @@ namespace MPTickBar
             var onlucidDreamingMPRegen = false;
             if (this.IsLucidDreamingActivated)
             {
-                var lucidDreamingMPRegen = 500;
+                var lucidDreamingMPRegen = 550;
                 var mpRecovered = (int)(this.MP.Current - this.MP.Last);
                 var recoveringMPToFull = (this.MP.Current == this.Player.MaxMp) && (this.MP.Last > (this.Player.MaxMp - lucidDreamingMPRegen)) && (mpRecovered > 0);
                 onlucidDreamingMPRegen = (mpRecovered == lucidDreamingMPRegen || recoveringMPToFull);
