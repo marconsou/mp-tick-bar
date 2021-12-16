@@ -281,9 +281,10 @@ namespace MPTickBar
             var textureY = 0.0f;
             var textureW = textureX + 0.5f;
             var textureH = 1.0f;
-            var stacks = 4;
+            var umbralIceRegenStackMax = 3;
+            var lucidDreamingRegenStackMax = 2;
             var widthAdjust = 0.65f;
-            var totalWidth = (width * (1.0f - widthAdjust)) + (width * widthAdjust * stacks);
+            var totalWidth = (width * (1.0f - widthAdjust)) + (width * widthAdjust * (umbralIceRegenStackMax + lucidDreamingRegenStackMax));
 
             void RenderImage(IntPtr imGuiHandle, Vector4 color)
             {
@@ -291,7 +292,7 @@ namespace MPTickBar
                 ImGui.Image(imGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), color);
             }
 
-            for (var i = 0; i < stacks - 1; i++)
+            for (var i = 0; i < umbralIceRegenStackMax; i++)
             {
                 if (isBackground || (i < this.PlayerState.UmbralIceRegenStack))
                     RenderImage(mpTickBarUI.UmbralIceRegenStack.ImGuiHandle, isBackground ? this.Configuration.MPRegenStack.UmbralIceStackBackgroundColor : this.Configuration.MPRegenStack.UmbralIceStackColor);
@@ -300,8 +301,12 @@ namespace MPTickBar
 
             x += 2.0f * this.Configuration.MPRegenStack.Scale;
 
-            if (isBackground || this.PlayerState.LucidDreamingRegenStack)
-                RenderImage(mpTickBarUI.LucidDreamingRegenStack.ImGuiHandle, isBackground ? this.Configuration.MPRegenStack.LucidDreamingStackBackgroundColor : this.Configuration.MPRegenStack.LucidDreamingStackColor);
+            for (var i = 0; i < lucidDreamingRegenStackMax; i++)
+            {
+                if (isBackground || (i < this.PlayerState.LucidDreamingRegenStack))
+                    RenderImage(mpTickBarUI.LucidDreamingRegenStack.ImGuiHandle, isBackground ? this.Configuration.MPRegenStack.LucidDreamingStackBackgroundColor : this.Configuration.MPRegenStack.LucidDreamingStackColor);
+                x += width * widthAdjust;
+            }
         }
 
         private void RenderNumbersUIElement(float offsetX, float offsetY, float gaugeWidth, float gaugeHeight)
@@ -429,8 +434,6 @@ namespace MPTickBar
             var progressWidth = 296.0f * textureToElementScale;
             var fastFireIIIMarkerOffset = Math.Clamp((3.0f - this.PlayerState.GetFastFireIIICastTime() + this.Configuration.FastFireIIIMarker.TimeOffset) * (progressWidth / 3.0f), 0.0f, progressWidth);
             var isProgressAfterMarker = this.Progress > (fastFireIIIMarkerOffset / progressWidth);
-            if (Global.SpellSpeedDisabled)
-                isProgressAfterMarker = false;
 
             this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, this.Progress, true, isProgressAfterMarker);
             this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, false);
@@ -438,11 +441,8 @@ namespace MPTickBar
             if ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.Visible) ||
                ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.UnderUmbralIceIII) && this.PlayerState.IsUmbralIceIIIActivated))
             {
-                if (!Global.SpellSpeedDisabled)
-                {
-                    this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, true);
-                    this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, false);
-                }
+                this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, true);
+                this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, false);
             }
 
             this.AddVertexDataUpToThisPoint();
@@ -450,8 +450,7 @@ namespace MPTickBar
             if (((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.Visible) ||
                 ((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.UnderUmbralIceIII) && this.PlayerState.IsUmbralIceIIIActivated)) && isProgressAfterMarker)
             {
-                if (!Global.SpellSpeedDisabled)
-                    this.RenderIndicatorUIElement(offsetX, offsetY, gaugeWidth, gaugeHeight);
+                this.RenderIndicatorUIElement(offsetX, offsetY, gaugeWidth, gaugeHeight);
             }
 
             if ((this.Configuration.MPRegenStack.Visibility == MPRegenStackVisibility.Visible) ||
@@ -596,7 +595,7 @@ namespace MPTickBar
                     "\n-Umbral Ice MP regen." +
                     "\n-Natural MP regen." +
                     "\n-At the beginning of the instanced duty or zone, under certain conditions." +
-                    "\n-Changing your HP: re-quipping gear, using food, taking damage, etc.");
+                    "\n-Changing your HP: changing your gear, using food, taking damage, etc.");
             });
             PluginUI.CollapsingHeader("Dimension", () =>
             {
@@ -678,12 +677,12 @@ namespace MPTickBar
             var config = this.Configuration.MPRegenStack;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                ImGui.Text("The MP Regen Stack contains 4 stacks:" +
+                ImGui.Text("The MP Regen Stack contains 5 stacks:" +
                     "\n-The first three stacks represent the state of the current MP." +
                     "\n (e.g Almost empty MP = 0 stack. Almost full MP = 3 stacks)" +
-                    "\n-The last one represents the Lucid Dreaming regen." +
                     "\n-Umbral Ice I regen grants 1 stack." +
-                    "\n-Umbral Ice III regen grants 2 stacks.");
+                    "\n-Umbral Ice III regen grants 2 stacks." +
+                    "\n-The last two stacks represent the Lucid Dreaming regen.");
             });
             PluginUI.CollapsingHeader("Location", () =>
             {
@@ -760,14 +759,9 @@ namespace MPTickBar
                 this.Configuration.Reset();
                 this.Configuration.Save();
             }
-            if (Global.SpellSpeedDisabled)
-            {
-                ImGui.SameLine();
-                ImGui.TextColored(new(1.0f, 0.0f, 0.0f, 1.0f), "Spell Speed based features have been disabled!");
-            }
 
             var iconDimension = 23.0f * ImGuiHelpers.GlobalScale;
-            var fastFireIIICastTime = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage && !Global.SpellSpeedDisabled ? (((int)(this.PlayerState.GetFastFireIIICastTime() * 100)) / 100.0f).ToString("0.00s") : "N/A";
+            var fastFireIIICastTime = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage ? (((int)(this.PlayerState.GetFastFireIIICastTime() * 100)) / 100.0f).ToString("0.00s") : "N/A";
             var textWidth = ImGui.CalcTextSize(fastFireIIICastTime).X;
             ImGui.SameLine(ImGui.GetWindowWidth() - textWidth - iconDimension - 32.0f);
             ImGui.TextColored(new(0.0f, 1.0f, 0.0f, 1.0f), fastFireIIICastTime);
