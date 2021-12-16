@@ -27,7 +27,7 @@ namespace MPTickBar
 
         public byte UmbralIceRegenStack { get; private set; }
 
-        public bool LucidDreamingRegenStack { get; private set; }
+        public byte LucidDreamingRegenStack { get; private set; }
 
         public bool IsPlayingAsBlackMage => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn && (this.Player.ClassJob?.Id == Global.BlackMageId);
 
@@ -100,12 +100,12 @@ namespace MPTickBar
                 onlucidDreamingMPRegen = (mpRecovered == lucidDreamingMPRegen || recoveringMPToFull);
             }
             else
-                this.LucidDreamingRegenStack = false;
+                this.LucidDreamingRegenStack = 0;
 
             if (this.MP.Last > this.MP.Current)
-                this.LucidDreamingRegenStack = false;
+                this.LucidDreamingRegenStack = 0;
             else if (onlucidDreamingMPRegen)
-                this.LucidDreamingRegenStack = true;
+                this.LucidDreamingRegenStack = (byte)Math.Min(this.LucidDreamingRegenStack + 1, 2);
 
             this.UmbralIceRegenStack = (byte)((this.MP.Current + ((this.MP.Current / 6200) * 200)) / 3200);
         }
