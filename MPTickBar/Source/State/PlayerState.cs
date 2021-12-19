@@ -35,7 +35,7 @@ namespace MPTickBar
 
         public bool IsBetweenAreas => this.CheckCondition(new[] { ConditionFlag.BetweenAreas, ConditionFlag.BetweenAreas51 });
 
-        public bool IsOccupied => this.CheckCondition(new[] { ConditionFlag.OccupiedInCutSceneEvent, ConditionFlag.Occupied33, ConditionFlag.Occupied38 });
+        public bool IsOccupied => this.CheckCondition(new[] { ConditionFlag.OccupiedInCutSceneEvent, ConditionFlag.Occupied33, ConditionFlag.Occupied38, ConditionFlag.OccupiedInQuestEvent });
 
         private bool CheckCondition(ConditionFlag[] conditionFlags) => this.IsPlayingAsBlackMage && (this.Condition != null) && conditionFlags.Any(x => this.Condition[x]);
 
@@ -126,11 +126,12 @@ namespace MPTickBar
                     return 0.0f;
 
                 var gcd35 = 3500;
-                var astralUmbral = 50;
+                var astralUmbral = 0.5;
                 var sub = LevelModifier.GetLevelModifierSub(level);
                 var div = LevelModifier.GetLevelModifierDiv(level);
                 var spellSpeed = UIState.pInstance->PlayerState.Attributes[Global.SpellSpeedIndex];
-                return (float)Math.Floor(Math.Floor(Math.Ceiling(Math.Floor(100.0 - (this.IsCircleOfPowerActivated ? 15 : 0)) * 1) * Math.Floor((2000 - Math.Floor(130.0 * (spellSpeed - sub) / div + 1000)) * gcd35 / 1000) / 1000) * astralUmbral / 100) / 100;
+
+                return (float)(gcd35 * (1000 + Math.Ceiling(130.0 * (sub - spellSpeed) / div)) / 10000 / 100 * (1.0 - (this.IsCircleOfPowerActivated ? 0.15 : 0.0)) * astralUmbral);
             }
         }
     }
