@@ -29,7 +29,7 @@ namespace MPTickBar
 
         public byte LucidDreamingRegenStack { get; private set; }
 
-        public bool IsPlayingAsBlackMage => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn && (this.Player.ClassJob?.Id == Global.BlackMageId);
+        public bool IsPlayingAsBlackMage => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn && (this.Player.ClassJob?.Id == 25);
 
         public bool IsInCombat => this.CheckCondition(new[] { ConditionFlag.InCombat });
 
@@ -45,9 +45,9 @@ namespace MPTickBar
 
         private byte UmbralIceStacks => (this.IsPlayingAsBlackMage && (this.JobGauges != null)) ? this.JobGauges.Get<BLMGauge>().UmbralIceStacks : (byte)0;
 
-        private bool IsLucidDreamingActivated => this.IsEffectActivated(Global.LucidDreamingId);
+        private bool IsLucidDreamingActivated => this.IsEffectActivated(1204);
 
-        private bool IsCircleOfPowerActivated => this.IsEffectActivated(Global.CircleOfPowerId);
+        private bool IsCircleOfPowerActivated => this.IsEffectActivated(738);
 
         private bool IsEffectActivated(uint statusId) => this.IsPlayingAsBlackMage && this.Player.StatusList.Any(x => x.StatusId == statusId);
 
@@ -113,8 +113,8 @@ namespace MPTickBar
         public bool IsValidState()
         {
             var onZoneChange = (this.Territory.Last != this.Territory.Current);
-            var OnDeath = (!this.IsDead.Last && this.IsDead.Current);
-            return !onZoneChange && !OnDeath;
+            var onDeath = (!this.IsDead.Last && this.IsDead.Current);
+            return !onZoneChange && !onDeath;
         }
 
         public float GetFastFireIIICastTime()
@@ -127,11 +127,12 @@ namespace MPTickBar
 
                 var gcd35 = 3500;
                 var astralUmbral = 0.5;
+                var leyLines = this.IsCircleOfPowerActivated ? 0.85 : 1.0;
                 var sub = LevelModifier.GetLevelModifierSub(level);
                 var div = LevelModifier.GetLevelModifierDiv(level);
                 var spellSpeed = UIState.pInstance->PlayerState.Attributes[Global.SpellSpeedIndex];
 
-                return (float)(gcd35 * (1000 + Math.Ceiling(130.0 * (sub - spellSpeed) / div)) / 10000 / 100 * (1.0 - (this.IsCircleOfPowerActivated ? 0.15 : 0.0)) * astralUmbral);
+                return (float)(gcd35 * (1000 + Math.Ceiling(130.0 * (sub - spellSpeed) / div)) / 10000 / 100 * astralUmbral * leyLines);
             }
         }
     }

@@ -2,14 +2,6 @@ namespace MPTickBar
 {
     public static class Global
     {
-        public static byte LevelMax => 90;
-
-        public static uint BlackMageId => 25;
-
-        public static uint LucidDreamingId => 1204;
-
-        public static uint CircleOfPowerId => 738;
-
         public static ushort SpellSpeedIndex => 46;
 
         public static ushort MPTickOpCode => 662;
