@@ -616,6 +616,30 @@ namespace MPTickBar
                 PluginUI.Tooltip("Show the bar effect animation when it goes from full to an empty state.");
                 this.ColorEdit4(config.RegressBarColor, x => config.RegressBarColor = x, "Regress Bar", spacing);
                 this.Combo(config.UI, x => config.UI = x, "UI");
+
+                if (config.UI != ProgressBarUI.SolidBar)
+                {
+                    ImGui.SameLine();
+                    if (ImGui.Button("Apply to other UI elements"))
+                    {
+                        if (config.UI == ProgressBarUI.Default)
+                        {
+                            this.Configuration.FastFireIIIMarker.UI = FastFireIIIMarkerUI.Default;
+                            this.Configuration.MPRegenStack.UI = MPRegenStackUI.Default;
+                        }
+                        else if (config.UI == ProgressBarUI.MaterialUIDiscord || config.UI == ProgressBarUI.MaterialUIBlack)
+                        {
+                            this.Configuration.FastFireIIIMarker.UI = FastFireIIIMarkerUI.MaterialUI;
+                            this.Configuration.MPRegenStack.UI = MPRegenStackUI.MaterialUI;
+                        }
+                        else if (config.UI == ProgressBarUI.MaterialUISilver)
+                        {
+                            this.Configuration.FastFireIIIMarker.UI = FastFireIIIMarkerUI.MaterialUISilver;
+                            this.Configuration.MPRegenStack.UI = MPRegenStackUI.MaterialUISilver;
+                        }
+                        this.Configuration.Save();
+                    }
+                }
             });
         }
 
