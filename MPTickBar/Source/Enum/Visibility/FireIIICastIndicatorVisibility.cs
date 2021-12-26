@@ -5,8 +5,8 @@ namespace MPTickBar
     public enum FireIIICastIndicatorVisibility
     {
         Visible,
-        [Description("Only under Umbral Ice III")]
-        UnderUmbralIceIII,
+        [Description("Only under Umbral Ice")]
+        UnderUmbralIce,
         Hidden,
     }
 }
