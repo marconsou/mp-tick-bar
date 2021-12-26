@@ -439,7 +439,7 @@ namespace MPTickBar
             this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, false);
 
             if ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.Visible) ||
-               ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.UnderUmbralIceIII) && this.PlayerState.IsUmbralIceIIIActivated))
+               ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated))
             {
                 this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, true);
                 this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, false);
@@ -448,7 +448,7 @@ namespace MPTickBar
             this.AddVertexDataUpToThisPoint();
 
             if (((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.Visible) ||
-                ((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.UnderUmbralIceIII) && this.PlayerState.IsUmbralIceIIIActivated)) && isProgressAfterMarker)
+                ((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated)) && isProgressAfterMarker)
             {
                 this.RenderIndicatorUIElement(offsetX, offsetY, gaugeWidth, gaugeHeight);
             }
@@ -461,7 +461,8 @@ namespace MPTickBar
             }
 
             if ((this.Configuration.Number.Visibility == NumberVisibility.Visible) ||
-               ((this.Configuration.Number.Visibility == NumberVisibility.WhileInProgress) && (this.Progress != 0.0)))
+               ((this.Configuration.Number.Visibility == NumberVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated) ||
+               ((this.Configuration.Number.Visibility == NumberVisibility.InProgress) && (this.Progress != 0.0)))
                 this.RenderNumbersUIElement(offsetX, offsetY, gaugeWidth, gaugeHeight);
 
             this.VertexDataUpdate(offsetX, offsetY, gaugeWidth, gaugeHeight);
@@ -472,6 +473,7 @@ namespace MPTickBar
             var isMPTickBarWindowVisible = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage && !this.PlayerState.IsBetweenAreas && !this.PlayerState.IsOccupied &&
                (!this.Configuration.General.IsLocked ||
                (this.Configuration.General.Visibility == MPTickBarVisibility.Visible) ||
+               (this.Configuration.General.Visibility == MPTickBarVisibility.UnderUmbralIce && this.PlayerState.IsUmbralIceActivated) ||
                (this.Configuration.General.Visibility == MPTickBarVisibility.InCombat && this.PlayerState.IsInCombat));
 
             if (!isMPTickBarWindowVisible)
@@ -595,7 +597,7 @@ namespace MPTickBar
                     "\n-Umbral Ice MP regen." +
                     "\n-Natural MP regen." +
                     "\n-At the beginning of the instanced duty or zone, under certain conditions." +
-                    "\n-Changing your HP: changing your gear, using food, taking damage, etc.");
+                    "\n-Changing your HP: changing your gear, using food, taking damage, dying, etc.");
             });
             PluginUI.CollapsingHeader("Dimension", () =>
             {
@@ -648,7 +650,7 @@ namespace MPTickBar
             var config = this.Configuration.FastFireIIIMarker;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                ImGui.Text("The marker indicates when you can cast a fast Fire III safely without losing the next regen tick." +
+                ImGui.Text("The marker indicates when you can cast a fast Fire III safely without losing the next MP regen tick." +
                     "\nAdjust the [Time Offset] option if needed." +
                     "\nThe marker will adjust automatically based on:" +
                     "\n-Spell Speed." +

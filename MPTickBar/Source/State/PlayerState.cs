@@ -41,8 +41,6 @@ namespace MPTickBar
 
         public bool IsUmbralIceActivated => (this.UmbralIceStacks > 0);
 
-        public bool IsUmbralIceIIIActivated => (this.UmbralIceStacks == 3);
-
         private byte UmbralIceStacks => (this.IsPlayingAsBlackMage && (this.JobGauges != null)) ? this.JobGauges.Get<BLMGauge>().UmbralIceStacks : (byte)0;
 
         private bool IsLucidDreamingActivated => this.IsEffectActivated(1204);
