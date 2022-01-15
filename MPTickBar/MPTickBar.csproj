@@ -13,17 +13,11 @@
   <PropertyGroup>
     <Authors>Marconsou</Authors>
     <Company></Company>
-    <Version>1.4.0.3</Version>
+    <Version>1.4.0.4</Version>
     <Description></Description>
     <Copyright></Copyright>
     <PackageProjectUrl></PackageProjectUrl>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <Content Include="MPTickBar.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   
   <PropertyGroup>
     <DalamudLibPath>$(AppData)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
@@ -59,6 +53,12 @@
       <HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
       <Private>false</Private>
     </Reference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="MPTickBar.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   
   <ItemGroup>

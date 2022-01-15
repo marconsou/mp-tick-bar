@@ -52,6 +52,8 @@ namespace MPTickBar
 
         private CountdownState CountdownState { get; } = new();
 
+        private Network Network { get; } = new();
+
         private Chat Chat { get; }
 
         public MPTickBarPlugin()
@@ -98,16 +100,6 @@ namespace MPTickBar
             this.PluginInterface.Dispose();
         }
 
-        private void PlayerStateUpdate()
-        {
-            if (this.PlayerState != null)
-            {
-                this.PlayerState.ServicesUpdate(this.ClientState, this.JobGauges, this.Condition);
-                this.ProgressBarState.PlayerState = this.PlayerState;
-                this.MPTickBarPluginUI.PlayerState = this.PlayerState;
-            }
-        }
-
         private void OnConfigCommand(string command, string args) => this.OpenConfigUi();
 
         private void OnCountdownCommand(string command, string args) => this.CountdownState.Start(args, this.Configuration.Countdown.StartingSeconds, this.Configuration.Countdown.TimeOffset);
@@ -118,20 +110,26 @@ namespace MPTickBar
 
         private void Update(Framework framework)
         {
-            this.PlayerStateUpdate();
+            if (this.PlayerState != null)
+            {
+                this.PlayerState.ServicesUpdate(this.ClientState, this.JobGauges, this.Condition);
+                this.ProgressBarState.PlayerState = this.PlayerState;
+                this.MPTickBarPluginUI.PlayerState = this.PlayerState;
+                this.Network.PlayerState = this.PlayerState;
+            }
 
             var progress = this.ProgressBarState.Update();
             this.MPTickBarPluginUI.Update(progress);
             this.CountdownState.Update(this.Chat, progress, this.Configuration.Countdown.TimeOffset);
+
+            if (this.Network.Update())
+                this.ProgressBarState.RestartProgress();
         }
 
         private void NetworkMessage(IntPtr dataPtr, ushort opCode, uint sourceActorId, uint targetActorId, NetworkMessageDirection direction)
         {
-            if ((opCode == Global.MPTickOpCode) && (direction == NetworkMessageDirection.ZoneDown) && (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage)
-            {
-                this.PlayerStateUpdate();
-                this.ProgressBarState.NetworkMessage(targetActorId);
-            }
+            if (this.Network.NetworkMessage(dataPtr, opCode, targetActorId, direction))
+                this.ProgressBarState.RestartProgress();
         }
     }
 }

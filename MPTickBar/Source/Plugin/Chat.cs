@@ -12,7 +12,7 @@ namespace MPTickBar
 
         private delegate void ProcessChatBoxDelegate(UIModule* uiModule, IntPtr message, IntPtr unused, byte a4);
 
-        public Chat(SigScanner sigScanner) => this.ProcessChatBox = Marshal.GetDelegateForFunctionPointer<ProcessChatBoxDelegate>(sigScanner.ScanText(Global.ChatSignature));
+        public Chat(SigScanner sigScanner) => this.ProcessChatBox = Marshal.GetDelegateForFunctionPointer<ProcessChatBoxDelegate>(sigScanner.ScanText("48 89 5C 24 ?? 57 48 83 EC 20 48 8B FA 48 8B D9 45 84 C9"));
 
         public void ExecuteCommand(string command)
         {
