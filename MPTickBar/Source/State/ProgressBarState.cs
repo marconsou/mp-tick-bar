@@ -13,13 +13,7 @@ namespace MPTickBar
 
         public void Login(object sender, EventArgs e) => this.ResetProgress();
 
-        public void NetworkMessage(uint targetActorId)
-        {
-            if (this.PlayerState.CheckPlayerState(targetActorId))
-                this.RestartProgress();
-        }
-
-        private void RestartProgress() => this.NetworkTime = ImGui.GetTime();
+        public void RestartProgress() => this.NetworkTime = ImGui.GetTime();
 
         private void ResetProgress() => this.NetworkTime = 0.0;
 

@@ -571,7 +571,8 @@ namespace MPTickBar
             PluginUI.CollapsingHeader("Information", () =>
             {
                 ImGui.Text("All options in this tab will apply to all UI elements at once." +
-                    "\nUse the [Offset] option if an UI element is clipping.");
+                    "\nUse the [Offset] option if an UI element is clipping." +
+                    "\nMove the bar on the screen, then check the [Locked] option to remove the background window.");
             });
             PluginUI.CollapsingHeader("Location", () =>
             {

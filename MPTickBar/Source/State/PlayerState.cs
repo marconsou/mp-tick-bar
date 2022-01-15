@@ -49,7 +49,9 @@ namespace MPTickBar
 
         private bool IsEffectActivated(uint statusId) => this.IsPlayingAsBlackMage && this.Player.StatusList.Any(x => x.StatusId == statusId);
 
-        public bool CheckPlayerState(uint targetActorId) => this.IsPlayingAsBlackMage && this.Player.IsValid() && !this.IsDead.Current && (this.Player.ObjectId == targetActorId);
+        public bool CheckPlayerId(uint targetActorId) => this.IsPlayingAsBlackMage && this.Player.IsValid() && (this.Player.ObjectId == targetActorId);
+
+        public bool CheckPlayerStatus(int hp, int mp) => this.IsPlayingAsBlackMage && !this.IsDead.Current && (this.Player.CurrentHp == hp) && (this.Player.CurrentMp == mp);
 
         private class Data<T> where T : struct
         {
@@ -128,7 +130,7 @@ namespace MPTickBar
                 var leyLines = this.IsCircleOfPowerActivated ? 0.85 : 1.0;
                 var sub = LevelModifier.GetLevelModifierSub(level);
                 var div = LevelModifier.GetLevelModifierDiv(level);
-                var spellSpeed = UIState.pInstance->PlayerState.Attributes[Global.SpellSpeedIndex];
+                var spellSpeed = UIState.pInstance->PlayerState.Attributes[46];
 
                 return (float)(gcd35 * (1000 + Math.Ceiling(130.0 * (sub - spellSpeed) / div)) / 10000 / 100 * astralUmbral * leyLines);
             }
