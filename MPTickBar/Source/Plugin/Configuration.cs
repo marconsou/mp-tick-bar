@@ -8,13 +8,15 @@ namespace MPTickBar
     [Serializable]
     public class Configuration : IPluginConfiguration
     {
-        public int Version { get; set; } = 9;
+        public int Version { get; set; } = 1;
 
         public GeneralTab General { get; set; }
 
         public ProgressBarTab ProgressBar { get; set; }
 
         public FastFireIIIMarkerTab FastFireIIIMarker { get; set; }
+
+        public TimeSplitMarkerTab TimeSplitMarker { get; set; }
 
         public FireIIICastIndicatorTab FireIIICastIndicator { get; set; }
 
@@ -47,11 +49,13 @@ namespace MPTickBar
 
             public Vector4 ProgressBarColor { get; set; } = new(0.0f, 1.0f, 1.0f, 1.0f);
 
-            public Vector4 ProgressBarAfterMarkerColor { get; set; } = new(0.0f, 0.65f, 1.0f, 1.0f);
-
             public Vector4 BackgroundColor { get; set; } = Vector4.One;
 
             public Vector4 EdgeColor { get; set; } = Vector4.One;
+
+            public bool IsProgressBarAfterMarkerEnabled { get; set; } = true;
+
+            public Vector4 ProgressBarAfterMarkerColor { get; set; } = new(0.0f, 0.65f, 1.0f, 1.0f);
 
             public bool IsRegressEffectEnabled { get; set; } = true;
 
@@ -75,6 +79,29 @@ namespace MPTickBar
             public float TimeOffset { get; set; } = 0.25f;
 
             public FastFireIIIMarkerVisibility Visibility { get; set; } = FastFireIIIMarkerVisibility.Visible;
+        }
+
+        public class TimeSplitMarkerTab
+        {
+            public float ScaleHorizontal { get; set; } = 1.0f;
+
+            public float ScaleVertical { get; set; } = 1.0f;
+
+            public Vector4 MarkerColor { get; set; } = new(0.25f, 1.0f, 0.25f, 1.0f);
+
+            public Vector4 BackgroundColor { get; set; } = Vector4.One;
+
+            public TimeSplitMarkerUI UI { get; set; } = TimeSplitMarkerUI.Default;
+
+            public bool IsSingleMarkerEnabled { get; set; } = false;
+
+            public float SingleMarkerTimeOffset { get; set; } = 1.5f;
+
+            public bool IsMultipleMarkersEnabled { get; set; } = false;
+
+            public int MultipleMarkersAmount { get; set; } = 2;
+
+            public TimeSplitMarkerVisibility Visibility { get; set; } = TimeSplitMarkerVisibility.Hidden;
         }
 
         public class FireIIICastIndicatorTab
@@ -149,6 +176,7 @@ namespace MPTickBar
             this.General = new();
             this.ProgressBar = new();
             this.FastFireIIIMarker = new();
+            this.TimeSplitMarker = new();
             this.FireIIICastIndicator = new();
             this.MPRegenStack = new();
             this.Number = new();

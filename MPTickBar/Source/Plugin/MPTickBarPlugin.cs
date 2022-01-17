@@ -97,7 +97,6 @@ namespace MPTickBar
             this.GameNetwork.NetworkMessage -= this.NetworkMessage;
             this.CommandManager.RemoveHandler(MPTickBarPlugin.ConfigCommand);
             this.CommandManager.RemoveHandler(MPTickBarPlugin.CountdownCommand);
-            this.PluginInterface.Dispose();
         }
 
         private void OnConfigCommand(string command, string args) => this.OpenConfigUi();
@@ -119,7 +118,7 @@ namespace MPTickBar
             }
 
             var progress = this.ProgressBarState.Update();
-            this.MPTickBarPluginUI.Update(progress);
+            this.MPTickBarPluginUI.Update(progress, this.Network.GetOpCode());
             this.CountdownState.Update(this.Chat, progress, this.Configuration.Countdown.TimeOffset);
 
             if (this.Network.Update())

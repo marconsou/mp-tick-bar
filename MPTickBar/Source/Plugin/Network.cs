@@ -16,6 +16,8 @@ namespace MPTickBar
 
         private bool WasOpCodeFound { get; set; }
 
+        public ushort GetOpCode() => (ushort)(this.WasOpCodeFound ? this.OpCode : 0);
+
         public bool Update()
         {
             if (!this.WasOpCodeFound && (this.OpCode != 0) && (this.PlayerState != null) && this.PlayerState.CheckPlayerStatus(this.HP, this.MP))

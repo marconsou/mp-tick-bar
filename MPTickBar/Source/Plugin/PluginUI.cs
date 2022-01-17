@@ -1,9 +1,7 @@
 ﻿using Dalamud.Interface;
 using ImGuiNET;
 using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Reflection;
 
 namespace MPTickBar
 {
@@ -11,84 +9,82 @@ namespace MPTickBar
     {
         protected Configuration Configuration { get; init; }
 
-        private void SaveConfiguration<T>(T changedValue, Action<T> setter)
-        {
-            setter(changedValue);
-            this.Configuration.Save();
-        }
+        protected static float Spacing => ImGui.GetStyle().ItemSpacing.X * ImGuiHelpers.GlobalScale;
 
-        private static void SameLine(float spacing)
+        private static bool SameLine(float spacing)
         {
             if (spacing != 0.0f)
+            {
                 ImGui.SameLine(0.0f, spacing);
+                return true;
+            }
+            return false;
+        }
+
+        private static void Dummy(float spacing = 0.0f)
+        {
+            if (!PluginUI.SameLine(spacing))
+                ImGui.Dummy(ImGui.GetStyle().ItemSpacing * ImGuiHelpers.GlobalScale);
+        }
+
+        private void UIElement<T>(Func<T, (bool, T)> function, T value, Action<T> setter, float spacing)
+        {
+            PluginUI.Dummy(spacing);
+            PluginUI.SameLine(spacing);
+
+            var result = function(value);
+
+            if (result.Item1)
+            {
+                setter(result.Item2);
+                this.Configuration.Save();
+            }
         }
 
         protected void CheckBox(bool value, Action<bool> setter, string label, float spacing = 0.0f)
-        {
-            var changedValue = value;
-            PluginUI.SameLine(spacing);
-            if (ImGui.Checkbox(label, ref changedValue))
-                this.SaveConfiguration(changedValue, setter);
-        }
+            => this.UIElement((param) => { return (ImGui.Checkbox(label, ref param), param); }, value, setter, spacing);
 
         protected void ColorEdit4(Vector4 value, Action<Vector4> setter, string label, float spacing = 0.0f)
-        {
-            var changedValue = value;
-            PluginUI.SameLine(spacing);
-            if (ImGui.ColorEdit4(label, ref changedValue, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.AlphaBar))
-                this.SaveConfiguration(changedValue, setter);
-        }
+            => this.UIElement((param) => { return (ImGui.ColorEdit4(label, ref param, ImGuiColorEditFlags.NoInputs | ImGuiColorEditFlags.AlphaBar), param); }, value, setter, spacing);
 
         protected void DragFloat(float value, Action<float> setter, string label, float speed, float min, float max, string format, float spacing = 0.0f)
-        {
-            var changedValue = value;
-            PluginUI.SameLine(spacing);
-            if (ImGui.DragFloat(label, ref changedValue, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp))
-                this.SaveConfiguration(changedValue, setter);
-        }
+            => this.UIElement((param) => { return (ImGui.DragFloat(label, ref param, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp), param); }, value, setter, spacing);
 
         protected void DragFloat(float valueLeft, float valueRight, Action<float> setterLeft, Action<float> setterRight, string label, float speed, float min, float max, string format, float spacing = 0.0f)
         {
-            this.DragFloat(valueLeft, setterLeft, " ", speed, min, max, format, spacing);
-            this.DragFloat(valueRight, setterRight, label, speed, min, max, format, ImGui.GetStyle().ItemSpacing.X * ImGuiHelpers.GlobalScale);
+            this.UIElement((param) => { return (ImGui.DragFloat($"##{label}", ref param, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp), param); }, valueLeft, setterLeft, spacing);
+            this.UIElement((param) => { return (ImGui.DragFloat(label, ref param, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp), param); }, valueRight, setterRight, PluginUI.Spacing);
         }
 
         protected void DragInt(int value, Action<int> setter, string label, int speed, int min, int max, string format, float spacing = 0.0f)
-        {
-            var changedValue = value;
-            PluginUI.SameLine(spacing);
-            if (ImGui.DragInt(label, ref changedValue, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp))
-                this.SaveConfiguration(changedValue, setter);
-        }
+            => this.UIElement((param) => { return (ImGui.DragInt(label, ref param, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp), param); }, value, setter, spacing);
 
         protected void DragInt(int valueLeft, int valueRight, Action<int> setterLeft, Action<int> setterRight, string label, int speed, int min, int max, string format, float spacing = 0.0f)
         {
-            this.DragInt(valueLeft, setterLeft, " ", speed, min, max, format, spacing);
-            this.DragInt(valueRight, setterRight, label, speed, min, max, format, ImGui.GetStyle().ItemSpacing.X * ImGuiHelpers.GlobalScale);
+            this.UIElement((param) => { return (ImGui.DragInt($"##{label}", ref param, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp), param); }, valueLeft, setterLeft, spacing);
+            this.UIElement((param) => { return (ImGui.DragInt(label, ref param, speed, min, max, format, ImGuiSliderFlags.AlwaysClamp), param); }, valueRight, setterRight, PluginUI.Spacing);
         }
 
-        protected void Combo<T>(T value, Action<T> setter, string label, float spacing = 0.0f)
+        protected void Combo<T>(T value, Action<T> setter, string label, float spacing = 0.0f) where T : Enum
         {
-            var method = typeof(EnumExtensions).GetMethod("GetDescription", BindingFlags.Public | BindingFlags.Static, null, new[] { value.GetType() }, null);
-            var options = new List<string>();
-            var values = Enum.GetValues(typeof(T));
-            foreach (var item in values)
-            {
-                var description = (string)method.Invoke(null, new[] { item });
-                options.Add(description);
-            }
+            var options = value.GetNames();
+            this.UIElement((param) => { var convertedParam = (int)(object)param; return (ImGui.Combo(label, ref convertedParam, options, options.Length), (T)(object)convertedParam); }, value, setter, spacing);
+        }
 
-            var changedValue = (int)(object)value;
-            PluginUI.SameLine(spacing);
-            if (ImGui.Combo(label, ref changedValue, options.ToArray(), options.Count))
-                this.SaveConfiguration((T)(object)changedValue, setter);
+        protected static void Text(string[] texts)
+        {
+            PluginUI.Dummy();
+            foreach (var item in texts)
+                ImGui.Text(item);
         }
 
         protected static void CollapsingHeader(string label, Action action)
         {
             if (ImGui.CollapsingHeader(label, ImGuiTreeNodeFlags.DefaultOpen))
+            {
                 action();
-            ImGui.Dummy(ImGui.GetStyle().ItemSpacing * ImGuiHelpers.GlobalScale);
+                PluginUI.Dummy();
+            }
         }
 
         protected static void Tooltip(string message, float width = 420.0f)

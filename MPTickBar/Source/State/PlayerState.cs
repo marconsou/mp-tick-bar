@@ -49,7 +49,7 @@ namespace MPTickBar
 
         private bool IsEffectActivated(uint statusId) => this.IsPlayingAsBlackMage && this.Player.StatusList.Any(x => x.StatusId == statusId);
 
-        public bool CheckPlayerId(uint targetActorId) => this.IsPlayingAsBlackMage && this.Player.IsValid() && (this.Player.ObjectId == targetActorId);
+        public bool CheckPlayerId(uint targetActorId) => this.IsPlayingAsBlackMage && this.Player.IsValid() && !this.IsDead.Current && (this.Player.ObjectId == targetActorId);
 
         public bool CheckPlayerStatus(int hp, int mp) => this.IsPlayingAsBlackMage && !this.IsDead.Current && (this.Player.CurrentHp == hp) && (this.Player.CurrentMp == mp);
 
