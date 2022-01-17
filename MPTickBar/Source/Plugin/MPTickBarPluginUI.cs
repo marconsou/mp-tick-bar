@@ -47,6 +47,8 @@ namespace MPTickBar
 
         private double Progress { get; set; }
 
+        private ushort OpCode { get; set; }
+
         private RegressEffectData RegressEffect { get; } = new();
 
         private List<int> RotateVertexIndices { get; } = new();
@@ -59,7 +61,9 @@ namespace MPTickBar
         {
             public TextureWrap Bar { get; init; }
 
-            public TextureWrap Marker { get; init; }
+            public TextureWrap FastFireIIIMarker { get; init; }
+
+            public TextureWrap TimeSplitMarker { get; init; }
 
             public TextureWrap UmbralIceRegenStack { get; init; }
 
@@ -162,10 +166,11 @@ namespace MPTickBar
 
         public void OpenConfigUi() => this.IsConfigurationWindowVisible = !this.IsConfigurationWindowVisible;
 
-        public void Update(double progress)
+        public void Update(double progress, ushort opCode)
         {
             this.Progress = progress;
             this.RegressEffect.Update(progress);
+            this.OpCode = opCode;
         }
 
         private MPTickBarUI GetMPTickBarUI()
@@ -180,12 +185,21 @@ namespace MPTickBar
                 _ => this.GaugeDefault,
             };
 
-            var marker = this.Configuration.FastFireIIIMarker.UI switch
+            var fastFireIIIMarker = this.Configuration.FastFireIIIMarker.UI switch
             {
                 FastFireIIIMarkerUI.Default => this.JobStackADefault,
                 FastFireIIIMarkerUI.MaterialUI => this.JobStackAMaterialUI,
                 FastFireIIIMarkerUI.MaterialUISilver => this.JobStackAMaterialUISilver,
                 FastFireIIIMarkerUI.Line => this.MarkerLine,
+                _ => this.JobStackADefault,
+            };
+
+            var timeSplitMarker = this.Configuration.TimeSplitMarker.UI switch
+            {
+                TimeSplitMarkerUI.Default => this.JobStackADefault,
+                TimeSplitMarkerUI.MaterialUI => this.JobStackAMaterialUI,
+                TimeSplitMarkerUI.MaterialUISilver => this.JobStackAMaterialUISilver,
+                TimeSplitMarkerUI.Line => this.MarkerLine,
                 _ => this.JobStackADefault,
             };
 
@@ -205,7 +219,7 @@ namespace MPTickBar
                 _ => this.JobStackADefault,
             };
 
-            return new() { Bar = bar, Marker = marker, UmbralIceRegenStack = umbralIceRegenStack, LucidDreamingRegenStack = lucidDreamingRegenStack };
+            return new() { Bar = bar, FastFireIIIMarker = fastFireIIIMarker, TimeSplitMarker = timeSplitMarker, UmbralIceRegenStack = umbralIceRegenStack, LucidDreamingRegenStack = lucidDreamingRegenStack };
         }
 
         private void RenderBackgroundUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float gaugeWidth, float gaugeHeight, float textureToElementScale, bool isBackground)
@@ -236,24 +250,25 @@ namespace MPTickBar
             var textureY = (textureElementHeight * (isProgress ? 2 : 4)) / mpTickBarUI.Bar.Height;
             var textureW = textureX + (float)((1.0f - (textureX * 2.0f)) * (isProgress ? progress : 1.0f));
             var textureH = textureY + (textureElementHeight / mpTickBarUI.Bar.Height);
-            var color = !isProgress ? this.Configuration.ProgressBar.RegressBarColor : (isProgressAfterMarker) ? this.Configuration.ProgressBar.ProgressBarAfterMarkerColor : this.Configuration.ProgressBar.ProgressBarColor;
+            var color = !isProgress ? this.Configuration.ProgressBar.RegressBarColor :
+                (isProgressAfterMarker && this.Configuration.ProgressBar.IsProgressBarAfterMarkerEnabled) ? this.Configuration.ProgressBar.ProgressBarAfterMarkerColor : this.Configuration.ProgressBar.ProgressBarColor;
             ImGui.SetCursorPos(new(x, y));
             ImGui.Image(mpTickBarUI.Bar.ImGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), color);
         }
 
-        private void RenderMarkerUIElement(MPTickBarUI mpTickBarUI, float offsetX, float offsetY, float dimension, float fastFireIIIMarkerOffset, bool isBackground)
+        private static void RenderMarkerUIElement(TextureWrap textureWrap, float offsetX, float offsetY, float dimension, float scaleX, float scaleY, Vector4 color, bool isBackground)
         {
             var adjustX = -4.0f;
-            var x = offsetX + adjustX + fastFireIIIMarkerOffset;
+            var x = offsetX + adjustX;
             var y = offsetY;
-            var width = dimension * this.Configuration.FastFireIIIMarker.ScaleHorizontal;
-            var height = dimension * this.Configuration.FastFireIIIMarker.ScaleVertical;
+            var width = dimension * scaleX;
+            var height = dimension * scaleY;
             var textureX = (!isBackground ? 1 : 0) * 0.5f;
             var textureY = 0.0f;
             var textureW = textureX + 0.5f;
             var textureH = 1.0f;
             ImGui.SetCursorPos(new(x - ((width - dimension) / 2.0f), y - ((height - dimension) / 2.0f)));
-            ImGui.Image(mpTickBarUI.Marker.ImGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), isBackground ? this.Configuration.FastFireIIIMarker.BackgroundColor : this.Configuration.FastFireIIIMarker.MarkerColor);
+            ImGui.Image(textureWrap.ImGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), color);
         }
 
         private void RenderIndicatorUIElement(float offsetX, float offsetY, float gaugeWidth, float gaugeHeight)
@@ -438,11 +453,31 @@ namespace MPTickBar
             this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, this.Progress, true, isProgressAfterMarker);
             this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, false);
 
+            if ((this.Configuration.TimeSplitMarker.Visibility == TimeSplitMarkerVisibility.Visible) ||
+               ((this.Configuration.TimeSplitMarker.Visibility == TimeSplitMarkerVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated))
+            {
+                if (this.Configuration.TimeSplitMarker.IsMultipleMarkersEnabled)
+                {
+                    var intervalOffset = Math.Clamp(progressWidth / (this.Configuration.TimeSplitMarker.MultipleMarkersAmount + 1), 0.0f, progressWidth);
+                    for (int i = 1; i <= this.Configuration.TimeSplitMarker.MultipleMarkersAmount; i++)
+                    {
+                        MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.TimeSplitMarker, offsetX + (intervalOffset * i), offsetY, gaugeHeight, this.Configuration.TimeSplitMarker.ScaleHorizontal, this.Configuration.TimeSplitMarker.ScaleVertical, this.Configuration.TimeSplitMarker.BackgroundColor, true);
+                        MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.TimeSplitMarker, offsetX + (intervalOffset * i), offsetY, gaugeHeight, this.Configuration.TimeSplitMarker.ScaleHorizontal, this.Configuration.TimeSplitMarker.ScaleVertical, this.Configuration.TimeSplitMarker.MarkerColor, false);
+                    }
+                }
+                if (this.Configuration.TimeSplitMarker.IsSingleMarkerEnabled)
+                {
+                    var timeOffset = Math.Clamp(this.Configuration.TimeSplitMarker.SingleMarkerTimeOffset * (progressWidth / 3.0f), 0.0f, progressWidth);
+                    MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.TimeSplitMarker, offsetX + timeOffset, offsetY, gaugeHeight, this.Configuration.TimeSplitMarker.ScaleHorizontal, this.Configuration.TimeSplitMarker.ScaleVertical, this.Configuration.TimeSplitMarker.BackgroundColor, true);
+                    MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.TimeSplitMarker, offsetX + timeOffset, offsetY, gaugeHeight, this.Configuration.TimeSplitMarker.ScaleHorizontal, this.Configuration.TimeSplitMarker.ScaleVertical, this.Configuration.TimeSplitMarker.MarkerColor, false);
+                }
+            }
+
             if ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.Visible) ||
                ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated))
             {
-                this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, true);
-                this.RenderMarkerUIElement(mpTickBarUI, offsetX, offsetY, gaugeHeight, fastFireIIIMarkerOffset, false);
+                MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.FastFireIIIMarker, offsetX + fastFireIIIMarkerOffset, offsetY, gaugeHeight, this.Configuration.FastFireIIIMarker.ScaleHorizontal, this.Configuration.FastFireIIIMarker.ScaleVertical, this.Configuration.FastFireIIIMarker.BackgroundColor, true);
+                MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.FastFireIIIMarker, offsetX + fastFireIIIMarkerOffset, offsetY, gaugeHeight, this.Configuration.FastFireIIIMarker.ScaleHorizontal, this.Configuration.FastFireIIIMarker.ScaleVertical, this.Configuration.FastFireIIIMarker.MarkerColor, false);
             }
 
             this.AddVertexDataUpToThisPoint();
@@ -537,6 +572,11 @@ namespace MPTickBar
                         this.FastFireIIIMarkerTab();
                         ImGui.EndTabItem();
                     }
+                    if (ImGui.BeginTabItem("Time Split Marker"))
+                    {
+                        this.TimeSplitMarkerTab();
+                        ImGui.EndTabItem();
+                    }
                     if (ImGui.BeginTabItem("Fire III Cast Indicator"))
                     {
                         this.FireIIICastIndicatorTab();
@@ -570,9 +610,12 @@ namespace MPTickBar
             var config = this.Configuration.General;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                ImGui.Text("All options in this tab will apply to all UI elements at once." +
-                    "\nUse the [Offset] option if an UI element is clipping." +
-                    "\nMove the bar on the screen, then check the [Locked] option to remove the background window.");
+                PluginUI.Text(new string[]
+                {
+                    "All options in this tab will apply to all UI elements at once.",
+                    "Use the [Offset] option if an UI element is clipping.",
+                    "Move the bar on the screen, then check the [Locked] option to remove the background window."
+                });
             });
             PluginUI.CollapsingHeader("Location", () =>
             {
@@ -594,11 +637,13 @@ namespace MPTickBar
             var config = this.Configuration.ProgressBar;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                ImGui.Text("The progress bar will start working based on:" +
-                    "\n-Umbral Ice MP regen." +
-                    "\n-Natural MP regen." +
-                    "\n-At the beginning of the instanced duty or zone, under certain conditions." +
-                    "\n-Changing your HP: changing your gear, using food, taking damage, dying, etc.");
+                PluginUI.Text(new string[]
+                {
+                    "The progress bar will start working based on:",
+                    "-Natural HP regen. (by changing your gear, using food, taking damage, etc.)",
+                    "-Natural/Umbral Ice MP regen.",
+                    "-At the beginning of the instanced duty or zone, under certain conditions." ,
+                });
             });
             PluginUI.CollapsingHeader("Dimension", () =>
             {
@@ -606,42 +651,48 @@ namespace MPTickBar
             });
             PluginUI.CollapsingHeader("Transform", () =>
             {
-                this.DragInt(config.Rotate, x => config.Rotate = x, "Rotate (°)", 1, 0, 360, "%i");
+                this.DragInt(config.Rotate, x => config.Rotate = x, "Rotate (Degrees)", 1, 0, 360, "%i");
             });
             PluginUI.CollapsingHeader("Visual", () =>
             {
-                var spacing = ImGui.GetStyle().ItemSpacing.X * ImGuiHelpers.GlobalScale;
                 this.ColorEdit4(config.ProgressBarColor, x => config.ProgressBarColor = x, "Progress Bar");
-                this.ColorEdit4(config.ProgressBarAfterMarkerColor, x => config.ProgressBarAfterMarkerColor = x, "Progress Bar (After reaching the marker)", spacing);
-                this.ColorEdit4(config.BackgroundColor, x => config.BackgroundColor = x, "Background");
-                this.ColorEdit4(config.EdgeColor, x => config.EdgeColor = x, "Edge");
-                this.CheckBox(config.IsRegressEffectEnabled, x => config.IsRegressEffectEnabled = x, "Regress Effect");
+                this.ColorEdit4(config.BackgroundColor, x => config.BackgroundColor = x, "Background", PluginUI.Spacing);
+                this.ColorEdit4(config.EdgeColor, x => config.EdgeColor = x, "Edge", PluginUI.Spacing);
+                this.CheckBox(config.IsProgressBarAfterMarkerEnabled, x => config.IsProgressBarAfterMarkerEnabled = x, "##IsProgressBarAfterMarkerEnabled");
+                PluginUI.Tooltip("Change the progress bar color after reaching the marker.");
+                this.ColorEdit4(config.ProgressBarAfterMarkerColor, x => config.ProgressBarAfterMarkerColor = x, "Progress Bar (After reaching the marker)", PluginUI.Spacing);
+                this.CheckBox(config.IsRegressEffectEnabled, x => config.IsRegressEffectEnabled = x, "##IsRegressEffectEnabled");
                 PluginUI.Tooltip("Show the bar effect animation when it goes from full to an empty state.");
-                this.ColorEdit4(config.RegressBarColor, x => config.RegressBarColor = x, "Regress Bar", spacing);
+                this.ColorEdit4(config.RegressBarColor, x => config.RegressBarColor = x, "Regress Bar", PluginUI.Spacing);
                 this.Combo(config.UI, x => config.UI = x, "UI");
 
-                if (config.UI != ProgressBarUI.SolidBar)
+                ImGui.SameLine();
+                if (ImGui.Button("Apply to other UI elements"))
                 {
-                    ImGui.SameLine();
-                    if (ImGui.Button("Apply to other UI elements"))
+                    if (config.UI == ProgressBarUI.Default)
                     {
-                        if (config.UI == ProgressBarUI.Default)
-                        {
-                            this.Configuration.FastFireIIIMarker.UI = FastFireIIIMarkerUI.Default;
-                            this.Configuration.MPRegenStack.UI = MPRegenStackUI.Default;
-                        }
-                        else if (config.UI == ProgressBarUI.MaterialUIDiscord || config.UI == ProgressBarUI.MaterialUIBlack)
-                        {
-                            this.Configuration.FastFireIIIMarker.UI = FastFireIIIMarkerUI.MaterialUI;
-                            this.Configuration.MPRegenStack.UI = MPRegenStackUI.MaterialUI;
-                        }
-                        else if (config.UI == ProgressBarUI.MaterialUISilver)
-                        {
-                            this.Configuration.FastFireIIIMarker.UI = FastFireIIIMarkerUI.MaterialUISilver;
-                            this.Configuration.MPRegenStack.UI = MPRegenStackUI.MaterialUISilver;
-                        }
-                        this.Configuration.Save();
+                        this.Configuration.FastFireIIIMarker.UI = FastFireIIIMarkerUI.Default;
+                        this.Configuration.TimeSplitMarker.UI = TimeSplitMarkerUI.Default;
+                        this.Configuration.MPRegenStack.UI = MPRegenStackUI.Default;
                     }
+                    else if (config.UI == ProgressBarUI.MaterialUIDiscord || config.UI == ProgressBarUI.MaterialUIBlack)
+                    {
+                        this.Configuration.FastFireIIIMarker.UI = FastFireIIIMarkerUI.MaterialUI;
+                        this.Configuration.TimeSplitMarker.UI = TimeSplitMarkerUI.MaterialUI;
+                        this.Configuration.MPRegenStack.UI = MPRegenStackUI.MaterialUI;
+                    }
+                    else if (config.UI == ProgressBarUI.MaterialUISilver)
+                    {
+                        this.Configuration.FastFireIIIMarker.UI = FastFireIIIMarkerUI.MaterialUISilver;
+                        this.Configuration.TimeSplitMarker.UI = TimeSplitMarkerUI.MaterialUISilver;
+                        this.Configuration.MPRegenStack.UI = MPRegenStackUI.MaterialUISilver;
+                    }
+                    else if (config.UI == ProgressBarUI.SolidBar)
+                    {
+                        this.Configuration.FastFireIIIMarker.UI = FastFireIIIMarkerUI.Line;
+                        this.Configuration.TimeSplitMarker.UI = TimeSplitMarkerUI.Line;
+                    }
+                    this.Configuration.Save();
                 }
             });
         }
@@ -651,11 +702,14 @@ namespace MPTickBar
             var config = this.Configuration.FastFireIIIMarker;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                ImGui.Text("The marker indicates when you can cast a fast Fire III safely without losing the next MP regen tick." +
-                    "\nAdjust the [Time Offset] option if needed." +
-                    "\nThe marker will adjust automatically based on:" +
-                    "\n-Spell Speed." +
-                    "\n-Ley Lines.");
+                PluginUI.Text(new string[]
+                {
+                    "The marker indicates when you can cast a fast Fire III safely without losing the next MP regen tick.",
+                    "Adjust the [Time Offset] option if needed.",
+                    "The marker will adjust automatically based on:",
+                    "-Spell Speed.",
+                    "-Ley Lines."
+                });
             });
             PluginUI.CollapsingHeader("Dimension", () =>
             {
@@ -664,12 +718,44 @@ namespace MPTickBar
             PluginUI.CollapsingHeader("Visual", () =>
             {
                 this.ColorEdit4(config.MarkerColor, x => config.MarkerColor = x, "Marker");
-                this.ColorEdit4(config.BackgroundColor, x => config.BackgroundColor = x, "Background");
+                this.ColorEdit4(config.BackgroundColor, x => config.BackgroundColor = x, "Background", PluginUI.Spacing);
                 this.Combo(config.UI, x => config.UI = x, "UI");
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
-                this.DragFloat(config.TimeOffset, x => config.TimeOffset = x, "Time Offset (s)", 0.01f, 0.0f, 0.5f, "%.2f");
+                this.DragFloat(config.TimeOffset, x => config.TimeOffset = x, "Time Offset (Seconds)", 0.01f, 0.0f, 0.5f, "%.2f");
+                this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
+            });
+        }
+
+        private void TimeSplitMarkerTab()
+        {
+            var config = this.Configuration.TimeSplitMarker;
+            PluginUI.CollapsingHeader("Information", () =>
+            {
+                PluginUI.Text(new string[]
+                {
+                    "The markers indicate a specific time or an interval on the bar.",
+                    "Use the [Single Marker] option to place one marker based on time and adjust it manually.",
+                    "Use the [Multiple Markers] option to place more than one marker automatically based on interval."
+                });
+            });
+            PluginUI.CollapsingHeader("Dimension", () =>
+            {
+                this.DragFloat(config.ScaleHorizontal, config.ScaleVertical, x => config.ScaleHorizontal = x, x => config.ScaleVertical = x, "Scale", 0.01f, 0.1f, 5.0f, "%.2f");
+            });
+            PluginUI.CollapsingHeader("Visual", () =>
+            {
+                this.ColorEdit4(config.MarkerColor, x => config.MarkerColor = x, "Marker");
+                this.ColorEdit4(config.BackgroundColor, x => config.BackgroundColor = x, "Background", PluginUI.Spacing);
+                this.Combo(config.UI, x => config.UI = x, "UI");
+            });
+            PluginUI.CollapsingHeader("Functional", () =>
+            {
+                this.CheckBox(config.IsSingleMarkerEnabled, x => config.IsSingleMarkerEnabled = x, "##IsSingleMarkerEnabled");
+                this.DragFloat(config.SingleMarkerTimeOffset, x => config.SingleMarkerTimeOffset = x, "Single Marker Time Offset (Seconds)", 0.01f, 0.1f, 2.9f, "%.2f", PluginUI.Spacing);
+                this.CheckBox(config.IsMultipleMarkersEnabled, x => config.IsMultipleMarkersEnabled = x, "##IsMultipleMarkersEnabled");
+                this.DragInt(config.MultipleMarkersAmount, x => config.MultipleMarkersAmount = x, "Multiple Markers (Amount)", 1, 2, 9, "%i", PluginUI.Spacing);
                 this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
             });
         }
@@ -679,7 +765,10 @@ namespace MPTickBar
             var config = this.Configuration.FireIIICastIndicator;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                ImGui.Text("The indicator will show up when the progress reaches the marker.");
+                PluginUI.Text(new string[]
+                {
+                    "The indicator will show up when the progress reaches the marker."
+                });
             });
             PluginUI.CollapsingHeader("Location", () =>
             {
@@ -704,12 +793,15 @@ namespace MPTickBar
             var config = this.Configuration.MPRegenStack;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                ImGui.Text("The MP Regen Stack contains 5 stacks:" +
-                    "\n-The first three stacks represent the state of the current MP." +
-                    "\n (e.g Almost empty MP = 0 stack. Almost full MP = 3 stacks)" +
-                    "\n-Umbral Ice I regen grants 1 stack." +
-                    "\n-Umbral Ice III regen grants 2 stacks." +
-                    "\n-The last two stacks represent the Lucid Dreaming regen.");
+                PluginUI.Text(new string[]
+                {
+                    "The MP Regen Stack contains 5 stacks:",
+                    "-The first three stacks represent the state of the current MP.",
+                    " (e.g Almost empty MP = 0 stack. Almost full MP = 3 stacks)",
+                    "-Umbral Ice I regen grants 1 stack.",
+                    "-Umbral Ice III regen grants 2 stacks.",
+                    "-The last two stacks represent the Lucid Dreaming regen."
+                });
             });
             PluginUI.CollapsingHeader("Location", () =>
             {
@@ -721,11 +813,10 @@ namespace MPTickBar
             });
             PluginUI.CollapsingHeader("Visual", () =>
             {
-                var spacing = ImGui.GetStyle().ItemSpacing.X * ImGuiHelpers.GlobalScale;
                 this.ColorEdit4(config.UmbralIceStackColor, x => config.UmbralIceStackColor = x, "Umbral Ice Stack");
-                this.ColorEdit4(config.UmbralIceStackBackgroundColor, x => config.UmbralIceStackBackgroundColor = x, "Background", spacing);
+                this.ColorEdit4(config.UmbralIceStackBackgroundColor, x => config.UmbralIceStackBackgroundColor = x, "Background", PluginUI.Spacing);
                 this.ColorEdit4(config.LucidDreamingStackColor, x => config.LucidDreamingStackColor = x, "Lucid Dreaming Stack");
-                this.ColorEdit4(config.LucidDreamingStackBackgroundColor, x => config.LucidDreamingStackBackgroundColor = x, "Background ", spacing);
+                this.ColorEdit4(config.LucidDreamingStackBackgroundColor, x => config.LucidDreamingStackBackgroundColor = x, "Background ", PluginUI.Spacing);
                 this.Combo(config.UI, x => config.UI = x, "UI");
             });
             PluginUI.CollapsingHeader("Functional", () =>
@@ -739,7 +830,10 @@ namespace MPTickBar
             var config = this.Configuration.Number;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                ImGui.Text("The number represents the remaining time or percentage of the progress.");
+                PluginUI.Text(new string[]
+                {
+                    "The number represents the remaining time or percentage of the progress."
+                });
             });
             PluginUI.CollapsingHeader("Location", () =>
             {
@@ -755,9 +849,8 @@ namespace MPTickBar
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
-                var spacing = ImGui.GetStyle().ItemSpacing.X * ImGuiHelpers.GlobalScale;
                 this.Combo(config.Type, x => config.Type = x, "Type");
-                this.CheckBox(config.Reverse, x => config.Reverse = x, "Reverse", spacing);
+                this.CheckBox(config.Reverse, x => config.Reverse = x, "Reverse", PluginUI.Spacing);
                 this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
             });
         }
@@ -767,14 +860,17 @@ namespace MPTickBar
             var config = this.Configuration.Countdown;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                ImGui.Text($"Type {MPTickBarPlugin.CountdownCommand} X to start the countdown with X seconds after next tick and time offset. (e.g. {MPTickBarPlugin.CountdownCommand} 12)" +
-                    "\nAdjust the [Time Offset] option based on your opener/encounter requirements.");
+                PluginUI.Text(new string[]
+                {
+                    $"Type {MPTickBarPlugin.CountdownCommand} X to start the countdown with X seconds after next tick and time offset. (e.g. {MPTickBarPlugin.CountdownCommand} 12)",
+                    "Adjust the [Time Offset] option based on your opener/encounter requirements."
+                });
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
                 this.DragInt(config.StartingSeconds, x => config.StartingSeconds = x, "Starting Seconds (Default)", 1, 5, 30, "%i");
-                PluginUI.Tooltip($"The default value used when {MPTickBarPlugin.CountdownCommand} command has invalid or no value.");
-                this.DragFloat(config.TimeOffset, x => config.TimeOffset = x, "Time Offset (s)", 0.01f, 0.0f, 3.0f, "%.2f");
+                PluginUI.Tooltip($"It's the default value used when the {MPTickBarPlugin.CountdownCommand} command has an invalid or no value.", 550.0f);
+                this.DragFloat(config.TimeOffset, x => config.TimeOffset = x, "Time Offset (Seconds)", 0.01f, 0.0f, 3.0f, "%.2f");
             });
         }
 
@@ -790,11 +886,20 @@ namespace MPTickBar
             var iconDimension = 23.0f * ImGuiHelpers.GlobalScale;
             var fastFireIIICastTime = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage ? (((int)(this.PlayerState.GetFastFireIIICastTime() * 100)) / 100.0f).ToString("0.00s") : "N/A";
             var textWidth = ImGui.CalcTextSize(fastFireIIICastTime).X;
-            ImGui.SameLine(ImGui.GetWindowWidth() - textWidth - iconDimension - 32.0f);
+            var x = ImGui.GetWindowWidth() - textWidth - iconDimension - 32.0f;
+            ImGui.SameLine(x);
             ImGui.TextColored(new(0.0f, 1.0f, 0.0f, 1.0f), fastFireIIICastTime);
             ImGui.SameLine();
             ImGui.Image(this.FireIIIIcon.ImGuiHandle, new(iconDimension, iconDimension));
             PluginUI.Tooltip($"Current fast Fire III cast time: {fastFireIIICastTime}");
+
+            if (this.OpCode != 0)
+            {
+                var text = $"[{this.OpCode}]";
+                ImGui.SameLine(x - ImGui.CalcTextSize(text).X - 6.0f);
+                ImGui.Text(text);
+                PluginUI.Tooltip($"OpCode: {this.OpCode}");
+            }
         }
     }
 }
