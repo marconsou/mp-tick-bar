@@ -118,7 +118,7 @@ namespace MPTickBar
             }
 
             var progress = this.ProgressBarState.Update();
-            this.MPTickBarPluginUI.Update(progress, this.Network.GetOpCode());
+            this.MPTickBarPluginUI.Update(progress, this.Network.OpCode);
             this.CountdownState.Update(this.Chat, progress, this.Configuration.Countdown.TimeOffset);
 
             if (this.Network.Update())

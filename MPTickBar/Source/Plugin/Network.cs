@@ -1,5 +1,6 @@
 using Dalamud.Game.Network;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace MPTickBar
@@ -8,22 +9,35 @@ namespace MPTickBar
     {
         public PlayerState PlayerState { get; set; }
 
-        private int HP { get; set; }
+        public ushort OpCode { get; private set; }
 
-        private int MP { get; set; }
+        private bool WasOpCodeFound => (this.OpCode != 0);
 
-        private ushort OpCode { get; set; }
+        private List<NetworkData> NetworkDataList { get; } = new();
 
-        private bool WasOpCodeFound { get; set; }
+        private readonly struct NetworkData
+        {
+            public ushort OpCode { get; init; }
 
-        public ushort GetOpCode() => (ushort)(this.WasOpCodeFound ? this.OpCode : 0);
+            public int HP { get; init; }
+
+            public int MP { get; init; }
+        }
 
         public bool Update()
         {
-            if (!this.WasOpCodeFound && (this.OpCode != 0) && (this.PlayerState != null) && this.PlayerState.CheckPlayerStatus(this.HP, this.MP))
+            if (!this.WasOpCodeFound)
             {
-                this.WasOpCodeFound = true;
-                return true;
+                var data = new List<NetworkData>(this.NetworkDataList);
+                foreach (var item in data)
+                {
+                    if ((this.PlayerState != null) && this.PlayerState.CheckPlayerStatus(item.HP, item.MP))
+                    {
+                        this.OpCode = item.OpCode;
+                        this.NetworkDataList.Clear();
+                        return true;
+                    }
+                }
             }
             return false;
         }
@@ -38,9 +52,10 @@ namespace MPTickBar
             }
             else if (!this.WasOpCodeFound && CheckNetworkPlayerStatus())
             {
-                this.HP = Network.GetData(dataPtr, 0, 3);
-                this.MP = Network.GetData(dataPtr, 4, 2);
-                this.OpCode = opCode;
+                if (this.NetworkDataList.Count >= 20)
+                    this.NetworkDataList.Clear();
+
+                this.NetworkDataList.Add(new() { OpCode = opCode, HP = Network.GetData(dataPtr, 0, 3), MP = Network.GetData(dataPtr, 4, 2) });
             }
             return false;
         }

@@ -662,7 +662,7 @@ namespace MPTickBar
                 PluginUI.Tooltip("Change the progress bar color after reaching the marker.");
                 this.ColorEdit4(config.ProgressBarAfterMarkerColor, x => config.ProgressBarAfterMarkerColor = x, "Progress Bar (After reaching the marker)", PluginUI.Spacing);
                 this.CheckBox(config.IsRegressEffectEnabled, x => config.IsRegressEffectEnabled = x, "##IsRegressEffectEnabled");
-                PluginUI.Tooltip("Show the bar effect animation when it goes from full to an empty state.");
+                PluginUI.Tooltip("Show the bar effect animation when the progress goes from 100%% to 0%%.");
                 this.ColorEdit4(config.RegressBarColor, x => config.RegressBarColor = x, "Regress Bar", PluginUI.Spacing);
                 this.Combo(config.UI, x => config.UI = x, "UI");
 
@@ -736,8 +736,8 @@ namespace MPTickBar
                 PluginUI.Text(new string[]
                 {
                     "The markers indicate a specific time or an interval on the bar.",
-                    "Use the [Single Marker] option to place one marker based on time and adjust it manually.",
-                    "Use the [Multiple Markers] option to place more than one marker automatically based on interval."
+                    "Use the [Single Marker] option to place one marker manually based on a specific time.",
+                    "Use the [Multiple Markers] option to place more than one marker based on an interval. It's adjusted automatically."
                 });
             });
             PluginUI.CollapsingHeader("Dimension", () =>
@@ -796,11 +796,11 @@ namespace MPTickBar
                 PluginUI.Text(new string[]
                 {
                     "The MP Regen Stack contains 5 stacks:",
-                    "-The first three stacks represent the state of the current MP.",
+                    "-The first 3 stacks represent the state of the current MP.",
                     " (e.g Almost empty MP = 0 stack. Almost full MP = 3 stacks)",
                     "-Umbral Ice I regen grants 1 stack.",
                     "-Umbral Ice III regen grants 2 stacks.",
-                    "-The last two stacks represent the Lucid Dreaming regen."
+                    "-The last 2 stacks represent the Lucid Dreaming regen."
                 });
             });
             PluginUI.CollapsingHeader("Location", () =>
@@ -869,7 +869,7 @@ namespace MPTickBar
             PluginUI.CollapsingHeader("Functional", () =>
             {
                 this.DragInt(config.StartingSeconds, x => config.StartingSeconds = x, "Starting Seconds (Default)", 1, 5, 30, "%i");
-                PluginUI.Tooltip($"It's the default value used when the {MPTickBarPlugin.CountdownCommand} command has an invalid or no value.", 550.0f);
+                PluginUI.Tooltip($"It's the default value used when the {MPTickBarPlugin.CountdownCommand} command has an invalid or no value at all.", 550.0f);
                 this.DragFloat(config.TimeOffset, x => config.TimeOffset = x, "Time Offset (Seconds)", 0.01f, 0.0f, 3.0f, "%.2f");
             });
         }
@@ -898,7 +898,7 @@ namespace MPTickBar
                 var text = $"[{this.OpCode}]";
                 ImGui.SameLine(x - ImGui.CalcTextSize(text).X - 6.0f);
                 ImGui.Text(text);
-                PluginUI.Tooltip($"OpCode: {this.OpCode}");
+                PluginUI.Tooltip($"Opcode: {this.OpCode}");
             }
         }
     }
