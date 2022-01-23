@@ -296,31 +296,38 @@ namespace MPTickBar
             var textureY = 0.0f;
             var textureW = textureX + 0.5f;
             var textureH = 1.0f;
-            var umbralIceRegenStackMax = 3;
-            var lucidDreamingRegenStackMax = 2;
-            var widthAdjust = 0.65f;
-            var totalWidth = (width * (1.0f - widthAdjust)) + (width * widthAdjust * (umbralIceRegenStackMax + lucidDreamingRegenStackMax));
+            var umbralIceRegenStackMax = this.Configuration.MPRegenStack.IsUmbralIceStackEnabled ? 3 : 0;
+            var lucidDreamingRegenStackMax = this.Configuration.MPRegenStack.IsLucidDreamingStackEnabled ? PlayerState.LucidDreamingRegenStackMax : 0;
+            var stacksTotal = umbralIceRegenStackMax + lucidDreamingRegenStackMax;
+            var widthAdjustScale = 0.65f;
+            var widthAdjust = width * widthAdjustScale;
+            var widthTotal = (width * stacksTotal) - (width * (1.0f - widthAdjustScale) * (stacksTotal - 1));
 
             void RenderImage(IntPtr imGuiHandle, Vector4 color)
             {
-                ImGui.SetCursorPos(new(x - (totalWidth / 2.0f), y - (height / 2.0f)));
+                ImGui.SetCursorPos(new(x - (widthTotal / 2.0f), y - (height / 2.0f)));
                 ImGui.Image(imGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), color);
             }
 
-            for (var i = 0; i < umbralIceRegenStackMax; i++)
+            if (this.Configuration.MPRegenStack.IsUmbralIceStackEnabled)
             {
-                if (isBackground || (i < this.PlayerState.UmbralIceRegenStack))
-                    RenderImage(mpTickBarUI.UmbralIceRegenStack.ImGuiHandle, isBackground ? this.Configuration.MPRegenStack.UmbralIceStackBackgroundColor : this.Configuration.MPRegenStack.UmbralIceStackColor);
-                x += width * widthAdjust;
+                for (var i = 0; i < umbralIceRegenStackMax; i++)
+                {
+                    if (isBackground || (i < this.PlayerState.UmbralIceRegenStack))
+                        RenderImage(mpTickBarUI.UmbralIceRegenStack.ImGuiHandle, isBackground ? this.Configuration.MPRegenStack.UmbralIceStackBackgroundColor : this.Configuration.MPRegenStack.UmbralIceStackColor);
+                    x += widthAdjust;
+                }
+                x += 2.0f * this.Configuration.MPRegenStack.Scale;
             }
 
-            x += 2.0f * this.Configuration.MPRegenStack.Scale;
-
-            for (var i = 0; i < lucidDreamingRegenStackMax; i++)
+            if (this.Configuration.MPRegenStack.IsLucidDreamingStackEnabled)
             {
-                if (isBackground || (i < this.PlayerState.LucidDreamingRegenStack))
-                    RenderImage(mpTickBarUI.LucidDreamingRegenStack.ImGuiHandle, isBackground ? this.Configuration.MPRegenStack.LucidDreamingStackBackgroundColor : this.Configuration.MPRegenStack.LucidDreamingStackColor);
-                x += width * widthAdjust;
+                for (var i = 0; i < lucidDreamingRegenStackMax; i++)
+                {
+                    if (isBackground || (i < this.PlayerState.LucidDreamingRegenStack))
+                        RenderImage(mpTickBarUI.LucidDreamingRegenStack.ImGuiHandle, isBackground ? this.Configuration.MPRegenStack.LucidDreamingStackBackgroundColor : this.Configuration.MPRegenStack.LucidDreamingStackColor);
+                    x += widthAdjust;
+                }
             }
         }
 
@@ -342,7 +349,7 @@ namespace MPTickBar
 
             var x = offsetX + this.Configuration.Number.OffsetX + (gaugeWidth / 2.0f);
             var y = offsetY + this.Configuration.Number.OffsetY + (gaugeHeight / 2.0f) + adjustY;
-            var totalNumberWidth = scaledWidth * numberText.Length;
+            var numberWidthTotal = scaledWidth * numberText.Length;
 
             if ((this.Configuration.Number.Type == NumberType.RemainingTime) && (numberText.Length > 1))
             {
@@ -355,7 +362,7 @@ namespace MPTickBar
                 var digit = char.GetNumericValue(item);
                 var textureX = (width * digit) / this.Numbers.Width;
                 var textureW = textureX + (width / this.Numbers.Width);
-                ImGui.SetCursorPos(new(x - (totalNumberWidth / 2.0f), y - (scaledHeight / 2.0f)));
+                ImGui.SetCursorPos(new(x - (numberWidthTotal / 2.0f), y - (scaledHeight / 2.0f)));
                 ImGui.Image(this.Numbers.ImGuiHandle, new(scaledWidth, scaledHeight), new((float)textureX, textureY), new((float)textureW, textureH), this.Configuration.Number.NumberColor);
                 x += scaledWidth;
             }
@@ -813,9 +820,11 @@ namespace MPTickBar
             });
             PluginUI.CollapsingHeader("Visual", () =>
             {
-                this.ColorEdit4(config.UmbralIceStackColor, x => config.UmbralIceStackColor = x, "Umbral Ice Stack");
+                this.CheckBox(config.IsUmbralIceStackEnabled, x => config.IsUmbralIceStackEnabled = x, "##IsUmbralIceStackEnabled");
+                this.ColorEdit4(config.UmbralIceStackColor, x => config.UmbralIceStackColor = x, "Umbral Ice Stack", PluginUI.Spacing);
                 this.ColorEdit4(config.UmbralIceStackBackgroundColor, x => config.UmbralIceStackBackgroundColor = x, "Background", PluginUI.Spacing);
-                this.ColorEdit4(config.LucidDreamingStackColor, x => config.LucidDreamingStackColor = x, "Lucid Dreaming Stack");
+                this.CheckBox(config.IsLucidDreamingStackEnabled, x => config.IsLucidDreamingStackEnabled = x, "##IsLucidDreamingStackEnabled");
+                this.ColorEdit4(config.LucidDreamingStackColor, x => config.LucidDreamingStackColor = x, "Lucid Dreaming Stack", PluginUI.Spacing);
                 this.ColorEdit4(config.LucidDreamingStackBackgroundColor, x => config.LucidDreamingStackBackgroundColor = x, "Background ", PluginUI.Spacing);
                 this.Combo(config.UI, x => config.UI = x, "UI");
             });
