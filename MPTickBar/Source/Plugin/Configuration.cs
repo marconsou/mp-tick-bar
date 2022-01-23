@@ -93,7 +93,7 @@ namespace MPTickBar
 
             public TimeSplitMarkerUI UI { get; set; } = TimeSplitMarkerUI.Default;
 
-            public bool IsSingleMarkerEnabled { get; set; } = false;
+            public bool IsSingleMarkerEnabled { get; set; } = true;
 
             public float SingleMarkerTimeOffset { get; set; } = 1.5f;
 
@@ -125,9 +125,13 @@ namespace MPTickBar
 
             public float Scale { get; set; } = 1.0f;
 
+            public bool IsUmbralIceStackEnabled { get; set; } = true;
+
             public Vector4 UmbralIceStackColor { get; set; } = new(0.0f, 1.0f, 1.0f, 1.0f);
 
             public Vector4 UmbralIceStackBackgroundColor { get; set; } = Vector4.One;
+
+            public bool IsLucidDreamingStackEnabled { get; set; } = true;
 
             public Vector4 LucidDreamingStackColor { get; set; } = new(0.86f, 0.435f, 1.0f, 1.0f);
 
