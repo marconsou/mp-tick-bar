@@ -31,7 +31,7 @@ namespace MPTickBar
 
         public static byte LucidDreamingRegenStackMax => 2;
 
-        public bool IsPlayingAsBlackMage => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn && (this.Player.ClassJob?.Id == 25);
+        public bool IsPlayingAsBlackMage => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn;
 
         public bool IsInCombat => this.CheckCondition(new[] { ConditionFlag.InCombat });
 
