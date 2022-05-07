@@ -5,12 +5,26 @@ using Dalamud.Game.ClientState.JobGauge.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MPTickBar
 {
     public class PlayerState
     {
+        private enum JobId : uint
+        {
+            BlackMage = 25,
+            Thaumaturge = 7,
+            DarkKnight = 32
+        }
+
+        private enum EffectId : uint
+        {
+            LucidDreaming = 1204,
+            CircleOfPower = 738
+        }
+
         private ClientState ClientState { get; set; }
 
         private JobGauges JobGauges { get; set; }
@@ -31,7 +45,13 @@ namespace MPTickBar
 
         public static byte LucidDreamingRegenStackMax => 2;
 
-        public bool IsPlayingAsBlackMage => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn && (this.Player.ClassJob?.Id == 25);
+        private List<uint> JobIds { get; } = new();
+
+        private bool IsLoggedIn => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn;
+
+        public bool IsPlayingAsBlackMage => this.IsLoggedIn && (this.Player.ClassJob?.Id == (uint)JobId.BlackMage || this.Player.ClassJob?.Id == (uint)JobId.Thaumaturge);
+
+        public bool IsPlayingWithOtherJobs => this.IsLoggedIn && (this.JobIds.Contains((uint)(this.Player.ClassJob?.Id)));
 
         public bool IsInCombat => this.CheckCondition(new[] { ConditionFlag.InCombat });
 
@@ -39,21 +59,21 @@ namespace MPTickBar
 
         public bool IsOccupied => this.CheckCondition(new[] { ConditionFlag.OccupiedInCutSceneEvent, ConditionFlag.Occupied33, ConditionFlag.Occupied38, ConditionFlag.OccupiedInQuestEvent });
 
-        private bool CheckCondition(ConditionFlag[] conditionFlags) => this.IsPlayingAsBlackMage && (this.Condition != null) && conditionFlags.Any(x => this.Condition[x]);
+        private bool CheckCondition(ConditionFlag[] conditionFlags) => (this.IsPlayingAsBlackMage || this.IsPlayingWithOtherJobs) && (this.Condition != null) && conditionFlags.Any(x => this.Condition[x]);
 
         public bool IsUmbralIceActivated => (this.UmbralIceStacks > 0);
 
         private byte UmbralIceStacks => (this.IsPlayingAsBlackMage && (this.JobGauges != null)) ? this.JobGauges.Get<BLMGauge>().UmbralIceStacks : (byte)0;
 
-        private bool IsLucidDreamingActivated => this.IsEffectActivated(1204);
+        private bool IsLucidDreamingActivated => this.IsEffectActivated((uint)EffectId.LucidDreaming);
 
-        private bool IsCircleOfPowerActivated => this.IsEffectActivated(738);
+        private bool IsCircleOfPowerActivated => this.IsEffectActivated((uint)EffectId.CircleOfPower);
 
         private bool IsEffectActivated(uint statusId) => this.IsPlayingAsBlackMage && this.Player.StatusList.Any(x => x.StatusId == statusId);
 
-        public bool CheckPlayerId(uint targetActorId) => this.IsPlayingAsBlackMage && this.Player.IsValid() && !this.IsDead.Current && (this.Player.ObjectId == targetActorId);
+        public bool CheckPlayerId(uint targetActorId) => (this.IsPlayingAsBlackMage || this.IsPlayingWithOtherJobs) && this.Player.IsValid() && !this.IsDead.Current && (this.Player.ObjectId == targetActorId);
 
-        public bool CheckPlayerStatus(int hp, int mp) => this.IsPlayingAsBlackMage && !this.IsDead.Current && (this.Player.CurrentHp == hp) && (this.Player.CurrentMp == mp);
+        public bool CheckPlayerStatus(int hp, int mp) => (this.IsPlayingAsBlackMage || this.IsPlayingWithOtherJobs) && !this.IsDead.Current && (this.Player.CurrentHp == hp) && (this.Player.CurrentMp == mp);
 
         private class Data<T> where T : struct
         {
@@ -75,10 +95,25 @@ namespace MPTickBar
 
         public void StateUpdate()
         {
-            var isPlayingAsBlackMage = this.IsPlayingAsBlackMage;
-            this.MP.Update(isPlayingAsBlackMage ? this.Player.CurrentMp : uint.MinValue);
-            this.Territory.Update(isPlayingAsBlackMage ? this.ClientState.TerritoryType : ushort.MinValue);
-            this.IsDead.Update(isPlayingAsBlackMage && (this.Player.CurrentHp == 0));
+            var updateData = (this.IsPlayingAsBlackMage || this.IsPlayingWithOtherJobs);
+            this.MP.Update(updateData ? this.Player.CurrentMp : uint.MinValue);
+            this.Territory.Update(updateData ? this.ClientState.TerritoryType : ushort.MinValue);
+            this.IsDead.Update(updateData && (this.Player.CurrentHp == 0));
+        }
+
+        public void OtherJobIdsUpdate(bool[] isJobsEnabled)
+        {
+            if (this.IsPlayingAsBlackMage)
+                return;
+
+            var jobIds = new uint[] { (uint)JobId.DarkKnight };
+
+            this.JobIds.Clear();
+            for (var i = 0; i < isJobsEnabled.Length; i++)
+            {
+                if (isJobsEnabled[i])
+                    this.JobIds.Add(jobIds[i]);
+            }
         }
 
         public void SaveData()
