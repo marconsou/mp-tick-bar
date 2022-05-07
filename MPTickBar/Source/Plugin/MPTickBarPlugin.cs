@@ -115,6 +115,7 @@ namespace MPTickBar
                 this.ProgressBarState.PlayerState = this.PlayerState;
                 this.MPTickBarPluginUI.PlayerState = this.PlayerState;
                 this.Network.PlayerState = this.PlayerState;
+                this.PlayerState.OtherJobIdsUpdate(new bool[] { this.Configuration.General.IsDarkKnightEnabled });
             }
 
             var progress = this.ProgressBarState.Update();

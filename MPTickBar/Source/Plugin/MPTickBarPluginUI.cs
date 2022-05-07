@@ -480,11 +480,16 @@ namespace MPTickBar
                 }
             }
 
+            var isPlayingAsBlackMage = this.PlayerState.IsPlayingAsBlackMage;
+
             if ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.Visible) ||
                ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated))
             {
-                MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.FastFireIIIMarker, offsetX + fastFireIIIMarkerOffset, offsetY, gaugeHeight, this.Configuration.FastFireIIIMarker.ScaleHorizontal, this.Configuration.FastFireIIIMarker.ScaleVertical, this.Configuration.FastFireIIIMarker.BackgroundColor, true);
-                MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.FastFireIIIMarker, offsetX + fastFireIIIMarkerOffset, offsetY, gaugeHeight, this.Configuration.FastFireIIIMarker.ScaleHorizontal, this.Configuration.FastFireIIIMarker.ScaleVertical, this.Configuration.FastFireIIIMarker.MarkerColor, false);
+                if (isPlayingAsBlackMage)
+                {
+                    MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.FastFireIIIMarker, offsetX + fastFireIIIMarkerOffset, offsetY, gaugeHeight, this.Configuration.FastFireIIIMarker.ScaleHorizontal, this.Configuration.FastFireIIIMarker.ScaleVertical, this.Configuration.FastFireIIIMarker.BackgroundColor, true);
+                    MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.FastFireIIIMarker, offsetX + fastFireIIIMarkerOffset, offsetY, gaugeHeight, this.Configuration.FastFireIIIMarker.ScaleHorizontal, this.Configuration.FastFireIIIMarker.ScaleVertical, this.Configuration.FastFireIIIMarker.MarkerColor, false);
+                }
             }
 
             this.AddVertexDataUpToThisPoint();
@@ -492,14 +497,18 @@ namespace MPTickBar
             if (((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.Visible) ||
                 ((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated)) && isProgressAfterMarker)
             {
-                this.RenderIndicatorUIElement(offsetX, offsetY, gaugeWidth, gaugeHeight);
+                if (isPlayingAsBlackMage)
+                    this.RenderIndicatorUIElement(offsetX, offsetY, gaugeWidth, gaugeHeight);
             }
 
             if ((this.Configuration.MPRegenStack.Visibility == MPRegenStackVisibility.Visible) ||
                ((this.Configuration.MPRegenStack.Visibility == MPRegenStackVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated))
             {
-                this.RenderStacksUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, true);
-                this.RenderStacksUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, false);
+                if (isPlayingAsBlackMage)
+                {
+                    this.RenderStacksUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, true);
+                    this.RenderStacksUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, false);
+                }
             }
 
             if ((this.Configuration.Number.Visibility == NumberVisibility.Visible) ||
@@ -512,7 +521,7 @@ namespace MPTickBar
 
         private void DrawMPTickBarWindow()
         {
-            var isMPTickBarWindowVisible = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage && !this.PlayerState.IsBetweenAreas && !this.PlayerState.IsOccupied &&
+            var isMPTickBarWindowVisible = (this.PlayerState != null) && (this.PlayerState.IsPlayingAsBlackMage || this.PlayerState.IsPlayingWithOtherJobs) && !this.PlayerState.IsBetweenAreas && !this.PlayerState.IsOccupied &&
                (!this.Configuration.General.IsLocked ||
                (this.Configuration.General.Visibility == MPTickBarVisibility.Visible) ||
                (this.Configuration.General.Visibility == MPTickBarVisibility.UnderUmbralIce && this.PlayerState.IsUmbralIceActivated) ||
@@ -635,6 +644,8 @@ namespace MPTickBar
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
+                PluginUI.Text(new string[] { "Enable for Jobs:" });
+                this.CheckBox(config.IsDarkKnightEnabled, x => config.IsDarkKnightEnabled = x, "Dark Knight");
                 this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
             });
         }

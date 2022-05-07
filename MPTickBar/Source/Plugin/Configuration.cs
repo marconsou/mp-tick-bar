@@ -36,6 +36,8 @@ namespace MPTickBar
 
             public float Scale { get; set; } = 1.0f;
 
+            public bool IsDarkKnightEnabled { get; set; } = false;
+
             public MPTickBarVisibility Visibility { get; set; } = MPTickBarVisibility.Visible;
         }
 
