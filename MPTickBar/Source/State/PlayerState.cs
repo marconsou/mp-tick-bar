@@ -73,7 +73,7 @@ namespace MPTickBar
 
         public bool CheckPlayerId(uint targetActorId) => (this.IsPlayingAsBlackMage || this.IsPlayingWithOtherJobs) && this.Player.IsValid() && !this.IsDead.Current && (this.Player.ObjectId == targetActorId);
 
-        public bool CheckPlayerStatus(int hp, int mp) => (this.IsPlayingAsBlackMage || this.IsPlayingWithOtherJobs) && !this.IsDead.Current && (this.Player.CurrentHp == hp) && (this.Player.CurrentMp == mp);
+        public bool CheckPlayerStatus(int hp, int mp) => !this.IsDead.Current && (this.Player.CurrentHp == hp) && (this.Player.CurrentMp == mp);
 
         private class Data<T> where T : struct
         {
