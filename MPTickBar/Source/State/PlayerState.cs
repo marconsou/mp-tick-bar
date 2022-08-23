@@ -45,13 +45,13 @@ namespace MPTickBar
 
         public static byte LucidDreamingRegenStackMax => 2;
 
-        private List<uint> JobIds { get; } = new();
+        private List<uint> OtherJobIds { get; } = new();
 
         private bool IsLoggedIn => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn;
 
         public bool IsPlayingAsBlackMage => this.IsLoggedIn && (this.Player.ClassJob?.Id == (uint)JobId.BlackMage || this.Player.ClassJob?.Id == (uint)JobId.Thaumaturge);
 
-        public bool IsPlayingWithOtherJobs => this.IsLoggedIn && (this.JobIds.Contains((uint)(this.Player.ClassJob?.Id)));
+        public bool IsPlayingWithOtherJobs => this.IsLoggedIn && (this.OtherJobIds.Contains((uint)(this.Player.ClassJob?.Id)));
 
         public bool IsInCombat => this.CheckCondition(new[] { ConditionFlag.InCombat });
 
@@ -106,13 +106,13 @@ namespace MPTickBar
             if (this.IsPlayingAsBlackMage)
                 return;
 
-            var jobIds = new uint[] { (uint)JobId.DarkKnight };
+            var otherJobIds = new uint[] { (uint)JobId.DarkKnight };
 
-            this.JobIds.Clear();
+            this.OtherJobIds.Clear();
             for (var i = 0; i < isJobsEnabled.Length; i++)
             {
                 if (isJobsEnabled[i])
-                    this.JobIds.Add(jobIds[i]);
+                    this.OtherJobIds.Add(otherJobIds[i]);
             }
         }
 
