@@ -19,7 +19,7 @@ namespace MPTickBar.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -63,9 +63,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] FireIIICastIndicator {
+        internal static byte[] fireiiicastindicator {
             get {
-                object obj = ResourceManager.GetObject("FireIIICastIndicator", resourceCulture);
+                object obj = ResourceManager.GetObject("fireiiicastindicator", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] FireIIIIcon {
+        internal static byte[] fireiiiicon {
             get {
-                object obj = ResourceManager.GetObject("FireIIIIcon", resourceCulture);
+                object obj = ResourceManager.GetObject("fireiiiicon", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -83,9 +83,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] GaugeDefault {
+        internal static byte[] gaugedefault {
             get {
-                object obj = ResourceManager.GetObject("GaugeDefault", resourceCulture);
+                object obj = ResourceManager.GetObject("gaugedefault", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -93,9 +93,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] GaugeMaterialUIBlack {
+        internal static byte[] gaugematerialuiblack {
             get {
-                object obj = ResourceManager.GetObject("GaugeMaterialUIBlack", resourceCulture);
+                object obj = ResourceManager.GetObject("gaugematerialuiblack", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -103,9 +103,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] GaugeMaterialUIDiscord {
+        internal static byte[] gaugematerialuidiscord {
             get {
-                object obj = ResourceManager.GetObject("GaugeMaterialUIDiscord", resourceCulture);
+                object obj = ResourceManager.GetObject("gaugematerialuidiscord", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -113,9 +113,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] GaugeMaterialUISilver {
+        internal static byte[] gaugematerialuisilver {
             get {
-                object obj = ResourceManager.GetObject("GaugeMaterialUISilver", resourceCulture);
+                object obj = ResourceManager.GetObject("gaugematerialuisilver", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -123,9 +123,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] GaugeSolidBar {
+        internal static byte[] gaugesolidbar {
             get {
-                object obj = ResourceManager.GetObject("GaugeSolidBar", resourceCulture);
+                object obj = ResourceManager.GetObject("gaugesolidbar", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -133,9 +133,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] JobStackADefault {
+        internal static byte[] jobstackadefault {
             get {
-                object obj = ResourceManager.GetObject("JobStackADefault", resourceCulture);
+                object obj = ResourceManager.GetObject("jobstackadefault", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -143,9 +143,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] JobStackAMaterialUI {
+        internal static byte[] jobstackamaterialui {
             get {
-                object obj = ResourceManager.GetObject("JobStackAMaterialUI", resourceCulture);
+                object obj = ResourceManager.GetObject("jobstackamaterialui", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -153,9 +153,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] JobStackAMaterialUISilver {
+        internal static byte[] jobstackamaterialuisilver {
             get {
-                object obj = ResourceManager.GetObject("JobStackAMaterialUISilver", resourceCulture);
+                object obj = ResourceManager.GetObject("jobstackamaterialuisilver", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -163,9 +163,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] JobStackBDefault {
+        internal static byte[] jobstackbdefault {
             get {
-                object obj = ResourceManager.GetObject("JobStackBDefault", resourceCulture);
+                object obj = ResourceManager.GetObject("jobstackbdefault", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -173,9 +173,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] JobStackBMaterialUI {
+        internal static byte[] jobstackbmaterialui {
             get {
-                object obj = ResourceManager.GetObject("JobStackBMaterialUI", resourceCulture);
+                object obj = ResourceManager.GetObject("jobstackbmaterialui", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -183,9 +183,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] JobStackBMaterialUISilver {
+        internal static byte[] jobstackbmaterialuisilver {
             get {
-                object obj = ResourceManager.GetObject("JobStackBMaterialUISilver", resourceCulture);
+                object obj = ResourceManager.GetObject("jobstackbmaterialuisilver", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -193,9 +193,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] LevelModifier {
+        internal static byte[] levelmodifier {
             get {
-                object obj = ResourceManager.GetObject("LevelModifier", resourceCulture);
+                object obj = ResourceManager.GetObject("levelmodifier", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -203,9 +203,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] MarkerLine {
+        internal static byte[] markerline {
             get {
-                object obj = ResourceManager.GetObject("MarkerLine", resourceCulture);
+                object obj = ResourceManager.GetObject("markerline", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -213,9 +213,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] Numbers {
+        internal static byte[] numbers {
             get {
-                object obj = ResourceManager.GetObject("Numbers", resourceCulture);
+                object obj = ResourceManager.GetObject("numbers", resourceCulture);
                 return ((byte[])(obj));
             }
         }
