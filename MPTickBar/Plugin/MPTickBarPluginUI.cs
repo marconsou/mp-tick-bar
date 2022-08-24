@@ -1,9 +1,9 @@
 ﻿using Dalamud.Interface;
 using ImGuiNET;
 using ImGuiScene;
-using MPTickBar.Properties;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 
@@ -108,25 +108,25 @@ namespace MPTickBar
             }
         }
 
-        public MPTickBarPluginUI(Configuration configuration, UiBuilder uiBuilder)
+        public MPTickBarPluginUI(Configuration configuration, UiBuilder uiBuilder, string path)
         {
             this.Configuration = configuration;
-            
-            this.GaugeDefault = uiBuilder.LoadImage(Resources.gaugedefault);
-            this.GaugeMaterialUIDiscord = uiBuilder.LoadImage(Resources.gaugematerialuidiscord);
-            this.GaugeMaterialUIBlack = uiBuilder.LoadImage(Resources.gaugematerialuiblack);
-            this.GaugeMaterialUISilver = uiBuilder.LoadImage(Resources.gaugematerialuisilver);
-            this.GaugeSolidBar = uiBuilder.LoadImage(Resources.gaugesolidbar);
-            this.JobStackADefault = uiBuilder.LoadImage(Resources.jobstackadefault);
-            this.JobStackAMaterialUI = uiBuilder.LoadImage(Resources.jobstackamaterialui);
-            this.JobStackAMaterialUISilver = uiBuilder.LoadImage(Resources.jobstackamaterialuisilver);
-            this.JobStackBDefault = uiBuilder.LoadImage(Resources.jobstackbdefault);
-            this.JobStackBMaterialUI = uiBuilder.LoadImage(Resources.jobstackbmaterialui);
-            this.JobStackBMaterialUISilver = uiBuilder.LoadImage(Resources.jobstackbmaterialuisilver);
-            this.MarkerLine = uiBuilder.LoadImage(Resources.markerline);
-            this.FireIIICastIndicator = uiBuilder.LoadImage(Resources.fireiiicastindicator);
-            this.Numbers = uiBuilder.LoadImage(Resources.numbers);
-            this.FireIIIIcon = uiBuilder.LoadImage(Resources.fireiiiicon);
+     
+            this.GaugeDefault = uiBuilder.LoadImage(Path.Combine(path, "GaugeDefault.png"));
+            this.GaugeMaterialUIDiscord = uiBuilder.LoadImage(Path.Combine(path, "GaugeMaterialUIDiscord.png"));
+            this.GaugeMaterialUIBlack = uiBuilder.LoadImage(Path.Combine(path, "GaugeMaterialUIBlack.png"));
+            this.GaugeMaterialUISilver = uiBuilder.LoadImage(Path.Combine(path, "GaugeMaterialUISilver.png"));
+            this.GaugeSolidBar = uiBuilder.LoadImage(Path.Combine(path, "GaugeSolidBar.png"));
+            this.JobStackADefault = uiBuilder.LoadImage(Path.Combine(path, "JobStackADefault.png"));
+            this.JobStackAMaterialUI = uiBuilder.LoadImage(Path.Combine(path, "JobStackAMaterialUI.png"));
+            this.JobStackAMaterialUISilver = uiBuilder.LoadImage(Path.Combine(path, "JobStackAMaterialUISilver.png"));
+            this.JobStackBDefault = uiBuilder.LoadImage(Path.Combine(path, "JobStackBDefault.png"));
+            this.JobStackBMaterialUI = uiBuilder.LoadImage(Path.Combine(path, "JobStackBMaterialUI.png"));
+            this.JobStackBMaterialUISilver = uiBuilder.LoadImage(Path.Combine(path, "JobStackBMaterialUISilver.png"));
+            this.MarkerLine = uiBuilder.LoadImage(Path.Combine(path, "MarkerLine.png"));
+            this.FireIIICastIndicator = uiBuilder.LoadImage(Path.Combine(path, "FireIIICastIndicator.png"));
+            this.Numbers = uiBuilder.LoadImage(Path.Combine(path, "Numbers.png"));
+            this.FireIIIIcon = uiBuilder.LoadImage(Path.Combine(path, "FireIIIIcon.png"));
         }
 
         public void Dispose()

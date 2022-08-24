@@ -7,6 +7,7 @@ using Dalamud.Game.Network;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using System;
+using System.IO;
 
 namespace MPTickBar
 {
@@ -60,7 +61,7 @@ namespace MPTickBar
         {
             this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new();
             this.Configuration.Initialize(this.PluginInterface);
-            this.MPTickBarPluginUI = new(this.Configuration, this.PluginInterface.UiBuilder);
+            this.MPTickBarPluginUI = new(this.Configuration, this.PluginInterface.UiBuilder, this.PluginInterface.AssemblyLocation.Directory?.FullName!);
             this.Chat = new(this.SigScanner);
 
             this.CommandManager.AddHandler(MPTickBarPlugin.ConfigCommand, new(this.OnConfigCommand)

@@ -17,7 +17,7 @@ namespace MPTickBar
 
         static LevelModifier()
         {
-            using var memoryStream = new MemoryStream(Resources.levelmodifier);
+            using var memoryStream = new MemoryStream(Resources.LevelModifier);
             using var streamReader = new StreamReader(memoryStream);
             string line;
             byte level = 1;
