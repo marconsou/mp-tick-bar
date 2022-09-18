@@ -47,6 +47,8 @@ namespace MPTickBar
 
         private List<uint> OtherJobIds { get; } = new();
 
+        private DateTime OnReviveDelayTime;
+
         private bool IsLoggedIn => (this.ClientState != null) && (this.Player != null) && this.ClientState.IsLoggedIn;
 
         public bool IsPlayingAsBlackMage => this.IsLoggedIn && (this.Player.ClassJob?.Id == (uint)JobId.BlackMage || this.Player.ClassJob?.Id == (uint)JobId.Thaumaturge);
@@ -55,9 +57,11 @@ namespace MPTickBar
 
         public bool IsInCombat => this.CheckCondition(new[] { ConditionFlag.InCombat });
 
+        public bool IsAlive => (!this.IsDead.Current) && (DateTime.Now > this.OnReviveDelayTime);
+
         public bool IsBetweenAreas => this.CheckCondition(new[] { ConditionFlag.BetweenAreas, ConditionFlag.BetweenAreas51 });
 
-        public bool IsOccupied => this.CheckCondition(new[] { ConditionFlag.OccupiedInCutSceneEvent, ConditionFlag.Occupied33, ConditionFlag.Occupied38, ConditionFlag.OccupiedInQuestEvent });
+        public bool IsOccupied => this.CheckCondition(new[] { ConditionFlag.OccupiedInCutSceneEvent, ConditionFlag.Occupied33, ConditionFlag.Occupied38, ConditionFlag.OccupiedInQuestEvent, ConditionFlag.OccupiedSummoningBell, ConditionFlag.OccupiedInEvent });
 
         private bool CheckCondition(ConditionFlag[] conditionFlags) => (this.IsPlayingAsBlackMage || this.IsPlayingWithOtherJobs) && (this.Condition != null) && conditionFlags.Any(x => this.Condition[x]);
 
@@ -74,6 +78,8 @@ namespace MPTickBar
         public bool CheckPlayerId(uint targetActorId) => (this.IsPlayingAsBlackMage || this.IsPlayingWithOtherJobs) && this.Player.IsValid() && !this.IsDead.Current && (this.Player.ObjectId == targetActorId);
 
         public bool CheckPlayerStatus(int hp, int mp) => (this.IsPlayingAsBlackMage || this.IsPlayingWithOtherJobs) && !this.IsDead.Current && (this.Player.CurrentHp == hp) && (this.Player.CurrentMp == mp);
+
+        public bool IsWeaponUnsheathed() { unsafe { return (UIState.Instance()->WeaponState.WeaponUnsheathed == 1); } }
 
         private class Data<T> where T : struct
         {
@@ -101,7 +107,7 @@ namespace MPTickBar
             this.IsDead.Update(updateData && (this.Player.CurrentHp == 0));
         }
 
-        public void OtherJobIdsUpdate(bool[] isJobsEnabled)
+        public void OtherJobIdsUpdate(bool[] isOtherJobsEnabled)
         {
             if (this.IsPlayingAsBlackMage)
                 return;
@@ -109,9 +115,9 @@ namespace MPTickBar
             var otherJobIds = new uint[] { (uint)JobId.DarkKnight };
 
             this.OtherJobIds.Clear();
-            for (var i = 0; i < isJobsEnabled.Length; i++)
+            for (var i = 0; i < isOtherJobsEnabled.Length; i++)
             {
-                if (isJobsEnabled[i])
+                if (isOtherJobsEnabled[i])
                     this.OtherJobIds.Add(otherJobIds[i]);
             }
         }
@@ -151,6 +157,8 @@ namespace MPTickBar
         {
             var onZoneChange = (this.Territory.Last != this.Territory.Current);
             var onDeath = (!this.IsDead.Last && this.IsDead.Current);
+            if (onDeath)
+                this.OnReviveDelayTime = DateTime.Now.AddMilliseconds(7200);
             return !onZoneChange && !onDeath;
         }
 
@@ -167,7 +175,7 @@ namespace MPTickBar
                 var leyLines = this.IsCircleOfPowerActivated ? 0.85 : 1.0;
                 var sub = LevelModifier.GetLevelModifierSub(level);
                 var div = LevelModifier.GetLevelModifierDiv(level);
-                var spellSpeed = UIState.pInstance->PlayerState.Attributes[46];
+                var spellSpeed = UIState.Instance()->PlayerState.Attributes[46];
 
                 return (float)(gcd35 * (1000 + Math.Ceiling(130.0 * (sub - spellSpeed) / div)) / 10000 / 100 * astralUmbral * leyLines);
             }

@@ -111,7 +111,7 @@ namespace MPTickBar
         public MPTickBarPluginUI(Configuration configuration, UiBuilder uiBuilder, string path)
         {
             this.Configuration = configuration;
-     
+
             this.GaugeDefault = uiBuilder.LoadImage(Path.Combine(path, "GaugeDefault.png"));
             this.GaugeMaterialUIDiscord = uiBuilder.LoadImage(Path.Combine(path, "GaugeMaterialUIDiscord.png"));
             this.GaugeMaterialUIBlack = uiBuilder.LoadImage(Path.Combine(path, "GaugeMaterialUIBlack.png"));
@@ -460,30 +460,26 @@ namespace MPTickBar
             this.RenderBarUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, this.Progress, true, isProgressAfterMarker);
             this.RenderBackgroundUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, textureToElementScale, false);
 
-            if ((this.Configuration.TimeSplitMarker.Visibility == TimeSplitMarkerVisibility.Visible) ||
-               ((this.Configuration.TimeSplitMarker.Visibility == TimeSplitMarkerVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated))
+            if (this.Configuration.TimeSplitMarker.IsMultipleMarkersEnabled)
             {
-                if (this.Configuration.TimeSplitMarker.IsMultipleMarkersEnabled)
+                var intervalOffset = Math.Clamp(progressWidth / (this.Configuration.TimeSplitMarker.MultipleMarkersAmount + 1), 0.0f, progressWidth);
+                for (int i = 1; i <= this.Configuration.TimeSplitMarker.MultipleMarkersAmount; i++)
                 {
-                    var intervalOffset = Math.Clamp(progressWidth / (this.Configuration.TimeSplitMarker.MultipleMarkersAmount + 1), 0.0f, progressWidth);
-                    for (int i = 1; i <= this.Configuration.TimeSplitMarker.MultipleMarkersAmount; i++)
-                    {
-                        MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.TimeSplitMarker, offsetX + (intervalOffset * i), offsetY, gaugeHeight, this.Configuration.TimeSplitMarker.ScaleHorizontal, this.Configuration.TimeSplitMarker.ScaleVertical, this.Configuration.TimeSplitMarker.BackgroundColor, true);
-                        MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.TimeSplitMarker, offsetX + (intervalOffset * i), offsetY, gaugeHeight, this.Configuration.TimeSplitMarker.ScaleHorizontal, this.Configuration.TimeSplitMarker.ScaleVertical, this.Configuration.TimeSplitMarker.MarkerColor, false);
-                    }
+                    MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.TimeSplitMarker, offsetX + (intervalOffset * i), offsetY, gaugeHeight, this.Configuration.TimeSplitMarker.ScaleHorizontal, this.Configuration.TimeSplitMarker.ScaleVertical, this.Configuration.TimeSplitMarker.BackgroundColor, true);
+                    MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.TimeSplitMarker, offsetX + (intervalOffset * i), offsetY, gaugeHeight, this.Configuration.TimeSplitMarker.ScaleHorizontal, this.Configuration.TimeSplitMarker.ScaleVertical, this.Configuration.TimeSplitMarker.MarkerColor, false);
                 }
-                if (this.Configuration.TimeSplitMarker.IsSingleMarkerEnabled)
-                {
-                    var timeOffset = Math.Clamp(this.Configuration.TimeSplitMarker.SingleMarkerTimeOffset * (progressWidth / 3.0f), 0.0f, progressWidth);
-                    MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.TimeSplitMarker, offsetX + timeOffset, offsetY, gaugeHeight, this.Configuration.TimeSplitMarker.ScaleHorizontal, this.Configuration.TimeSplitMarker.ScaleVertical, this.Configuration.TimeSplitMarker.BackgroundColor, true);
-                    MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.TimeSplitMarker, offsetX + timeOffset, offsetY, gaugeHeight, this.Configuration.TimeSplitMarker.ScaleHorizontal, this.Configuration.TimeSplitMarker.ScaleVertical, this.Configuration.TimeSplitMarker.MarkerColor, false);
-                }
+            }
+
+            if (this.Configuration.TimeSplitMarker.IsSingleMarkerEnabled)
+            {
+                var timeOffset = Math.Clamp(this.Configuration.TimeSplitMarker.SingleMarkerTimeOffset * (progressWidth / 3.0f), 0.0f, progressWidth);
+                MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.TimeSplitMarker, offsetX + timeOffset, offsetY, gaugeHeight, this.Configuration.TimeSplitMarker.ScaleHorizontal, this.Configuration.TimeSplitMarker.ScaleVertical, this.Configuration.TimeSplitMarker.BackgroundColor, true);
+                MPTickBarPluginUI.RenderMarkerUIElement(mpTickBarUI.TimeSplitMarker, offsetX + timeOffset, offsetY, gaugeHeight, this.Configuration.TimeSplitMarker.ScaleHorizontal, this.Configuration.TimeSplitMarker.ScaleVertical, this.Configuration.TimeSplitMarker.MarkerColor, false);
             }
 
             var isPlayingAsBlackMage = this.PlayerState.IsPlayingAsBlackMage;
 
-            if ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.Visible) ||
-               ((this.Configuration.FastFireIIIMarker.Visibility == FastFireIIIMarkerVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated))
+            if (this.Configuration.FastFireIIIMarker.IsAlwaysEnabled)
             {
                 if (isPlayingAsBlackMage)
                 {
@@ -494,26 +490,19 @@ namespace MPTickBar
 
             this.AddVertexDataUpToThisPoint();
 
-            if (((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.Visible) ||
-                ((this.Configuration.FireIIICastIndicator.Visibility == FireIIICastIndicatorVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated)) && isProgressAfterMarker)
+            if (this.Configuration.FireIIICastIndicator.IsAlwaysEnabled && isProgressAfterMarker)
             {
                 if (isPlayingAsBlackMage)
                     this.RenderIndicatorUIElement(offsetX, offsetY, gaugeWidth, gaugeHeight);
             }
 
-            if ((this.Configuration.MPRegenStack.Visibility == MPRegenStackVisibility.Visible) ||
-               ((this.Configuration.MPRegenStack.Visibility == MPRegenStackVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated))
+            if (isPlayingAsBlackMage)
             {
-                if (isPlayingAsBlackMage)
-                {
-                    this.RenderStacksUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, true);
-                    this.RenderStacksUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, false);
-                }
+                this.RenderStacksUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, true);
+                this.RenderStacksUIElement(mpTickBarUI, offsetX, offsetY, gaugeWidth, gaugeHeight, false);
             }
 
-            if ((this.Configuration.Number.Visibility == NumberVisibility.Visible) ||
-               ((this.Configuration.Number.Visibility == NumberVisibility.UnderUmbralIce) && this.PlayerState.IsUmbralIceActivated) ||
-               ((this.Configuration.Number.Visibility == NumberVisibility.InProgress) && (this.Progress != 0.0)))
+            if (this.Configuration.Number.IsAlwaysEnabled)
                 this.RenderNumbersUIElement(offsetX, offsetY, gaugeWidth, gaugeHeight);
 
             this.VertexDataUpdate(offsetX, offsetY, gaugeWidth, gaugeHeight);
@@ -521,11 +510,20 @@ namespace MPTickBar
 
         private void DrawMPTickBarWindow()
         {
-            var isMPTickBarWindowVisible = (this.PlayerState != null) && (this.PlayerState.IsPlayingAsBlackMage || this.PlayerState.IsPlayingWithOtherJobs) && !this.PlayerState.IsBetweenAreas && !this.PlayerState.IsOccupied &&
-               (!this.Configuration.General.IsLocked ||
-               (this.Configuration.General.Visibility == MPTickBarVisibility.Visible) ||
-               (this.Configuration.General.Visibility == MPTickBarVisibility.UnderUmbralIce && this.PlayerState.IsUmbralIceActivated) ||
-               (this.Configuration.General.Visibility == MPTickBarVisibility.InCombat && this.PlayerState.IsInCombat));
+            var isMPTickBarWindowVisible =
+                ((this.PlayerState != null) && (!this.PlayerState.IsBetweenAreas) && (!this.PlayerState.IsOccupied)) &&
+                (!this.Configuration.General.IsLocked ||
+                (this.PlayerState.IsPlayingAsBlackMage &&
+                (this.Configuration.General.IsAlwaysEnabled ||
+                (this.Configuration.General.IsWhileAliveEnabled && this.PlayerState.IsAlive) ||
+                (this.Configuration.General.IsWhileInCombatEnabled && this.PlayerState.IsInCombat) ||
+                (this.Configuration.General.IsWhileWeaponUnsheathedEnabled && this.PlayerState.IsWeaponUnsheathed()) ||
+                (this.Configuration.General.IsWhileUnderUmbralIceEnabled && this.PlayerState.IsUmbralIceActivated))) ||
+                (this.PlayerState.IsPlayingWithOtherJobs &&
+                (this.Configuration.General.IsAlwaysOtherJobsEnabled ||
+                (this.Configuration.General.IsWhileAliveOtherJobsEnabled && this.PlayerState.IsAlive) ||
+                (this.Configuration.General.IsWhileInCombatOtherJobsEnabled && this.PlayerState.IsInCombat) ||
+                (this.Configuration.General.IsWhileWeaponUnsheathedOtherJobsEnabled && this.PlayerState.IsWeaponUnsheathed()))));
 
             if (!isMPTickBarWindowVisible)
                 return;
@@ -644,9 +642,19 @@ namespace MPTickBar
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
-                PluginUI.Text(new string[] { "Enable for Jobs:" });
+                PluginUI.Text(new string[] { "Enable for other Jobs:" });
                 this.CheckBox(config.IsDarkKnightEnabled, x => config.IsDarkKnightEnabled = x, "Dark Knight");
-                this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
+                PluginUI.Text(new string[] { "Visibility (Black Mage):" });
+                this.CheckBox(config.IsAlwaysEnabled, x => config.IsAlwaysEnabled = x, "Always##BlackMage");
+                this.CheckBox(config.IsWhileAliveEnabled, x => config.IsWhileAliveEnabled = x, "While alive##BlackMage", 10.0f);
+                this.CheckBox(config.IsWhileInCombatEnabled, x => config.IsWhileInCombatEnabled = x, "While in combat##BlackMage", 10.0f);
+                this.CheckBox(config.IsWhileWeaponUnsheathedEnabled, x => config.IsWhileWeaponUnsheathedEnabled = x, "While weapon is unsheathed##BlackMage", 10.0f);
+                this.CheckBox(config.IsWhileUnderUmbralIceEnabled, x => config.IsWhileUnderUmbralIceEnabled = x, "While under Umbral Ice", 10.0f);
+                PluginUI.Text(new string[] { "Visibility (Other Jobs):" });
+                this.CheckBox(config.IsAlwaysOtherJobsEnabled, x => config.IsAlwaysOtherJobsEnabled = x, "Always##OtherJobs");
+                this.CheckBox(config.IsWhileAliveOtherJobsEnabled, x => config.IsWhileAliveOtherJobsEnabled = x, "While alive##OtherJobs", 10.0f);
+                this.CheckBox(config.IsWhileInCombatOtherJobsEnabled, x => config.IsWhileInCombatOtherJobsEnabled = x, "While in combat##OtherJobs", 10.0f);
+                this.CheckBox(config.IsWhileWeaponUnsheathedOtherJobsEnabled, x => config.IsWhileWeaponUnsheathedOtherJobsEnabled = x, "While weapon is unsheathed##OtherJobs", 10.0f);
             });
         }
 
@@ -680,7 +688,7 @@ namespace MPTickBar
                 PluginUI.Tooltip("Change the progress bar color after reaching the marker.");
                 this.ColorEdit4(config.ProgressBarAfterMarkerColor, x => config.ProgressBarAfterMarkerColor = x, "Progress Bar (After reaching the marker)", PluginUI.Spacing);
                 this.CheckBox(config.IsRegressEffectEnabled, x => config.IsRegressEffectEnabled = x, "##IsRegressEffectEnabled");
-                PluginUI.Tooltip("Show the bar effect animation when the progress goes from 100%% to 0%%.");
+                PluginUI.Tooltip("Show the bar effect animation when the progress goes from 100%% to 0%%.", 450.0f);
                 this.ColorEdit4(config.RegressBarColor, x => config.RegressBarColor = x, "Regress Bar", PluginUI.Spacing);
                 this.Combo(config.UI, x => config.UI = x, "UI");
 
@@ -742,7 +750,8 @@ namespace MPTickBar
             PluginUI.CollapsingHeader("Functional", () =>
             {
                 this.DragFloat(config.TimeOffset, x => config.TimeOffset = x, "Time Offset (Seconds)", 0.01f, 0.0f, 0.5f, "%.2f");
-                this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
+                PluginUI.Text(new string[] { "Visibility:" });
+                this.CheckBox(config.IsAlwaysEnabled, x => config.IsAlwaysEnabled = x, "Always");
             });
         }
 
@@ -774,7 +783,6 @@ namespace MPTickBar
                 this.DragFloat(config.SingleMarkerTimeOffset, x => config.SingleMarkerTimeOffset = x, "Single Marker Time Offset (Seconds)", 0.01f, 0.1f, 2.9f, "%.2f", PluginUI.Spacing);
                 this.CheckBox(config.IsMultipleMarkersEnabled, x => config.IsMultipleMarkersEnabled = x, "##IsMultipleMarkersEnabled");
                 this.DragInt(config.MultipleMarkersAmount, x => config.MultipleMarkersAmount = x, "Multiple Markers (Amount)", 1, 2, 9, "%i", PluginUI.Spacing);
-                this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
             });
         }
 
@@ -802,7 +810,8 @@ namespace MPTickBar
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
-                this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
+                PluginUI.Text(new string[] { "Visibility:" });
+                this.CheckBox(config.IsAlwaysEnabled, x => config.IsAlwaysEnabled = x, "Always");
             });
         }
 
@@ -839,10 +848,6 @@ namespace MPTickBar
                 this.ColorEdit4(config.LucidDreamingStackBackgroundColor, x => config.LucidDreamingStackBackgroundColor = x, "Background ", PluginUI.Spacing);
                 this.Combo(config.UI, x => config.UI = x, "UI");
             });
-            PluginUI.CollapsingHeader("Functional", () =>
-            {
-                this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
-            });
         }
 
         private void NumberTab()
@@ -871,7 +876,8 @@ namespace MPTickBar
             {
                 this.Combo(config.Type, x => config.Type = x, "Type");
                 this.CheckBox(config.Reverse, x => config.Reverse = x, "Reverse", PluginUI.Spacing);
-                this.Combo(config.Visibility, x => config.Visibility = x, "Visibility");
+                PluginUI.Text(new string[] { "Visibility:" });
+                this.CheckBox(config.IsAlwaysEnabled, x => config.IsAlwaysEnabled = x, "Always");
             });
         }
 

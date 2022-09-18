@@ -38,7 +38,23 @@ namespace MPTickBar
 
             public bool IsDarkKnightEnabled { get; set; } = false;
 
-            public MPTickBarVisibility Visibility { get; set; } = MPTickBarVisibility.Visible;
+            public bool IsAlwaysEnabled { get; set; } = true;
+
+            public bool IsWhileAliveEnabled { get; set; } = false;
+
+            public bool IsWhileInCombatEnabled { get; set; } = false;
+
+            public bool IsWhileWeaponUnsheathedEnabled { get; set; } = false;
+
+            public bool IsWhileUnderUmbralIceEnabled { get; set; } = false;
+
+            public bool IsAlwaysOtherJobsEnabled { get; set; } = true;
+
+            public bool IsWhileAliveOtherJobsEnabled { get; set; } = false;
+
+            public bool IsWhileInCombatOtherJobsEnabled { get; set; } = false;
+
+            public bool IsWhileWeaponUnsheathedOtherJobsEnabled { get; set; } = false;
         }
 
         public class ProgressBarTab
@@ -80,7 +96,7 @@ namespace MPTickBar
 
             public float TimeOffset { get; set; } = 0.25f;
 
-            public FastFireIIIMarkerVisibility Visibility { get; set; } = FastFireIIIMarkerVisibility.Visible;
+            public bool IsAlwaysEnabled { get; set; } = true;
         }
 
         public class TimeSplitMarkerTab
@@ -95,15 +111,13 @@ namespace MPTickBar
 
             public TimeSplitMarkerUI UI { get; set; } = TimeSplitMarkerUI.Default;
 
-            public bool IsSingleMarkerEnabled { get; set; } = true;
+            public bool IsSingleMarkerEnabled { get; set; } = false;
 
             public float SingleMarkerTimeOffset { get; set; } = 1.5f;
 
             public bool IsMultipleMarkersEnabled { get; set; } = false;
 
             public int MultipleMarkersAmount { get; set; } = 2;
-
-            public TimeSplitMarkerVisibility Visibility { get; set; } = TimeSplitMarkerVisibility.Hidden;
         }
 
         public class FireIIICastIndicatorTab
@@ -116,7 +130,7 @@ namespace MPTickBar
 
             public Vector4 IndicatorColor { get; set; } = new(1.0f, 0.0f, 0.0f, 1.0f);
 
-            public FireIIICastIndicatorVisibility Visibility { get; set; } = FireIIICastIndicatorVisibility.Hidden;
+            public bool IsAlwaysEnabled { get; set; } = false;
         }
 
         public class MPRegenStackTab
@@ -127,21 +141,19 @@ namespace MPTickBar
 
             public float Scale { get; set; } = 1.0f;
 
-            public bool IsUmbralIceStackEnabled { get; set; } = true;
+            public bool IsUmbralIceStackEnabled { get; set; } = false;
 
             public Vector4 UmbralIceStackColor { get; set; } = new(0.0f, 1.0f, 1.0f, 1.0f);
 
             public Vector4 UmbralIceStackBackgroundColor { get; set; } = Vector4.One;
 
-            public bool IsLucidDreamingStackEnabled { get; set; } = true;
+            public bool IsLucidDreamingStackEnabled { get; set; } = false;
 
             public Vector4 LucidDreamingStackColor { get; set; } = new(0.86f, 0.435f, 1.0f, 1.0f);
 
             public Vector4 LucidDreamingStackBackgroundColor { get; set; } = Vector4.One;
 
             public MPRegenStackUI UI { get; set; } = MPRegenStackUI.Default;
-
-            public MPRegenStackVisibility Visibility { get; set; } = MPRegenStackVisibility.Hidden;
         }
 
         public class NumberTab
@@ -158,7 +170,7 @@ namespace MPTickBar
 
             public bool Reverse { get; set; } = false;
 
-            public NumberVisibility Visibility { get; set; } = NumberVisibility.Hidden;
+            public bool IsAlwaysEnabled { get; set; } = false;
         }
 
         public class CountdownTab

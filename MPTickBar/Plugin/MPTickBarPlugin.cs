@@ -7,7 +7,6 @@ using Dalamud.Game.Network;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using System;
-using System.IO;
 
 namespace MPTickBar
 {
