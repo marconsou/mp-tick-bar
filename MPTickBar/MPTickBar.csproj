@@ -63,67 +63,63 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Resources\FireIIICastIndicator.png">
+		<Content Include="..\Resources\FireIIIIcon.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\FireIIIIcon.png">
+		<Content Include="..\Resources\GaugeDefault.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\GaugeDefault.png">
+		<Content Include="..\Resources\GaugeMaterialUIBlack.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\GaugeMaterialUIBlack.png">
+		<Content Include="..\Resources\GaugeMaterialUIDiscord.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\GaugeMaterialUIDiscord.png">
+		<Content Include="..\Resources\GaugeMaterialUISilver.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\GaugeMaterialUISilver.png">
+		<Content Include="..\Resources\GaugeSolidBar.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\GaugeSolidBar.png">
+		<Content Include="..\Resources\JobStackADefault.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\JobStackADefault.png">
+		<Content Include="..\Resources\JobStackAMaterialUI.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\JobStackAMaterialUI.png">
+		<Content Include="..\Resources\JobStackAMaterialUISilver.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\JobStackAMaterialUISilver.png">
+		<Content Include="..\Resources\JobStackBDefault.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\JobStackBDefault.png">
+		<Content Include="..\Resources\JobStackBMaterialUI.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\JobStackBMaterialUI.png">
+		<Content Include="..\Resources\JobStackBMaterialUISilver.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\JobStackBMaterialUISilver.png">
+		<Content Include="..\Resources\MarkerLine.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\MarkerLine.png">
+		<Content Include="..\Resources\JobStackBMaterialUI.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Include="Resources\JobStackBMaterialUI.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<Visible>false</Visible>
-		</Content>
-		<Content Include="Resources\Numbers.png">
+		<Content Include="..\Resources\Numbers.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>

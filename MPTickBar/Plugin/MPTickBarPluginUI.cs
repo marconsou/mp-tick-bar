@@ -114,8 +114,6 @@ namespace MPTickBar
         {
             this.Configuration = configuration;
 
-            path += "/Resources/";
-
             this.GaugeDefault = uiBuilder.LoadImage(Path.Combine(path, "GaugeDefault.png"));
             this.GaugeMaterialUIDiscord = uiBuilder.LoadImage(Path.Combine(path, "GaugeMaterialUIDiscord.png"));
             this.GaugeMaterialUIBlack = uiBuilder.LoadImage(Path.Combine(path, "GaugeMaterialUIBlack.png"));
@@ -128,7 +126,7 @@ namespace MPTickBar
             this.JobStackBMaterialUI = uiBuilder.LoadImage(Path.Combine(path, "JobStackBMaterialUI.png"));
             this.JobStackBMaterialUISilver = uiBuilder.LoadImage(Path.Combine(path, "JobStackBMaterialUISilver.png"));
             this.MarkerLine = uiBuilder.LoadImage(Path.Combine(path, "MarkerLine.png"));
-            this.FireIIICastIndicator = uiBuilder.LoadImage(Path.Combine(path, "FireIIICastIndicator.png"));
+            this.FireIIICastIndicator = uiBuilder.LoadImage(/*Path.Combine(path, "FireIIICastIndicator.png")*/Resources.FireIIICastIndicator);
             this.Numbers = uiBuilder.LoadImage(Path.Combine(path, "Numbers.png"));
             this.FireIIIIcon = uiBuilder.LoadImage(Path.Combine(path, "FireIIIIcon.png"));
         }
