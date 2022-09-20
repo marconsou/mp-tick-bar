@@ -118,52 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="FireIIICastIndicator" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\fireiiicastindicator.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="FireIIIIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\fireiiiicon.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="GaugeDefault" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\gaugedefault.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="GaugeMaterialUIBlack" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\gaugematerialuiblack.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="GaugeMaterialUIDiscord" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\gaugematerialuidiscord.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="GaugeMaterialUISilver" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\gaugematerialuisilver.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="GaugeSolidBar" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\gaugesolidbar.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="JobStackADefault" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\jobstackadefault.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="JobStackAMaterialUI" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\jobstackamaterialui.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="JobStackAMaterialUISilver" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\jobstackamaterialuisilver.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="JobStackBDefault" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\jobstackbdefault.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="JobStackBMaterialUI" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\jobstackbmaterialui.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="JobStackBMaterialUISilver" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\jobstackbmaterialuisilver.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="LevelModifier" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\levelmodifier.data;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="MarkerLine" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\markerline.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Numbers" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\numbers.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>
