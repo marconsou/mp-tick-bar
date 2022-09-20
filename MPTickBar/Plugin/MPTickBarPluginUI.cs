@@ -125,7 +125,7 @@ namespace MPTickBar
             this.JobStackBMaterialUI = uiBuilder.LoadImage(Resources.JobStackBMaterialUI);
             this.JobStackBMaterialUISilver = uiBuilder.LoadImage(Resources.JobStackBMaterialUISilver);
             this.MarkerLine = uiBuilder.LoadImage(Resources.MarkerLine);
-            this.FireIIICastIndicator = uiBuilder.LoadImage(Resources.fireiiicastindicator);
+            this.FireIIICastIndicator = uiBuilder.LoadImage(Resources.FireIIICastIndicator);
             this.Numbers = uiBuilder.LoadImage(Resources.Numbers);
             this.FireIIIIcon = uiBuilder.LoadImage(Resources.FireIIIIcon);
         }
