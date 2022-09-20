@@ -1,4 +1,5 @@
 ﻿using Dalamud.Interface;
+using Dalamud.Interface.Components;
 using ImGuiNET;
 using ImGuiScene;
 using MPTickBar.Properties;
@@ -510,20 +511,46 @@ namespace MPTickBar
 
         private void DrawMPTickBarWindow()
         {
+            var config = this.Configuration.General;
+            var checkedConditionsBlackMage = new List<(bool, bool)>
+            {
+                (config.IsAlwaysEnabled, true ),
+                (config.IsWhileInsideInstanceEnabled , this.PlayerState.IsInsideInstance),
+                (config.IsWhileAliveEnabled,  this.PlayerState.IsAlive ),
+                (config.IsWhileInCombatEnabled, this.PlayerState.IsInCombat),
+                (config.IsWhileOutCombatEnabled, !this.PlayerState.IsInCombat),
+                (config.IsWhileWeaponUnsheathedEnabled , this.PlayerState.IsWeaponUnsheathed),
+                (config.IsWhileUnderUmbralIceEnabled , this.PlayerState.IsUmbralIceActivated)
+            };
+            checkedConditionsBlackMage.RemoveAll(x => !x.Item1);
+
+            var checkedConditionsOtherJobs = new List<(bool, bool)>
+            {
+                (config.IsAlwaysOtherJobsEnabled, true ),
+                (config.IsWhileInsideInstanceOtherJobsEnabled , this.PlayerState.IsInsideInstance),
+                (config.IsWhileAliveOtherJobsEnabled,  this.PlayerState.IsAlive ),
+                (config.IsWhileInCombatOtherJobsEnabled, this.PlayerState.IsInCombat),
+                (config.IsWhileOutCombatOtherJobsEnabled, !this.PlayerState.IsInCombat),
+                (config.IsWhileWeaponUnsheathedOtherJobsEnabled , this.PlayerState.IsWeaponUnsheathed)
+            };
+            checkedConditionsOtherJobs.RemoveAll(x => !x.Item1);
+
             var isMPTickBarWindowVisible =
-                ((this.PlayerState != null) && (!this.PlayerState.IsBetweenAreas) && (!this.PlayerState.IsOccupied)) &&
-                (!this.Configuration.General.IsLocked ||
-                (this.PlayerState.IsPlayingAsBlackMage &&
-                (this.Configuration.General.IsAlwaysEnabled ||
-                (this.Configuration.General.IsWhileAliveEnabled && this.PlayerState.IsAlive) ||
-                (this.Configuration.General.IsWhileInCombatEnabled && this.PlayerState.IsInCombat) ||
-                (this.Configuration.General.IsWhileWeaponUnsheathedEnabled && this.PlayerState.IsWeaponUnsheathed()) ||
-                (this.Configuration.General.IsWhileUnderUmbralIceEnabled && this.PlayerState.IsUmbralIceActivated))) ||
-                (this.PlayerState.IsPlayingWithOtherJobs &&
-                (this.Configuration.General.IsAlwaysOtherJobsEnabled ||
-                (this.Configuration.General.IsWhileAliveOtherJobsEnabled && this.PlayerState.IsAlive) ||
-                (this.Configuration.General.IsWhileInCombatOtherJobsEnabled && this.PlayerState.IsInCombat) ||
-                (this.Configuration.General.IsWhileWeaponUnsheathedOtherJobsEnabled && this.PlayerState.IsWeaponUnsheathed()))));
+                (this.PlayerState != null) && (!this.PlayerState.IsBetweenAreas) && (!this.PlayerState.IsOccupied) &&
+                (!this.Configuration.General.IsLocked
+                    ||
+                    (this.PlayerState.IsPlayingAsBlackMage && checkedConditionsBlackMage.Count > 0 &&
+                    (config.VisibilityCondition == VisibilityConditionType.Any ?
+                        checkedConditionsBlackMage.Any(x => x.Item1 && x.Item2) :
+                        checkedConditionsBlackMage.All(x => x.Item1 && x.Item2))
+                    )
+                    ||
+                    (this.PlayerState.IsPlayingWithOtherJobs && checkedConditionsOtherJobs.Count > 0 &&
+                    (config.VisibilityConditionOtherJobs == VisibilityConditionType.Any ?
+                        checkedConditionsOtherJobs.Any(x => x.Item1 && x.Item2) :
+                        checkedConditionsOtherJobs.All(x => x.Item1 && x.Item2))
+                    )
+                );
 
             if (!isMPTickBarWindowVisible)
                 return;
@@ -642,19 +669,33 @@ namespace MPTickBar
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
+                var visibilityConditionTooltip =
+                "[Any]: One checked condition is enough to make it visible.\n" +
+                "(e.g. If you teleport to Limsa with [Inside instance] and [Out of combat] checked, it will be visible)\n\n" +
+                "[All]: All checked conditions are required to make it visible.\n" +
+                "(e.g. If you teleport to Limsa with [Inside instance] and [Out of combat] checked, it will not be visible)";
+
                 PluginUI.Text(new string[] { "Enable for other Jobs:" });
                 this.CheckBox(config.IsDarkKnightEnabled, x => config.IsDarkKnightEnabled = x, "Dark Knight");
                 PluginUI.Text(new string[] { "Visibility (Black Mage):" });
+                this.Combo(config.VisibilityCondition, x => config.VisibilityCondition = x, "Condition##BlackMage");
+                ImGuiComponents.HelpMarker(visibilityConditionTooltip);
                 this.CheckBox(config.IsAlwaysEnabled, x => config.IsAlwaysEnabled = x, "Always##BlackMage");
-                this.CheckBox(config.IsWhileAliveEnabled, x => config.IsWhileAliveEnabled = x, "While alive##BlackMage", 10.0f);
-                this.CheckBox(config.IsWhileInCombatEnabled, x => config.IsWhileInCombatEnabled = x, "While in combat##BlackMage", 10.0f);
-                this.CheckBox(config.IsWhileWeaponUnsheathedEnabled, x => config.IsWhileWeaponUnsheathedEnabled = x, "While weapon is unsheathed##BlackMage", 10.0f);
-                this.CheckBox(config.IsWhileUnderUmbralIceEnabled, x => config.IsWhileUnderUmbralIceEnabled = x, "While under Umbral Ice", 10.0f);
+                this.CheckBox(config.IsWhileInsideInstanceEnabled, x => config.IsWhileInsideInstanceEnabled = x, "Inside instance##BlackMage", 10.0f);
+                this.CheckBox(config.IsWhileAliveEnabled, x => config.IsWhileAliveEnabled = x, "Alive##BlackMage", 10.0f);
+                this.CheckBox(config.IsWhileInCombatEnabled, x => config.IsWhileInCombatEnabled = x, "In combat##BlackMage", 10.0f);
+                this.CheckBox(config.IsWhileOutCombatEnabled, x => config.IsWhileOutCombatEnabled = x, "Out of combat##BlackMage", 10.0f);
+                this.CheckBox(config.IsWhileWeaponUnsheathedEnabled, x => config.IsWhileWeaponUnsheathedEnabled = x, "Weapon is unsheathed##BlackMage", 10.0f);
+                this.CheckBox(config.IsWhileUnderUmbralIceEnabled, x => config.IsWhileUnderUmbralIceEnabled = x, "Under Umbral Ice");
                 PluginUI.Text(new string[] { "Visibility (Other Jobs):" });
+                this.Combo(config.VisibilityConditionOtherJobs, x => config.VisibilityConditionOtherJobs = x, "Condition##OtherJobs");
+                ImGuiComponents.HelpMarker(visibilityConditionTooltip);
                 this.CheckBox(config.IsAlwaysOtherJobsEnabled, x => config.IsAlwaysOtherJobsEnabled = x, "Always##OtherJobs");
-                this.CheckBox(config.IsWhileAliveOtherJobsEnabled, x => config.IsWhileAliveOtherJobsEnabled = x, "While alive##OtherJobs", 10.0f);
-                this.CheckBox(config.IsWhileInCombatOtherJobsEnabled, x => config.IsWhileInCombatOtherJobsEnabled = x, "While in combat##OtherJobs", 10.0f);
-                this.CheckBox(config.IsWhileWeaponUnsheathedOtherJobsEnabled, x => config.IsWhileWeaponUnsheathedOtherJobsEnabled = x, "While weapon is unsheathed##OtherJobs", 10.0f);
+                this.CheckBox(config.IsWhileInsideInstanceOtherJobsEnabled, x => config.IsWhileInsideInstanceOtherJobsEnabled = x, "Inside instance##OtherJobs", 10.0f);
+                this.CheckBox(config.IsWhileAliveOtherJobsEnabled, x => config.IsWhileAliveOtherJobsEnabled = x, "Alive##OtherJobs", 10.0f);
+                this.CheckBox(config.IsWhileInCombatOtherJobsEnabled, x => config.IsWhileInCombatOtherJobsEnabled = x, "In combat##OtherJobs", 10.0f);
+                this.CheckBox(config.IsWhileOutCombatOtherJobsEnabled, x => config.IsWhileOutCombatOtherJobsEnabled = x, "Out of combat##OtherJobs", 10.0f);
+                this.CheckBox(config.IsWhileWeaponUnsheathedOtherJobsEnabled, x => config.IsWhileWeaponUnsheathedOtherJobsEnabled = x, "Weapon is unsheathed##OtherJobs", 10.0f);
             });
         }
 

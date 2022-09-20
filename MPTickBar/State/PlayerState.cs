@@ -55,9 +55,13 @@ namespace MPTickBar
 
         public bool IsPlayingWithOtherJobs => this.IsLoggedIn && (this.OtherJobIds.Contains((uint)(this.Player.ClassJob?.Id)));
 
+        public bool IsAlive => (!this.IsDead.Current) && (DateTime.Now > this.OnReviveDelayTime);
+
         public bool IsInCombat => this.CheckCondition(new[] { ConditionFlag.InCombat });
 
-        public bool IsAlive => (!this.IsDead.Current) && (DateTime.Now > this.OnReviveDelayTime);
+        public unsafe bool IsWeaponUnsheathed => (UIState.Instance()->WeaponState.WeaponUnsheathed == 1);
+
+        public bool IsInsideInstance => this.CheckCondition(new[] { ConditionFlag.BoundByDuty });
 
         public bool IsBetweenAreas => this.CheckCondition(new[] { ConditionFlag.BetweenAreas, ConditionFlag.BetweenAreas51 });
 
@@ -78,8 +82,6 @@ namespace MPTickBar
         public bool CheckPlayerId(uint targetActorId) => (this.IsPlayingAsBlackMage || this.IsPlayingWithOtherJobs) && this.Player.IsValid() && !this.IsDead.Current && (this.Player.ObjectId == targetActorId);
 
         public bool CheckPlayerStatus(int hp, int mp) => (this.IsPlayingAsBlackMage || this.IsPlayingWithOtherJobs) && !this.IsDead.Current && (this.Player.CurrentHp == hp) && (this.Player.CurrentMp == mp);
-
-        public bool IsWeaponUnsheathed() { unsafe { return (UIState.Instance()->WeaponState.WeaponUnsheathed == 1); } }
 
         private class Data<T> where T : struct
         {

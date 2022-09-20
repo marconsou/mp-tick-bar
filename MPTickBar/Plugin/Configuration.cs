@@ -38,21 +38,33 @@ namespace MPTickBar
 
             public bool IsDarkKnightEnabled { get; set; } = false;
 
+            public VisibilityConditionType VisibilityCondition { get; set; } = VisibilityConditionType.Any;
+
             public bool IsAlwaysEnabled { get; set; } = true;
+
+            public bool IsWhileInsideInstanceEnabled { get; set; } = false;
 
             public bool IsWhileAliveEnabled { get; set; } = false;
 
             public bool IsWhileInCombatEnabled { get; set; } = false;
 
+            public bool IsWhileOutCombatEnabled { get; set; } = false;
+
             public bool IsWhileWeaponUnsheathedEnabled { get; set; } = false;
 
             public bool IsWhileUnderUmbralIceEnabled { get; set; } = false;
 
+            public VisibilityConditionType VisibilityConditionOtherJobs { get; set; } = VisibilityConditionType.Any;
+
             public bool IsAlwaysOtherJobsEnabled { get; set; } = true;
+
+            public bool IsWhileInsideInstanceOtherJobsEnabled { get; set; } = false;
 
             public bool IsWhileAliveOtherJobsEnabled { get; set; } = false;
 
             public bool IsWhileInCombatOtherJobsEnabled { get; set; } = false;
+
+            public bool IsWhileOutCombatOtherJobsEnabled { get; set; } = false;
 
             public bool IsWhileWeaponUnsheathedOtherJobsEnabled { get; set; } = false;
         }
