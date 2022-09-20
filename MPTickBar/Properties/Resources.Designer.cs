@@ -63,9 +63,9 @@ namespace MPTickBar.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] FireIIICastIndicator {
+        internal static byte[] fireiiicastindicator {
             get {
-                object obj = ResourceManager.GetObject("FireIIICastIndicator", resourceCulture);
+                object obj = ResourceManager.GetObject("fireiiicastindicator", resourceCulture);
                 return ((byte[])(obj));
             }
         }
