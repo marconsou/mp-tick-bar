@@ -512,6 +512,9 @@ namespace MPTickBar
 
         private void DrawMPTickBarWindow()
         {
+            if (this.PlayerState == null)
+                return;
+
             var config = this.Configuration.General;
             var checkedConditionsBlackMage = new List<(bool, bool)>
             {
@@ -537,7 +540,7 @@ namespace MPTickBar
             checkedConditionsOtherJobs.RemoveAll(x => !x.Item1);
 
             var isMPTickBarWindowVisible =
-                (this.PlayerState != null) && (!this.PlayerState.IsBetweenAreas) && (!this.PlayerState.IsOccupied) &&
+                (!this.PlayerState.IsBetweenAreas) && (!this.PlayerState.IsOccupied) &&
                 (!this.Configuration.General.IsLocked
                     ||
                     (this.PlayerState.IsPlayingAsBlackMage && checkedConditionsBlackMage.Count > 0 &&
