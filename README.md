@@ -15,3 +15,5 @@ Type `/mptbcd X` to start the countdown with `X` seconds after next tick and tim
 
 ## Examples
 ![Examples](https://user-images.githubusercontent.com/27457164/142336488-d9ccea43-94c6-411c-aeed-a74795dbce42.png)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/marconsou)
