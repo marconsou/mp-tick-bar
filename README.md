@@ -1,5 +1,5 @@
 # MP Tick Bar [![Download count](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fkamori.goats.dev%2FPlugin%2FDownloadCounts&query=MPTickBar&style=for-the-badge&logo=github&label=Downloads&color=brightgreen)](https://github.com/marconsou/mp-tick-bar)
-<img src="https://user-images.githubusercontent.com/27457164/134722917-dd5967f9-2352-42d2-aeaf-ebf7dee49771.png" width="256" height="256" >
+<img src="https://user-images.githubusercontent.com/27457164/134722917-dd5967f9-2352-42d2-aeaf-ebf7dee49771.png" width="256" height="256">
 
 A Final Fantasy XIV [Dalamud](https://github.com/goatcorp/Dalamud) plugin to you visually track MP regeneration ticks (Black Mage only).
 
