@@ -1,11 +1,12 @@
 ﻿using Dalamud.Interface;
 using Dalamud.Interface.Components;
+using Dalamud.Interface.Internal;
+using Dalamud.Interface.Utility;
 using ImGuiNET;
-using ImGuiScene;
 using MPTickBar.Properties;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
@@ -15,35 +16,35 @@ namespace MPTickBar
     {
         public PlayerState PlayerState { get; set; }
 
-        private TextureWrap GaugeDefault { get; }
+        private IDalamudTextureWrap GaugeDefault { get; }
 
-        private TextureWrap GaugeMaterialUIDiscord { get; }
+        private IDalamudTextureWrap GaugeMaterialUIDiscord { get; }
 
-        private TextureWrap GaugeMaterialUIBlack { get; }
+        private IDalamudTextureWrap GaugeMaterialUIBlack { get; }
 
-        private TextureWrap GaugeMaterialUISilver { get; }
+        private IDalamudTextureWrap GaugeMaterialUISilver { get; }
 
-        private TextureWrap GaugeSolidBar { get; }
+        private IDalamudTextureWrap GaugeSolidBar { get; }
 
-        private TextureWrap JobStackADefault { get; }
+        private IDalamudTextureWrap JobStackADefault { get; }
 
-        private TextureWrap JobStackAMaterialUI { get; }
+        private IDalamudTextureWrap JobStackAMaterialUI { get; }
 
-        private TextureWrap JobStackAMaterialUISilver { get; }
+        private IDalamudTextureWrap JobStackAMaterialUISilver { get; }
 
-        private TextureWrap JobStackBDefault { get; }
+        private IDalamudTextureWrap JobStackBDefault { get; }
 
-        private TextureWrap JobStackBMaterialUI { get; }
+        private IDalamudTextureWrap JobStackBMaterialUI { get; }
 
-        private TextureWrap JobStackBMaterialUISilver { get; }
+        private IDalamudTextureWrap JobStackBMaterialUISilver { get; }
 
-        private TextureWrap MarkerLine { get; }
+        private IDalamudTextureWrap MarkerLine { get; }
 
-        private TextureWrap FireIIICastIndicator { get; }
+        private IDalamudTextureWrap FireIIICastIndicator { get; }
 
-        private TextureWrap Numbers { get; }
+        private IDalamudTextureWrap Numbers { get; }
 
-        private TextureWrap FireIIIIcon { get; }
+        private IDalamudTextureWrap FireIIIIcon { get; }
 
         private bool IsConfigurationWindowVisible { get; set; }
 
@@ -61,15 +62,15 @@ namespace MPTickBar
 
         private class MPTickBarUI
         {
-            public TextureWrap Bar { get; init; }
+            public IDalamudTextureWrap Bar { get; init; }
 
-            public TextureWrap FastFireIIIMarker { get; init; }
+            public IDalamudTextureWrap FastFireIIIMarker { get; init; }
 
-            public TextureWrap TimeSplitMarker { get; init; }
+            public IDalamudTextureWrap TimeSplitMarker { get; init; }
 
-            public TextureWrap UmbralIceRegenStack { get; init; }
+            public IDalamudTextureWrap UmbralIceRegenStack { get; init; }
 
-            public TextureWrap LucidDreamingRegenStack { get; init; }
+            public IDalamudTextureWrap LucidDreamingRegenStack { get; init; }
         }
 
         private class RegressEffectData
@@ -258,7 +259,7 @@ namespace MPTickBar
             ImGui.Image(mpTickBarUI.Bar.ImGuiHandle, new(width, height), new(textureX, textureY), new(textureW, textureH), color);
         }
 
-        private static void RenderMarkerUIElement(TextureWrap textureWrap, float offsetX, float offsetY, float dimension, float scaleX, float scaleY, Vector4 color, bool isBackground)
+        private static void RenderMarkerUIElement(IDalamudTextureWrap textureWrap, float offsetX, float offsetY, float dimension, float scaleX, float scaleY, Vector4 color, bool isBackground)
         {
             var adjustX = -4.0f;
             var x = offsetX + adjustX;
@@ -953,6 +954,9 @@ namespace MPTickBar
                 this.Configuration.Reset();
                 this.Configuration.Save();
             }
+            ImGui.SameLine();
+            if (ImGui.Button("Ko-fi"))
+                this.OpenKofiLink();
 
             var iconDimension = 23.0f * ImGuiHelpers.GlobalScale;
             var fastFireIIICastTime = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage ? (((int)(this.PlayerState.GetFastFireIIICastTime() * 100)) / 100.0f).ToString("0.00s") : "N/A";
@@ -972,5 +976,7 @@ namespace MPTickBar
                 PluginUI.Tooltip($"Opcode: {this.OpCode}");
             }
         }
+
+        private void OpenKofiLink() => Process.Start(new ProcessStartInfo { FileName = "https://ko-fi.com/marconsou", UseShellExecute = true });
     }
 }

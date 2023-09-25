@@ -1,8 +1,7 @@
-using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState.JobGauge;
 using Dalamud.Game.ClientState.JobGauge.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 using System;
 using System.Collections.Generic;
@@ -25,11 +24,11 @@ namespace MPTickBar
             CircleOfPower = 738
         }
 
-        private ClientState ClientState { get; set; }
+        private IClientState ClientState { get; set; }
 
-        private JobGauges JobGauges { get; set; }
+        private IJobGauges JobGauges { get; set; }
 
-        private Condition Condition { get; set; }
+        private ICondition Condition { get; set; }
 
         private PlayerCharacter Player => this.ClientState?.LocalPlayer;
 
@@ -59,7 +58,7 @@ namespace MPTickBar
 
         public bool IsInCombat => this.CheckCondition(new[] { ConditionFlag.InCombat });
 
-        public unsafe bool IsWeaponUnsheathed => (UIState.Instance()->WeaponState.WeaponUnsheathed == 1);
+        public unsafe bool IsWeaponUnsheathed => (UIState.Instance()->WeaponState.IsUnsheathed);
 
         public bool IsInsideInstance => this.CheckCondition(new[] { ConditionFlag.BoundByDuty });
 
@@ -94,7 +93,7 @@ namespace MPTickBar
             public void SaveData() => this.Last = this.Current;
         }
 
-        public void ServicesUpdate(ClientState clientState, JobGauges jobGauges, Condition condition)
+        public void ServicesUpdate(IClientState clientState, IJobGauges jobGauges, ICondition condition)
         {
             this.ClientState = clientState;
             this.JobGauges = jobGauges;

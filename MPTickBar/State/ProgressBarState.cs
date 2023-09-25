@@ -1,5 +1,4 @@
 ﻿using ImGuiNET;
-using System;
 
 namespace MPTickBar
 {
@@ -11,7 +10,7 @@ namespace MPTickBar
 
         private double NetworkTime { get; set; }
 
-        public void Login(object sender, EventArgs e) => this.ResetProgress();
+        public void Login() => this.ResetProgress();
 
         public void RestartProgress() => this.NetworkTime = ImGui.GetTime();
 

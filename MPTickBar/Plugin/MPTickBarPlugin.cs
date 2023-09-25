@@ -1,18 +1,15 @@
 ﻿using Dalamud.Game;
-using Dalamud.Game.ClientState;
-using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState.JobGauge;
-using Dalamud.Game.Command;
 using Dalamud.Game.Network;
 using Dalamud.IoC;
 using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
 using System;
 
 namespace MPTickBar
 {
     public sealed class MPTickBarPlugin : IDalamudPlugin
     {
-        public string Name => "MP Tick Bar";
+        public static string Name => "MP Tick Bar";
 
         private static string ConfigCommand => "/mptb";
 
@@ -22,25 +19,25 @@ namespace MPTickBar
         private DalamudPluginInterface PluginInterface { get; init; }
 
         [PluginService]
-        private CommandManager CommandManager { get; init; }
+        private ICommandManager CommandManager { get; init; }
 
         [PluginService]
-        private Framework Framework { get; init; }
+        private IFramework Framework { get; init; }
 
         [PluginService]
-        private ClientState ClientState { get; init; }
+        private IClientState ClientState { get; init; }
 
         [PluginService]
-        private JobGauges JobGauges { get; init; }
+        private IJobGauges JobGauges { get; init; }
 
         [PluginService]
-        private Condition Condition { get; init; }
+        private ICondition Condition { get; init; }
 
         [PluginService]
-        private GameNetwork GameNetwork { get; init; }
+        private IGameNetwork GameNetwork { get; init; }
 
         [PluginService]
-        private SigScanner SigScanner { get; init; }
+        private ISigScanner SigScanner { get; init; }
 
         private MPTickBarPluginUI MPTickBarPluginUI { get; }
 
@@ -107,7 +104,7 @@ namespace MPTickBar
 
         private void OpenConfigUi() => this.MPTickBarPluginUI.OpenConfigUi();
 
-        private void Update(Framework framework)
+        private void Update(IFramework framework)
         {
             if (this.PlayerState != null)
             {
