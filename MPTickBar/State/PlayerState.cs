@@ -66,6 +66,8 @@ namespace MPTickBar
 
         public bool IsOccupied => this.CheckCondition(new[] { ConditionFlag.OccupiedInCutSceneEvent, ConditionFlag.Occupied33, ConditionFlag.Occupied38, ConditionFlag.OccupiedInQuestEvent, ConditionFlag.OccupiedSummoningBell, ConditionFlag.OccupiedInEvent });
 
+        public bool IsPvP => this.ClientState.IsPvP;
+
         private bool CheckCondition(ConditionFlag[] conditionFlags) => (this.IsPlayingAsBlackMage || this.IsPlayingWithOtherJobs) && (this.Condition != null) && conditionFlags.Any(x => this.Condition[x]);
 
         public bool IsUmbralIceActivated => (this.UmbralIceStacks > 0);
