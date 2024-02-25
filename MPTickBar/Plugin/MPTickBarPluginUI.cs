@@ -542,6 +542,7 @@ namespace MPTickBar
 
             var isMPTickBarWindowVisible =
                 (!this.PlayerState.IsBetweenAreas) && (!this.PlayerState.IsOccupied) &&
+                (!this.PlayerState.IsPvP) &&
                 (!this.Configuration.General.IsLocked
                     ||
                     (this.PlayerState.IsPlayingAsBlackMage && checkedConditionsBlackMage.Count > 0 &&
