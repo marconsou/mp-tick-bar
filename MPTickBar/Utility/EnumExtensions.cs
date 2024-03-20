@@ -23,15 +23,15 @@ namespace MPTickBar
 
         public static string[] GetNames<T>(this T value) where T : Enum
         {
-            var method = typeof(EnumExtensions).GetMethod("GetDescription", BindingFlags.Public | BindingFlags.Static, null, new[] { value.GetType() }, null);
+            var method = typeof(EnumExtensions).GetMethod("GetDescription", BindingFlags.Public | BindingFlags.Static, null, [value.GetType()], null);
             var names = new List<string>();
             var values = Enum.GetValues(typeof(T));
             foreach (var item in values)
             {
-                var description = (string)method.Invoke(null, new[] { item });
+                var description = (string)method.Invoke(null, [item]);
                 names.Add(description);
             }
-            return names.ToArray();
+            return [.. names];
         }
     }
 }

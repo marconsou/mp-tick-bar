@@ -9,8 +9,6 @@ namespace MPTickBar
 {
     public sealed class MPTickBarPlugin : IDalamudPlugin
     {
-        public static string Name => "MP Tick Bar";
-
         private static string ConfigCommand => "/mptb";
 
         public static string CountdownCommand => $"{MPTickBarPlugin.ConfigCommand}cd";
@@ -57,7 +55,7 @@ namespace MPTickBar
         {
             this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new();
             this.Configuration.Initialize(this.PluginInterface);
-            this.MPTickBarPluginUI = new(this.Configuration, this.PluginInterface.UiBuilder, this.PluginInterface.AssemblyLocation.Directory?.FullName!);
+            this.MPTickBarPluginUI = new(this.Configuration, this.PluginInterface.UiBuilder);
             this.Chat = new(this.SigScanner);
 
             this.CommandManager.AddHandler(MPTickBarPlugin.ConfigCommand, new(this.OnConfigCommand)
@@ -112,7 +110,7 @@ namespace MPTickBar
                 this.ProgressBarState.PlayerState = this.PlayerState;
                 this.MPTickBarPluginUI.PlayerState = this.PlayerState;
                 this.Network.PlayerState = this.PlayerState;
-                this.PlayerState.OtherJobIdsUpdate(new bool[] { this.Configuration.General.IsDarkKnightEnabled });
+                this.PlayerState.OtherJobIdsUpdate([this.Configuration.General.IsDarkKnightEnabled]);
             }
 
             var progress = this.ProgressBarState.Update();

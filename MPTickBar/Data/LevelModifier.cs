@@ -6,7 +6,7 @@ namespace MPTickBar
 {
     public static class LevelModifier
     {
-        private static List<Data> LevelModifierData { get; } = new();
+        private static List<Data> LevelModifierData { get; } = [];
 
         private readonly struct Data
         {

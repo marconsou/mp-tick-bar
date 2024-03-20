@@ -13,7 +13,7 @@ namespace MPTickBar
 
         private bool WasOpCodeFound => (this.OpCode != 0);
 
-        private List<NetworkData> NetworkDataList { get; } = new();
+        private List<NetworkData> NetworkDataList { get; } = [];
 
         private readonly struct NetworkData
         {

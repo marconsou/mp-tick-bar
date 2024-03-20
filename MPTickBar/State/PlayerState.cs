@@ -44,7 +44,7 @@ namespace MPTickBar
 
         public static byte LucidDreamingRegenStackMax => 2;
 
-        private List<uint> OtherJobIds { get; } = new();
+        private List<uint> OtherJobIds { get; } = [];
 
         private DateTime OnReviveDelayTime;
 
@@ -56,15 +56,15 @@ namespace MPTickBar
 
         public bool IsAlive => (!this.IsDead.Current) && (DateTime.Now > this.OnReviveDelayTime);
 
-        public bool IsInCombat => this.CheckCondition(new[] { ConditionFlag.InCombat });
+        public bool IsInCombat => this.CheckCondition([ConditionFlag.InCombat]);
 
         public unsafe bool IsWeaponUnsheathed => (UIState.Instance()->WeaponState.IsUnsheathed);
 
-        public bool IsInsideInstance => this.CheckCondition(new[] { ConditionFlag.BoundByDuty });
+        public bool IsInsideInstance => this.CheckCondition([ConditionFlag.BoundByDuty]);
 
-        public bool IsBetweenAreas => this.CheckCondition(new[] { ConditionFlag.BetweenAreas, ConditionFlag.BetweenAreas51 });
+        public bool IsBetweenAreas => this.CheckCondition([ConditionFlag.BetweenAreas, ConditionFlag.BetweenAreas51]);
 
-        public bool IsOccupied => this.CheckCondition(new[] { ConditionFlag.OccupiedInCutSceneEvent, ConditionFlag.Occupied33, ConditionFlag.Occupied38, ConditionFlag.OccupiedInQuestEvent, ConditionFlag.OccupiedSummoningBell, ConditionFlag.OccupiedInEvent });
+        public bool IsOccupied => this.CheckCondition([ConditionFlag.OccupiedInCutSceneEvent, ConditionFlag.Occupied33, ConditionFlag.Occupied38, ConditionFlag.OccupiedInQuestEvent, ConditionFlag.OccupiedSummoningBell, ConditionFlag.OccupiedInEvent]);
 
         public bool IsPvP => this.ClientState.IsPvP;
 

@@ -54,11 +54,11 @@ namespace MPTickBar
 
         private RegressEffectData RegressEffect { get; } = new();
 
-        private List<int> RotateVertexIndices { get; } = new();
+        private List<int> RotateVertexIndices { get; } = [];
 
-        private List<(int, float)> ScaleHorizontalVertexIndices { get; } = new();
+        private List<(int, float)> ScaleHorizontalVertexIndices { get; } = [];
 
-        private List<(int, float)> ScaleVerticalVertexIndices { get; } = new();
+        private List<(int, float)> ScaleVerticalVertexIndices { get; } = [];
 
         private class MPTickBarUI
         {
@@ -111,7 +111,7 @@ namespace MPTickBar
             }
         }
 
-        public MPTickBarPluginUI(Configuration configuration, UiBuilder uiBuilder, string path)
+        public MPTickBarPluginUI(Configuration configuration, UiBuilder uiBuilder)
         {
             this.Configuration = configuration;
 
@@ -657,12 +657,12 @@ namespace MPTickBar
             var config = this.Configuration.General;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                PluginUI.Text(new string[]
-                {
+                PluginUI.Text(
+                [
                     "All options in this tab will apply to all UI elements at once.",
                     "Use the [Offset] option if an UI element is clipping.",
                     "Move the bar on the screen, then check the [Locked] option to remove the background window."
-                });
+                ]);
             });
             PluginUI.CollapsingHeader("Location", () =>
             {
@@ -681,9 +681,9 @@ namespace MPTickBar
                 "[All]: All checked conditions are required to make it visible.\n" +
                 "(e.g. If you teleport to Limsa with [Inside instance] and [Out of combat] checked, it will not be visible)";
 
-                PluginUI.Text(new string[] { "Enable for other Jobs:" });
+                PluginUI.Text(["Enable for other Jobs:"]);
                 this.CheckBox(config.IsDarkKnightEnabled, x => config.IsDarkKnightEnabled = x, "Dark Knight");
-                PluginUI.Text(new string[] { "Visibility (Black Mage):" });
+                PluginUI.Text(["Visibility (Black Mage):"]);
                 this.Combo(config.VisibilityCondition, x => config.VisibilityCondition = x, "Condition##BlackMage");
                 ImGuiComponents.HelpMarker(visibilityConditionTooltip);
                 this.CheckBox(config.IsAlwaysEnabled, x => config.IsAlwaysEnabled = x, "Always##BlackMage");
@@ -693,7 +693,7 @@ namespace MPTickBar
                 this.CheckBox(config.IsWhileOutCombatEnabled, x => config.IsWhileOutCombatEnabled = x, "Out of combat##BlackMage", 10.0f);
                 this.CheckBox(config.IsWhileWeaponUnsheathedEnabled, x => config.IsWhileWeaponUnsheathedEnabled = x, "Weapon is unsheathed##BlackMage", 10.0f);
                 this.CheckBox(config.IsWhileUnderUmbralIceEnabled, x => config.IsWhileUnderUmbralIceEnabled = x, "Under Umbral Ice");
-                PluginUI.Text(new string[] { "Visibility (Other Jobs):" });
+                PluginUI.Text(["Visibility (Other Jobs):"]);
                 this.Combo(config.VisibilityConditionOtherJobs, x => config.VisibilityConditionOtherJobs = x, "Condition##OtherJobs");
                 ImGuiComponents.HelpMarker(visibilityConditionTooltip);
                 this.CheckBox(config.IsAlwaysOtherJobsEnabled, x => config.IsAlwaysOtherJobsEnabled = x, "Always##OtherJobs");
@@ -710,13 +710,13 @@ namespace MPTickBar
             var config = this.Configuration.ProgressBar;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                PluginUI.Text(new string[]
-                {
+                PluginUI.Text(
+                [
                     "The progress bar will start working based on:",
                     "-Natural HP regen. (by changing your gear, using food, taking damage, etc.)",
                     "-Natural/Umbral Ice MP regen.",
                     "-At the beginning of the instanced duty or zone, under certain conditions." ,
-                });
+                ]);
             });
             PluginUI.CollapsingHeader("Dimension", () =>
             {
@@ -775,14 +775,14 @@ namespace MPTickBar
             var config = this.Configuration.FastFireIIIMarker;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                PluginUI.Text(new string[]
-                {
+                PluginUI.Text(
+                [
                     "The marker indicates when you can cast a fast Fire III safely without losing the next MP regen tick.",
                     "Adjust the [Time Offset] option if needed.",
                     "The marker will adjust automatically based on:",
                     "-Spell Speed.",
                     "-Ley Lines."
-                });
+                ]);
             });
             PluginUI.CollapsingHeader("Dimension", () =>
             {
@@ -797,7 +797,7 @@ namespace MPTickBar
             PluginUI.CollapsingHeader("Functional", () =>
             {
                 this.DragFloat(config.TimeOffset, x => config.TimeOffset = x, "Time Offset (Seconds)", 0.01f, 0.0f, 0.5f, "%.2f");
-                PluginUI.Text(new string[] { "Visibility:" });
+                PluginUI.Text(["Visibility:"]);
                 this.CheckBox(config.IsAlwaysEnabled, x => config.IsAlwaysEnabled = x, "Always");
             });
         }
@@ -807,12 +807,12 @@ namespace MPTickBar
             var config = this.Configuration.TimeSplitMarker;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                PluginUI.Text(new string[]
-                {
+                PluginUI.Text(
+                [
                     "The markers indicate a specific time or an interval on the bar.",
                     "Use the [Single Marker] option to place one marker manually based on a specific time.",
                     "Use the [Multiple Markers] option to place more than one marker based on an interval. It's adjusted automatically."
-                });
+                ]);
             });
             PluginUI.CollapsingHeader("Dimension", () =>
             {
@@ -838,10 +838,10 @@ namespace MPTickBar
             var config = this.Configuration.FireIIICastIndicator;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                PluginUI.Text(new string[]
-                {
+                PluginUI.Text(
+                [
                     "The indicator will show up when the progress reaches the marker."
-                });
+                ]);
             });
             PluginUI.CollapsingHeader("Location", () =>
             {
@@ -857,7 +857,7 @@ namespace MPTickBar
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
-                PluginUI.Text(new string[] { "Visibility:" });
+                PluginUI.Text(["Visibility:"]);
                 this.CheckBox(config.IsAlwaysEnabled, x => config.IsAlwaysEnabled = x, "Always");
             });
         }
@@ -867,15 +867,15 @@ namespace MPTickBar
             var config = this.Configuration.MPRegenStack;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                PluginUI.Text(new string[]
-                {
+                PluginUI.Text(
+                [
                     "The MP Regen Stack contains 5 stacks:",
                     "-The first 3 stacks represent the state of the current MP.",
                     " (e.g Almost empty MP = 0 stack. Almost full MP = 3 stacks)",
                     "-Umbral Ice I regen grants 1 stack.",
                     "-Umbral Ice III regen grants 2 stacks.",
                     "-The last 2 stacks represent the Lucid Dreaming regen."
-                });
+                ]);
             });
             PluginUI.CollapsingHeader("Location", () =>
             {
@@ -902,10 +902,10 @@ namespace MPTickBar
             var config = this.Configuration.Number;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                PluginUI.Text(new string[]
-                {
+                PluginUI.Text(
+                [
                     "The number represents the remaining time or percentage of the progress."
-                });
+                ]);
             });
             PluginUI.CollapsingHeader("Location", () =>
             {
@@ -923,7 +923,7 @@ namespace MPTickBar
             {
                 this.Combo(config.Type, x => config.Type = x, "Type");
                 this.CheckBox(config.Reverse, x => config.Reverse = x, "Reverse", PluginUI.Spacing);
-                PluginUI.Text(new string[] { "Visibility:" });
+                PluginUI.Text(["Visibility:"]);
                 this.CheckBox(config.IsAlwaysEnabled, x => config.IsAlwaysEnabled = x, "Always");
             });
         }
@@ -933,11 +933,11 @@ namespace MPTickBar
             var config = this.Configuration.Countdown;
             PluginUI.CollapsingHeader("Information", () =>
             {
-                PluginUI.Text(new string[]
-                {
+                PluginUI.Text(
+                [
                     $"Type {MPTickBarPlugin.CountdownCommand} X to start the countdown with X seconds after next tick and time offset. (e.g. {MPTickBarPlugin.CountdownCommand} 12)",
                     "Adjust the [Time Offset] option based on your opener/encounter requirements."
-                });
+                ]);
             });
             PluginUI.CollapsingHeader("Functional", () =>
             {
@@ -957,7 +957,7 @@ namespace MPTickBar
             }
             ImGui.SameLine();
             if (ImGui.Button("Ko-fi"))
-                this.OpenKofiLink();
+                OpenKofiLink();
 
             var iconDimension = 23.0f * ImGuiHelpers.GlobalScale;
             var fastFireIIICastTime = (this.PlayerState != null) && this.PlayerState.IsPlayingAsBlackMage ? (((int)(this.PlayerState.GetFastFireIIICastTime() * 100)) / 100.0f).ToString("0.00s") : "N/A";
@@ -978,6 +978,6 @@ namespace MPTickBar
             }
         }
 
-        private void OpenKofiLink() => Process.Start(new ProcessStartInfo { FileName = "https://ko-fi.com/marconsou", UseShellExecute = true });
+        private static void OpenKofiLink() => Process.Start(new ProcessStartInfo { FileName = "https://ko-fi.com/marconsou", UseShellExecute = true });
     }
 }
